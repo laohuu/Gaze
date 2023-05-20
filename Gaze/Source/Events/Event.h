@@ -1,10 +1,8 @@
 #ifndef GAZE_EVENT_H
 #define GAZE_EVENT_H
 
+#include "GazePCH.h"
 #include "Core/Core.h"
-
-#include <string>
-#include <functional>
 
 namespace Gaze {
 

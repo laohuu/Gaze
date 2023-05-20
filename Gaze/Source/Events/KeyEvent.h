@@ -2,8 +2,7 @@
 #define GAZE_KEYEVENT_H
 
 #include "Event.h"
-
-#include <sstream>
+#include "Core/KeyCodes.h"
 
 namespace Gaze {
 

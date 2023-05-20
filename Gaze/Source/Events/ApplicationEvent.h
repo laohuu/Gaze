@@ -4,8 +4,6 @@
 
 #include "Event.h"
 
-#include <sstream>
-
 namespace Gaze {
 
     class WindowResizeEvent : public Event {

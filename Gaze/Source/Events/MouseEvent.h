@@ -4,8 +4,6 @@
 #include "Event.h"
 #include "Core/MouseCodes.h"
 
-#include <sstream>
-
 namespace Gaze {
     class MouseMovedEvent : public Event {
     public:

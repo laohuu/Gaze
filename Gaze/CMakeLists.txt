@@ -23,5 +23,5 @@ include_directories(Source)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCES})
 
-target_precompile_headers(${PROJECT_NAME} PUBLIC "Source/GazePCH.h")
+target_precompile_headers(${PROJECT_NAME} PRIVATE "Source/GazePCH.h")
 target_link_libraries(${PROJECT_NAME} PRIVATE spdlog)
