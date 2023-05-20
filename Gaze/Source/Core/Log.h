@@ -25,13 +25,12 @@ namespace Gaze {
 #define GZ_CORE_INFO(...)     ::Gaze::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define GZ_CORE_WARN(...)     ::Gaze::Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define GZ_CORE_ERROR(...)    ::Gaze::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define GZ_CORE_FATAL(...)    ::Gaze::Log::GetCoreLogger()->fatal(__VA_ARGS__)
+#define GZ_CORE_CRITICAL(...) ::Gaze::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 // Client log macros
-#define GZ_TRACE(...)          ::Gaze::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define GZ_TRACE(...)         ::Gaze::Log::GetClientLogger()->trace(__VA_ARGS__)
 #define GZ_INFO(...)          ::Gaze::Log::GetClientLogger()->info(__VA_ARGS__)
 #define GZ_WARN(...)          ::Gaze::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define GZ_ERROR(...)          ::Gaze::Log::GetClientLogger()->error(__VA_ARGS__)
-#define GZ_FATAL(...)          ::Gaze::Log::GetClientLogger()->fatal(__VA_ARGS__)
-
+#define GZ_ERROR(...)         ::Gaze::Log::GetClientLogger()->error(__VA_ARGS__)
+#define GZ_CRITICAL(...)      ::Gaze::Log::GetClientLogger()->critical(__VA_ARGS__)
 #endif //GAZEENGINE_LOG_H
