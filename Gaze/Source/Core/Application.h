@@ -6,6 +6,7 @@
 
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
+#include "Window.h"
 
 int main(int argc, char **argv);
 
@@ -18,9 +19,13 @@ namespace Gaze {
         virtual ~Application();
 
         void Run();
+    private:
+        std::unique_ptr<Window> m_Window;
+        bool m_Running = true;
     };
 
     Application *CreateApplication();
+
 } // Gaze
 
 #endif //GAZE_APPLICATION_H

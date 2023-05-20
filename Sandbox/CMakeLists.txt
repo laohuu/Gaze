@@ -5,11 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(BUILD_SHARED_LIBS OFF)
 
-include_directories(../Gaze/Source)
+file(GLOB_RECURSE SOURCES Source/*.h Source/*.cpp)
+add_executable(Sandbox ${SOURCES})
 
-set(SOURCES
-        Source/SandboxApp.cpp)
+target_include_directories(Sandbox PRIVATE
+        ../Gaze/Source
+        )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
-
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC Gaze)
+target_link_libraries(Sandbox PRIVATE Gaze glfw)

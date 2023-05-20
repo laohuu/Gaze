@@ -1,3 +1,6 @@
 [submodule "Gaze/Packages/spdlog"]
 	path = Gaze/Packages/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "Gaze/Packages/GLFW"]
+	path = Gaze/Packages/GLFW
+	url = https://github.com/laohuu/glfw.git
