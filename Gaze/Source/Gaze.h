@@ -4,7 +4,12 @@
 // For use by Meteora applications
 
 #include "Core/Application.h"
+#include "Core/Layer.h"
 #include "Core/Log.h"
+
+#include "Core/KeyCodes.h"
+#include "Core/MouseCodes.h"
+
 
 // ---Start Entry Point---
 #include "Core/EntryPoint.h"
