@@ -1,0 +1,3 @@
+[submodule "Gaze/Packages/spdlog"]
+	path = Gaze/Packages/spdlog
+	url = https://github.com/gabime/spdlog

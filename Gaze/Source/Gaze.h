@@ -3,8 +3,8 @@
 
 // For use by Meteora applications
 
-#include "iostream"
 #include "Core/Application.h"
+#include "Core/Log.h"
 
 // ---Start Entry Point---
 #include "Core/EntryPoint.h"
