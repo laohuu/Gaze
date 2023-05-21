@@ -7,22 +7,26 @@ public:
 
     virtual ~ExampleLayer() = default;
 
-    virtual void OnAttach() override {};
+    void OnAttach() override {};
 
-    virtual void OnDetach() override {};
+    void OnDetach() override {};
 
     void OnUpdate() override {
         if (Gaze::Input::IsKeyPressed(Gaze::Key::Tab))
             GZ_TRACE("Tab key is pressed (poll)!");
     };
 
-    virtual void OnImGuiRender() override {};
+    void OnImGuiRender() override {
+
+    };
 
     void OnEvent(Gaze::Event &event) override {
         if (event.GetEventType() == Gaze::EventType::KeyPressed) {
             auto &e = (Gaze::KeyPressedEvent &) event;
             if (e.GetKeyCode() == Gaze::Key::Tab)
                 GZ_TRACE("Tab key is pressed (event)!");
+
+            GZ_TRACE("GetMousePosition: {0},{1}", Gaze::Input::GetMousePosition().x, Gaze::Input::GetMousePosition().y);
             GZ_TRACE("{0}", (char) e.GetKeyCode());
         }
     };

@@ -7,3 +7,6 @@
 [submodule "Gaze/Packages/imgui"]
 	path = Gaze/Packages/imgui
 	url = https://github.com/laohuu/imgui.git
+[submodule "Gaze/Packages/glm"]
+	path = Gaze/Packages/glm
+	url = https://github.com/laohuu/glm
