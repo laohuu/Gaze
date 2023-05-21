@@ -4,3 +4,6 @@
 [submodule "Gaze/Packages/GLFW"]
 	path = Gaze/Packages/GLFW
 	url = https://github.com/laohuu/glfw.git
+[submodule "Gaze/Packages/imgui"]
+	path = Gaze/Packages/imgui
+	url = https://github.com/laohuu/imgui.git

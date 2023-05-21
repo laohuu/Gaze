@@ -7,6 +7,8 @@
 #include "Core/Layer.h"
 #include "Core/Log.h"
 
+#include "ImGui/ImGuiLayer.h"
+
 #include "Core/KeyCodes.h"
 #include "Core/MouseCodes.h"
 

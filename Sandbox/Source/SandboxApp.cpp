@@ -1,8 +1,5 @@
 #include <Gaze.h>
 #include "Events/KeyEvent.h"
-//#include "ExampleLayer.h"
-
-
 
 class ExampleLayer : public Gaze::Layer {
 public:
@@ -22,7 +19,7 @@ public:
 
     void OnEvent(Gaze::Event &event) override {
         if (event.GetEventType() == Gaze::EventType::KeyPressed) {
-            Gaze::KeyPressedEvent &e = (Gaze::KeyPressedEvent &) event;
+            auto &e = (Gaze::KeyPressedEvent &) event;
             GZ_TRACE("{0}", e);
         }
     };

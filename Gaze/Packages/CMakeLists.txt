@@ -2,6 +2,11 @@ set(third_party_folder "Packages")
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
+if(NOT TARGET imgui)
+   include(imgui.cmake)
+   set_target_properties(imgui PROPERTIES FOLDER ${third_party_folder}/imgui)
+endif()
+
 if(NOT TARGET glfw)
    option(GLFW_BUILD_EXAMPLES "" OFF)
    option(GLFW_BUILD_TESTS "" OFF)

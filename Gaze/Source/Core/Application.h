@@ -8,6 +8,7 @@
 #include "Core/LayerStack.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
+#include "ImGui/ImGuiLayer.h"
 
 int main(int argc, char **argv);
 
@@ -25,6 +26,8 @@ namespace Gaze {
 
         void PushOverlay(Layer *layer);
 
+        inline Window& GetWindow() { return *m_Window; }
+
         static Application &Get() { return *s_Instance; }
 
         void Run();
@@ -36,6 +39,7 @@ namespace Gaze {
 
     private:
         std::unique_ptr<Window> m_Window;
+        ImGuiLayer* m_ImGuiLayer;
         bool m_Running = true;
         LayerStack m_LayerStack;
         bool m_Minimized;
