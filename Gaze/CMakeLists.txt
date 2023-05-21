@@ -6,24 +6,37 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
 add_subdirectory(Packages)
-add_compile_definitions(GZ_DEBUG)
 
-file(GLOB_RECURSE SOURCES Source/*.h Source/*.cpp)
+file(GLOB_RECURSE HEADER_FILES "*.h")
+file(GLOB_RECURSE SOURCE_FILES "Source/*.cpp")
 
-add_library(${PROJECT_NAME} STATIC ${SOURCES})
+add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
 if (WIN32)
 elseif (UNIX AND NOT APPLE)
 elseif (APPLE)
-    set(GLFW_LINK Lib/GLFW/lib-arm64/libglfw.3.dylib)
-    link_libraries(${GLFW_LINK})
-
-    target_link_libraries(Gaze PRIVATE "-framework OpenGL")
-    target_link_libraries(Gaze PRIVATE "-framework GLUT")
+    #    set(GLFW_LINK Lib/GLFW/lib-arm64/libglfw.3.dylib)
+    #    link_libraries(${GLFW_LINK})
+    #
+    #    target_link_libraries(Gaze PRIVATE "-framework OpenGL")
+    #    target_link_libraries(Gaze PRIVATE "-framework GLUT")
 else ()
 endif (WIN32)
 
-target_precompile_headers(${PROJECT_NAME} PRIVATE "Source/GazePCH.h")
-target_link_libraries(${PROJECT_NAME} PRIVATE spdlog glfw)
 
+target_link_libraries(${PROJECT_NAME} PUBLIC spdlog)
+target_link_libraries(${PROJECT_NAME} PUBLIC glad)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
+target_link_libraries(${PROJECT_NAME} PUBLIC opengl32)
+
+target_include_directories(${PROJECT_NAME}
+        PUBLIC
+        ${PROJECT_SOURCE_DIR}/Packages/spdlog/include
+        ${PROJECT_SOURCE_DIR}/Packages/GLFW/include
+        ${PROJECT_SOURCE_DIR}/Source
+        )
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/Source/GazePCH.h")
+
+target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 
