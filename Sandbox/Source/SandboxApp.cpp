@@ -12,7 +12,8 @@ public:
     virtual void OnDetach() override {};
 
     void OnUpdate() override {
-//        GZ_TRACE("ExampleLayer OnUpdate!");
+        if (Gaze::Input::IsKeyPressed(Gaze::Key::Tab))
+            GZ_TRACE("Tab key is pressed (poll)!");
     };
 
     virtual void OnImGuiRender() override {};
@@ -20,7 +21,9 @@ public:
     void OnEvent(Gaze::Event &event) override {
         if (event.GetEventType() == Gaze::EventType::KeyPressed) {
             auto &e = (Gaze::KeyPressedEvent &) event;
-            GZ_TRACE("{0}", e);
+            if (e.GetKeyCode() == Gaze::Key::Tab)
+                GZ_TRACE("Tab key is pressed (event)!");
+            GZ_TRACE("{0}", (char) e.GetKeyCode());
         }
     };
 };
