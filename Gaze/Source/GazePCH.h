@@ -13,6 +13,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Core//Log.h"
+#include "Core/Log.h"
 
 #endif //GAZE_GAZEPCH_H
