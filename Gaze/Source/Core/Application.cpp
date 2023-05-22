@@ -5,6 +5,8 @@
 
 #include <glad/glad.h>
 
+#include <memory>
+
 namespace Gaze {
 
     Application *Application::s_Instance = nullptr;
@@ -19,9 +21,9 @@ namespace Gaze {
         PushOverlay(m_ImGuiLayer);
 
         GZ_CORE_INFO("OpenGL Info:");
-        GZ_CORE_INFO("GL_VENDOR: {0}", (char*)glGetString(GL_VENDOR));
-        GZ_CORE_INFO("GL_RENDERER: {0}", (char*)glGetString(GL_RENDERER));
-        GZ_CORE_INFO("GL_VERSION: {0}", (char*)glGetString(GL_VERSION));
+        GZ_CORE_INFO("GL_VENDOR: {0}", (char *) glGetString(GL_VENDOR));
+        GZ_CORE_INFO("GL_RENDERER: {0}", (char *) glGetString(GL_RENDERER));
+        GZ_CORE_INFO("GL_VERSION: {0}", (char *) glGetString(GL_VERSION));
 
         //Vertex Array
         //Vertex Buffer
@@ -47,6 +49,32 @@ namespace Gaze {
 
         unsigned int indices[3] = {0, 1, 2};
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+
+        std::string vertexSrc = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_Position;
+			out vec3 v_Position;
+			void main()
+			{
+				v_Position = a_Position;
+				gl_Position = vec4(a_Position, 1.0f);
+			}
+		)";
+
+        std::string fragmentSrc = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 color;
+			in vec3 v_Position;
+			void main()
+			{
+				color = vec4(v_Position * 0.5f + 0.5f, 1.0f);
+			}
+		)";
+
+        m_Shader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
     }
 
     Application::~Application() {
@@ -83,6 +111,8 @@ namespace Gaze {
         while (m_Running) {
             glClearColor(1.0f, 0.5f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT);
+
+            m_Shader->Bind();
 
             glBindVertexArray(m_VertexArray);
             glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
