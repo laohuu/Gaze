@@ -26,7 +26,7 @@ namespace Gaze {
 
         void PushOverlay(Layer *layer);
 
-        inline Window& GetWindow() { return *m_Window; }
+        inline Window &GetWindow() { return *m_Window; }
 
         static Application &Get() { return *s_Instance; }
 
@@ -39,9 +39,11 @@ namespace Gaze {
 
     private:
         std::unique_ptr<Window> m_Window;
-        ImGuiLayer* m_ImGuiLayer;
+        ImGuiLayer *m_ImGuiLayer;
         bool m_Running = true;
         LayerStack m_LayerStack;
+
+        unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
         bool m_Minimized;
     private:
         static Application *s_Instance;
