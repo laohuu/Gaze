@@ -3,6 +3,7 @@
 
 #include "Core/Window.h"
 #include "GLFW/glfw3.h"
+#include "Renderer/GraphicsContext.h"
 
 namespace Gaze {
     class WindowsWindow : public Window {
@@ -26,6 +27,7 @@ namespace Gaze {
         virtual void Shutdown();
     private:
         GLFWwindow* m_Window;
+        GraphicsContext* m_Context;
 
         struct WindowData
         {

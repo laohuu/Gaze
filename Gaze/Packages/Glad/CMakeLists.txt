@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.23)
 project(glad)
 
 add_library(${PROJECT_NAME} src/glad.c)
