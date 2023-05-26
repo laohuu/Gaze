@@ -13,13 +13,6 @@
 
 #include "ImGui/ImGuiLayer.h"
 
-#include "Renderer/Shader.h"
-#include "Renderer/Buffer.h"
-#include "Renderer/VertexArray.h"
-
-#include "Renderer/OrthographicCamera.h"
-
-
 
 int main(int argc, char **argv);
 
