@@ -3,7 +3,114 @@
 
 class ExampleLayer : public Gaze::Layer {
 public:
-    ExampleLayer() {};
+    ExampleLayer() : m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f) {
+        m_VertexArray.reset(Gaze::VertexArray::Create());
+
+        float vertices[3 * 7] = {
+                -0.5f, -0.5f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
+                0.5f, -0.5f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
+                0.0f, 0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
+        };
+
+        std::shared_ptr<Gaze::VertexBuffer> vertexBuffer;
+        vertexBuffer.reset(Gaze::VertexBuffer::Create(vertices, sizeof(vertices)));
+        Gaze::BufferLayout layout = {
+                {Gaze::ShaderDataType::Float3, "a_Position"},
+                {Gaze::ShaderDataType::Float4, "a_Color"}
+        };
+        vertexBuffer->SetLayout(layout);
+        m_VertexArray->AddVertexBuffer(vertexBuffer);
+
+        uint32_t indices[3] = {0, 1, 2};
+        std::shared_ptr<Gaze::IndexBuffer> indexBuffer;
+        indexBuffer.reset(Gaze::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+        m_VertexArray->SetIndexBuffer(indexBuffer);
+
+        m_SquareVA.reset(Gaze::VertexArray::Create());
+
+        float squareVertices[3 * 4] = {
+                -0.75f, -0.75f, 0.0f,
+                0.75f, -0.75f, 0.0f,
+                0.75f, 0.75f, 0.0f,
+                -0.75f, 0.75f, 0.0f
+        };
+
+        std::shared_ptr<Gaze::VertexBuffer> squareVB;
+        squareVB.reset(Gaze::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+        squareVB->SetLayout({
+                                    {Gaze::ShaderDataType::Float3, "a_Position"}
+                            });
+        m_SquareVA->AddVertexBuffer(squareVB);
+
+        uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
+        std::shared_ptr<Gaze::IndexBuffer> squareIB;
+        squareIB.reset(Gaze::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+        m_SquareVA->SetIndexBuffer(squareIB);
+
+        std::string vertexSrc = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec4 a_Color;
+
+            uniform mat4 u_ViewProjection;
+
+			out vec3 v_Position;
+			out vec4 v_Color;
+
+			void main()
+			{
+				v_Position = a_Position;
+				v_Color = a_Color;
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0f);
+			}
+		)";
+
+        std::string fragmentSrc = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 color;
+
+			in vec3 v_Position;
+			in vec4 v_Color;
+
+			void main()
+			{
+				color = vec4(v_Position * 0.5f + 0.5f, 1.0f);
+				color = v_Color;
+			}
+		)";
+
+        m_Shader.reset(new Gaze::Shader(vertexSrc, fragmentSrc));
+
+        std::string blueShaderVertexSrc = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_Position;
+
+            uniform mat4 u_ViewProjection;
+
+			out vec3 v_Position;
+			void main()
+			{
+				v_Position = a_Position;
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0f);
+			}
+		)";
+
+        std::string blueShaderFragmentSrc = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 color;
+			in vec3 v_Position;
+			void main()
+			{
+				color = vec4(0.2, 0.3, 0.8, 1.0);
+			}
+		)";
+
+        m_BlueShader.reset(new Gaze::Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
+    };
 
     virtual ~ExampleLayer() = default;
 
@@ -11,9 +118,37 @@ public:
 
     void OnDetach() override {};
 
-    void OnUpdate() override {
-        if (Gaze::Input::IsKeyPressed(Gaze::Key::Tab))
-            GZ_TRACE("Tab key is pressed (poll)!");
+    void OnUpdate(Gaze::Timestep ts) override {
+//        if (Gaze::Input::IsKeyPressed(Gaze::Key::Tab))
+//            GZ_TRACE("Tab key is pressed (poll)!");
+
+        if (Gaze::Input::IsKeyPressed(Gaze::Key::Left))
+            m_CameraPosition.x -= m_CameraMoveSpeed * ts;
+        else if (Gaze::Input::IsKeyPressed(Gaze::Key::Right))
+            m_CameraPosition.x += m_CameraMoveSpeed * ts;
+
+        if (Gaze::Input::IsKeyPressed(Gaze::Key::Up))
+            m_CameraPosition.y += m_CameraMoveSpeed * ts;
+        else if (Gaze::Input::IsKeyPressed(Gaze::Key::Down))
+            m_CameraPosition.y -= m_CameraMoveSpeed * ts;
+
+        if (Gaze::Input::IsKeyPressed(Gaze::Key::A))
+            m_CameraRotation += m_CameraRotationSpeed * ts;
+        if (Gaze::Input::IsKeyPressed(Gaze::Key::D))
+            m_CameraRotation -= m_CameraRotationSpeed * ts;
+
+        Gaze::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
+        Gaze::RenderCommand::Clear();
+
+        m_Camera.SetPosition(m_CameraPosition);
+        m_Camera.SetRotation(m_CameraRotation);
+
+        Gaze::Renderer::BeginScene(m_Camera);
+
+        Gaze::Renderer::Submit(m_BlueShader, m_SquareVA);
+        Gaze::Renderer::Submit(m_Shader, m_VertexArray);
+
+        Gaze::Renderer::EndScene();
     };
 
     void OnImGuiRender() override {
@@ -26,10 +161,24 @@ public:
             if (e.GetKeyCode() == Gaze::Key::Tab)
                 GZ_TRACE("Tab key is pressed (event)!");
 
-            GZ_TRACE("GetMousePosition: {0},{1}", Gaze::Input::GetMousePosition().x, Gaze::Input::GetMousePosition().y);
             GZ_TRACE("{0}", (char) e.GetKeyCode());
         }
     };
+
+private:
+    std::shared_ptr<Gaze::Shader> m_Shader;
+    std::shared_ptr<Gaze::VertexArray> m_VertexArray;
+
+    std::shared_ptr<Gaze::Shader> m_BlueShader;
+    std::shared_ptr<Gaze::VertexArray> m_SquareVA;
+
+    Gaze::OrthographicCamera m_Camera;
+    glm::vec3 m_CameraPosition;
+    float m_CameraMoveSpeed = 5.0f;
+
+    float m_CameraRotation = 0.0f;
+    float m_CameraRotationSpeed = 180.0f;
+
 };
 
 

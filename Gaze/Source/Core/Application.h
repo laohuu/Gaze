@@ -8,6 +8,9 @@
 #include "Core/LayerStack.h"
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
+
+#include "Timestep.h"
+
 #include "ImGui/ImGuiLayer.h"
 
 #include "Renderer/Shader.h"
@@ -15,6 +18,8 @@
 #include "Renderer/VertexArray.h"
 
 #include "Renderer/OrthographicCamera.h"
+
+
 
 int main(int argc, char **argv);
 
@@ -49,15 +54,9 @@ namespace Gaze {
         ImGuiLayer *m_ImGuiLayer;
         bool m_Running = true;
         LayerStack m_LayerStack;
-        std::shared_ptr<Shader> m_Shader;
-        std::shared_ptr<VertexArray> m_VertexArray;
-
-        std::shared_ptr<Shader> m_BlueShader;
-        std::shared_ptr<VertexArray> m_SquareVA;
-
-        OrthographicCamera m_Camera;
 
         bool m_Minimized;
+        float m_LastFrameTime = 0.0f;
 
     private:
         static Application *s_Instance;

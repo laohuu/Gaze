@@ -3,6 +3,7 @@
 
 #include "Core/Core.h"
 #include "Events/Event.h"
+#include "Timestep.h"
 
 namespace Gaze {
 
@@ -14,7 +15,7 @@ namespace Gaze {
 
         virtual void OnAttach() {}
         virtual void OnDetach() {}
-        virtual void OnUpdate() {}
+        virtual void OnUpdate(Timestep ts) {}
         virtual void OnImGuiRender() {}
         virtual void OnEvent(Event& event) {}
 

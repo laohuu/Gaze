@@ -13,6 +13,17 @@
 #include "Core/KeyCodes.h"
 #include "Core/MouseCodes.h"
 
+// ---Renderer------------------------
+#include "Renderer/Renderer.h"
+#include "Renderer/RenderCommand.h"
+
+#include "Renderer/Buffer.h"
+#include "Renderer/Shader.h"
+#include "Renderer/VertexArray.h"
+
+#include "Renderer/OrthographicCamera.h"
+// -----------------------------------
+
 
 // ---Start Entry Point---
 #include "Core/EntryPoint.h"
