@@ -5,7 +5,6 @@
 
 namespace Gaze {
 
-
     static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {
         switch (type) {
             case Gaze::ShaderDataType::Float:

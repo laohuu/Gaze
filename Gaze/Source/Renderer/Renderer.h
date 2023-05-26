@@ -1,18 +1,19 @@
 #ifndef GAZE_ENGINE_RENDERER_H
 #define GAZE_ENGINE_RENDERER_H
 
-namespace Gaze {
+#include "RenderCommand.h"
 
-    enum class RendererAPI {
-        None = 0, OpenGL = 1
-    };
+namespace Gaze {
 
     class Renderer {
     public:
-        inline static RendererAPI GetAPI() { return s_RendererAPI; }
+        static void BeginScene();
 
-    private:
-        static RendererAPI s_RendererAPI;
+        static void EndScene();
+
+        static void Submit(const std::shared_ptr<VertexArray> &vertexArray);
+
+        inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
     };
 
 } // Gaze

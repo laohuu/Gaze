@@ -127,7 +127,7 @@ namespace Gaze {
 
     class VertexBuffer {
     public:
-        virtual ~VertexBuffer() {}
+        virtual ~VertexBuffer() = default;
 
         virtual void Bind() const = 0;
 
@@ -144,7 +144,7 @@ namespace Gaze {
 
     class IndexBuffer {
     public:
-        virtual ~IndexBuffer() {}
+        virtual ~IndexBuffer() = default;
 
         virtual void Bind() const = 0;
 

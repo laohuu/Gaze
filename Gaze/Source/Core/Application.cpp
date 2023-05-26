@@ -3,7 +3,7 @@
 
 #include "Core/Log.h"
 
-#include <glad/glad.h>
+#include "Renderer/Renderer.h"
 
 #include <memory>
 
@@ -20,10 +20,10 @@ namespace Gaze {
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
 
-        GZ_CORE_INFO("OpenGL Info:");
-        GZ_CORE_INFO("GL_VENDOR: {0}", (char *) glGetString(GL_VENDOR));
-        GZ_CORE_INFO("GL_RENDERER: {0}", (char *) glGetString(GL_RENDERER));
-        GZ_CORE_INFO("GL_VERSION: {0}", (char *) glGetString(GL_VERSION));
+//        GZ_CORE_INFO("OpenGL Info:");
+//        GZ_CORE_INFO("GL_VENDOR: {0}", (char *) glGetString(GL_VENDOR));
+//        GZ_CORE_INFO("GL_RENDERER: {0}", (char *) glGetString(GL_RENDERER));
+//        GZ_CORE_INFO("GL_VERSION: {0}", (char *) glGetString(GL_VERSION));
 
         m_VertexArray.reset(VertexArray::Create());
 
@@ -128,10 +128,6 @@ namespace Gaze {
         m_BlueShader.reset(new Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
     }
 
-    Application::~Application() {
-
-    }
-
     void Application::PushLayer(Layer *layer) {
         m_LayerStack.PushLayer(layer);
         layer->OnAttach();
@@ -161,17 +157,18 @@ namespace Gaze {
             GZ_TRACE(e.ToString());
         }
         while (m_Running) {
-            glClearColor(1.0f, 0.5f, 0.2f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+            RenderCommand::Clear();
+
+            Renderer::BeginScene();
 
             m_BlueShader->Bind();
-            m_SquareVA->Bind();
-            glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+            Renderer::Submit(m_SquareVA);
 
             m_Shader->Bind();
-            m_VertexArray->Bind();
-            glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+            Renderer::Submit(m_VertexArray);
 
+            Renderer::EndScene();
             for (Layer *layer: m_LayerStack)
                 layer->OnUpdate();
 
