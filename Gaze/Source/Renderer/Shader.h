@@ -2,6 +2,7 @@
 #define GAZE_SHADER_H
 
 #include <string>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Gaze {
 
@@ -15,6 +16,7 @@ namespace Gaze {
 
         void Unbind() const;
 
+        void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
     private:
         uint32_t m_RendererID;
     };

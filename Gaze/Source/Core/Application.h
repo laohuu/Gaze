@@ -14,6 +14,8 @@
 #include "Renderer/Buffer.h"
 #include "Renderer/VertexArray.h"
 
+#include "Renderer/OrthographicCamera.h"
+
 int main(int argc, char **argv);
 
 namespace Gaze {
@@ -52,6 +54,9 @@ namespace Gaze {
 
         std::shared_ptr<Shader> m_BlueShader;
         std::shared_ptr<VertexArray> m_SquareVA;
+
+        OrthographicCamera m_Camera;
+
         bool m_Minimized;
 
     private:

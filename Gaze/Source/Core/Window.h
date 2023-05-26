@@ -7,6 +7,7 @@
 #include <sstream>
 
 namespace Gaze {
+
     struct WindowProps {
         std::string Title;
         uint32_t Width;

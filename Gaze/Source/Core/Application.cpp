@@ -11,7 +11,7 @@ namespace Gaze {
 
     Application *Application::s_Instance = nullptr;
 
-    Application::Application() {
+    Application::Application() : m_Camera(-1.6f, 1.6f, -0.9f, 0.9f) {
         GZ_CORE_ASSERT(!s_Instance, "Application already exists!");
         s_Instance = this;
 
@@ -74,6 +74,8 @@ namespace Gaze {
 			layout(location = 0) in vec3 a_Position;
 			layout(location = 1) in vec4 a_Color;
 
+            uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 			out vec4 v_Color;
 
@@ -81,7 +83,7 @@ namespace Gaze {
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0f);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0f);
 			}
 		)";
 
@@ -106,11 +108,14 @@ namespace Gaze {
 			#version 330 core
 
 			layout(location = 0) in vec3 a_Position;
+
+            uniform mat4 u_ViewProjection;
+
 			out vec3 v_Position;
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * vec4(a_Position, 1.0f);
 			}
 		)";
 
@@ -157,18 +162,19 @@ namespace Gaze {
             GZ_TRACE(e.ToString());
         }
         while (m_Running) {
-            RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
+            RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
             RenderCommand::Clear();
 
-            Renderer::BeginScene();
+            m_Camera.SetPosition({0.5f, 0.5f, 0.0f});
+            m_Camera.SetRotation(45.0f);
 
-            m_BlueShader->Bind();
-            Renderer::Submit(m_SquareVA);
+            Renderer::BeginScene(m_Camera);
 
-            m_Shader->Bind();
-            Renderer::Submit(m_VertexArray);
+            Renderer::Submit(m_BlueShader, m_SquareVA);
+            Renderer::Submit(m_Shader, m_VertexArray);
 
             Renderer::EndScene();
+
             for (Layer *layer: m_LayerStack)
                 layer->OnUpdate();
 
