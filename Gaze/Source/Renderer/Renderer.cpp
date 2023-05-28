@@ -1,8 +1,6 @@
 #include "GazePCH.h"
 #include "Renderer.h"
 
-#include "Platform/OpenGL/OpenGLShader.h"
-
 namespace Gaze {
 
     Renderer::SceneData *Renderer::s_SceneData = new Renderer::SceneData;
@@ -18,9 +16,9 @@ namespace Gaze {
                           const glm::mat4 &transform
     ) {
         shader->Bind();
-        std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_ViewProjection",
-                                                                           s_SceneData->ViewProjectionMatrix);
-        std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_Transform", transform);
+        shader->SetMat4("u_ViewProjection",
+                        s_SceneData->ViewProjectionMatrix);
+        shader->SetMat4("u_Transform", transform);
 
         vertexArray->Bind();
 
