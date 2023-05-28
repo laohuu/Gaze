@@ -8,17 +8,13 @@ namespace Gaze {
 
     class Shader {
     public:
-        Shader(const std::string &vertexSrc, const std::string &fragmentSrc);
+        virtual ~Shader() = default;
 
-        ~Shader();
+        virtual void Bind() const = 0;
 
-        void Bind() const;
+        virtual void Unbind() const = 0;
 
-        void Unbind() const;
-
-        void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
-    private:
-        uint32_t m_RendererID;
+        static Shader *Create(const std::string &vertexSrc, const std::string &fragmentSrc);
     };
 
 } // Gaze
