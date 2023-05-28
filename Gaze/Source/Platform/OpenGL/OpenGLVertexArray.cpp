@@ -29,6 +29,8 @@ namespace Gaze {
                 return GL_INT;
             case Gaze::ShaderDataType::Bool:
                 return GL_BOOL;
+            case ShaderDataType::None: GZ_CORE_ASSERT(false, "None ShaderDataType!");
+                break;
         }
 
         GZ_CORE_ASSERT(false, "Unknown ShaderDataType!");
@@ -66,7 +68,7 @@ namespace Gaze {
                                   ShaderDataTypeToOpenGLBaseType(element.Type),
                                   element.Normalized ? GL_TRUE : GL_FALSE,
                                   layout.GetStride(),
-                                  (const void *) element.Offset);
+                                  (const void *) (intptr_t) element.Offset);
             index++;
         }
         m_VertexBuffers.push_back(vertexBuffer);
