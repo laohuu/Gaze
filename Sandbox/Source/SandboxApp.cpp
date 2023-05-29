@@ -155,6 +155,9 @@ public:
         m_Texture = Gaze::Texture2D::Create(
                 "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Textures/Checkerboard.png");
 
+        m_ChernoLogoTexture = Gaze::Texture2D::Create(
+                "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Textures/ChernoLogo.png");
+
         m_TextureShader->Bind();
         m_TextureShader->SetInt("u_Texture", 0);
 
@@ -210,6 +213,9 @@ public:
         m_Texture->Bind();
         Gaze::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
+        m_ChernoLogoTexture->Bind();
+        Gaze::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
 //        // Triangle
 //        Gaze::Renderer::Submit(m_Shader, m_VertexArray);
 
@@ -239,7 +245,7 @@ private:
     Gaze::Ref<Gaze::Shader> m_FlatColorShader, m_TextureShader;
     Gaze::Ref<Gaze::VertexArray> m_SquareVA;
 
-    Gaze::Ref<Gaze::Texture2D> m_Texture;
+    Gaze::Ref<Gaze::Texture2D> m_Texture, m_ChernoLogoTexture;
 
     Gaze::OrthographicCamera m_Camera;
     glm::vec3 m_CameraPosition;

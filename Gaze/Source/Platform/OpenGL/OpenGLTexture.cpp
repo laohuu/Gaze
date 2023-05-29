@@ -28,7 +28,7 @@ namespace Gaze {
         stbi_set_flip_vertically_on_load(1);
         stbi_uc *data = nullptr;
         {
-            GZ_CORE_INFO("stbi_load - OpenGLTexture2D::OpenGLTexture2D(const std::string&)");
+            GZ_CORE_TRACE("stbi_load - OpenGLTexture2D::OpenGLTexture2D(const std::string&)");
             data = stbi_load(path.c_str(), &width, &height, &channels, 0);
         }
 
