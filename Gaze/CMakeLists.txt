@@ -25,6 +25,7 @@ file(GLOB_RECURSE SOURCE_FILES "Source/*.cpp")
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog)
+target_link_libraries(${PROJECT_NAME} PRIVATE stb)
 target_link_libraries(${PROJECT_NAME} PUBLIC glad)
 target_link_libraries(${PROJECT_NAME} PUBLIC glm)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
@@ -34,6 +35,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC opengl32)
 target_include_directories(${PROJECT_NAME}
         PUBLIC
         ${PROJECT_SOURCE_DIR}/Packages/spdlog/include
+        ${PROJECT_SOURCE_DIR}/Packages/stb
         ${PROJECT_SOURCE_DIR}/Packages/GLFW/include
         ${PROJECT_SOURCE_DIR}/Packages/glm
         ${PROJECT_SOURCE_DIR}/Source

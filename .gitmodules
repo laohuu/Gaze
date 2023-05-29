@@ -10,3 +10,6 @@
 [submodule "Gaze/Packages/glm"]
 	path = Gaze/Packages/glm
 	url = https://github.com/laohuu/glm
+[submodule "Gaze/Packages/stb"]
+	path = Gaze/Packages/stb
+	url = https://github.com/laohuu/stb.git
