@@ -31,6 +31,8 @@ namespace Gaze {
         virtual const std::string &GetName() const = 0;
 
         static Shader *Create(const std::string &vertexSrc, const std::string &fragmentSrc);
+
+        static Shader *Create(const std::string &filepath);
     };
 
 } // Gaze
