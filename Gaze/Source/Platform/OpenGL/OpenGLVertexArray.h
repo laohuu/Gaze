@@ -26,6 +26,7 @@ namespace Gaze {
 
     private:
         uint32_t m_RendererID;
+        uint32_t m_VertexBufferIndex = 0;
         std::vector<Gaze::Ref<VertexBuffer>> m_VertexBuffers;
         Gaze::Ref<IndexBuffer> m_IndexBuffer;
     };
