@@ -6,6 +6,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <Core/EntryPoint.h>
+
+#include "Sandbox2D.h"
 
 class ExampleLayer : public Gaze::Layer {
 public:
@@ -19,7 +22,7 @@ public:
         };
 
         Gaze::Ref<Gaze::VertexBuffer> vertexBuffer;
-        vertexBuffer.reset(Gaze::VertexBuffer::Create(vertices, sizeof(vertices)));
+        vertexBuffer = Gaze::VertexBuffer::Create(vertices, sizeof(vertices));
         Gaze::BufferLayout layout = {
                 {Gaze::ShaderDataType::Float3, "a_Position"},
                 {Gaze::ShaderDataType::Float4, "a_Color"}
@@ -29,7 +32,7 @@ public:
 
         uint32_t indices[3] = {0, 1, 2};
         Gaze::Ref<Gaze::IndexBuffer> indexBuffer;
-        indexBuffer.reset(Gaze::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+        indexBuffer = Gaze::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
         m_VertexArray->SetIndexBuffer(indexBuffer);
 
         m_SquareVA = Gaze::VertexArray::Create();
@@ -42,7 +45,7 @@ public:
         };
 
         Gaze::Ref<Gaze::VertexBuffer> squareVB;
-        squareVB.reset(Gaze::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+        squareVB = Gaze::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
         squareVB->SetLayout({
                                     {Gaze::ShaderDataType::Float3, "a_Position"},
                                     {Gaze::ShaderDataType::Float2, "a_TexCoord"}
@@ -51,7 +54,7 @@ public:
 
         uint32_t squareIndices[6] = {0, 1, 2, 2, 3, 0};
         Gaze::Ref<Gaze::IndexBuffer> squareIB;
-        squareIB.reset(Gaze::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+        squareIB = Gaze::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t));
         m_SquareVA->SetIndexBuffer(squareIB);
 
         std::string vertexSrc = R"(
@@ -210,7 +213,8 @@ private:
 class Sandbox : public Gaze::Application {
 public:
     Sandbox() {
-        PushLayer(new ExampleLayer());
+//        PushLayer(new ExampleLayer());
+        PushLayer(new Sandbox2D());
     }
 
     ~Sandbox() override {}

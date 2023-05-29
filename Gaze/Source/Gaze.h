@@ -28,9 +28,4 @@
 #include "Renderer/OrthographicCameraController.h"
 // -----------------------------------
 
-
-// ---Start Entry Point---
-#include "Core/EntryPoint.h"
-// ---End Entry Point---
-
 #endif //GAZE_GAZE_H
