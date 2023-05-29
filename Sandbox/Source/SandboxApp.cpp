@@ -89,7 +89,7 @@ public:
 			}
 		)";
 
-        m_Shader.reset(Gaze::Shader::Create(vertexSrc, fragmentSrc));
+        m_Shader = Gaze::Shader::Create("VertexPosColor", vertexSrc, fragmentSrc);
 
         std::string flatColorShaderVertexSrc = R"(
 			#version 330 core
@@ -120,10 +120,10 @@ public:
 			}
 		)";
 
-        m_FlatColorShader.reset(Gaze::Shader::Create(flatColorShaderVertexSrc, flatColorShaderFragmentSrc));
+        m_FlatColorShader = Gaze::Shader::Create("FlatColor", flatColorShaderVertexSrc, flatColorShaderFragmentSrc);
 
-        m_TextureShader.reset(
-                Gaze::Shader::Create("C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Shaders/Texture.glsl"));
+        auto textureShader = m_ShaderLibrary.Load(
+                "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Shaders/Texture.glsl");
 
         m_Texture = Gaze::Texture2D::Create(
                 "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Textures/Checkerboard.png");
@@ -131,12 +131,12 @@ public:
         m_ChernoLogoTexture = Gaze::Texture2D::Create(
                 "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Textures/ChernoLogo.png");
 
-        m_TextureShader->Bind();
-        m_TextureShader->SetInt("u_Texture", 0);
+        textureShader->Bind();
+        textureShader->SetInt("u_Texture", 0);
 
     };
 
-    virtual ~ExampleLayer() = default;
+    ~ExampleLayer() override = default;
 
     void OnAttach() override {};
 
@@ -183,11 +183,13 @@ public:
             }
         }
 
+        auto textureShader = m_ShaderLibrary.Get("Texture");
+
         m_Texture->Bind();
-        Gaze::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+        Gaze::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
         m_ChernoLogoTexture->Bind();
-        Gaze::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+        Gaze::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 //        // Triangle
 //        Gaze::Renderer::Submit(m_Shader, m_VertexArray);
@@ -212,10 +214,11 @@ public:
     };
 
 private:
+    Gaze::ShaderLibrary m_ShaderLibrary;
     Gaze::Ref<Gaze::Shader> m_Shader;
     Gaze::Ref<Gaze::VertexArray> m_VertexArray;
 
-    Gaze::Ref<Gaze::Shader> m_FlatColorShader, m_TextureShader;
+    Gaze::Ref<Gaze::Shader> m_FlatColorShader;
     Gaze::Ref<Gaze::VertexArray> m_SquareVA;
 
     Gaze::Ref<Gaze::Texture2D> m_Texture, m_ChernoLogoTexture;
@@ -238,7 +241,7 @@ public:
         PushLayer(new ExampleLayer());
     }
 
-    ~Sandbox() {}
+    ~Sandbox() override {}
 
 private:
 
