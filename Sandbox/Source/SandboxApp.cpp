@@ -9,7 +9,7 @@
 
 class ExampleLayer : public Gaze::Layer {
 public:
-    ExampleLayer() : m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f) {
+    ExampleLayer() : Layer("Example"), m_CameraController(1280.0f / 720.0f, true) {
         m_VertexArray.reset(Gaze::VertexArray::Create());
 
         float vertices[3 * 7] = {
@@ -143,31 +143,14 @@ public:
     void OnDetach() override {};
 
     void OnUpdate(Gaze::Timestep ts) override {
-//        if (Gaze::Input::IsKeyPressed(Gaze::Key::Tab))
-//            GZ_TRACE("Tab key is pressed (poll)!");
+        // Update
+        m_CameraController.OnUpdate(ts);
 
-        if (Gaze::Input::IsKeyPressed(Gaze::Key::Left))
-            m_CameraPosition.x -= m_CameraMoveSpeed * ts;
-        else if (Gaze::Input::IsKeyPressed(Gaze::Key::Right))
-            m_CameraPosition.x += m_CameraMoveSpeed * ts;
-
-        if (Gaze::Input::IsKeyPressed(Gaze::Key::Up))
-            m_CameraPosition.y += m_CameraMoveSpeed * ts;
-        else if (Gaze::Input::IsKeyPressed(Gaze::Key::Down))
-            m_CameraPosition.y -= m_CameraMoveSpeed * ts;
-
-        if (Gaze::Input::IsKeyPressed(Gaze::Key::A))
-            m_CameraRotation += m_CameraRotationSpeed * ts;
-        if (Gaze::Input::IsKeyPressed(Gaze::Key::D))
-            m_CameraRotation -= m_CameraRotationSpeed * ts;
-
+        // Render
         Gaze::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Gaze::RenderCommand::Clear();
 
-        m_Camera.SetPosition(m_CameraPosition);
-        m_Camera.SetRotation(m_CameraRotation);
-
-        Gaze::Renderer::BeginScene(m_Camera);
+        Gaze::Renderer::BeginScene(m_CameraController.GetCamera());
 
 
         glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
@@ -204,13 +187,7 @@ public:
     };
 
     void OnEvent(Gaze::Event &event) override {
-        if (event.GetEventType() == Gaze::EventType::KeyPressed) {
-            auto &e = (Gaze::KeyPressedEvent &) event;
-            if (e.GetKeyCode() == Gaze::Key::Tab)
-                GZ_TRACE("Tab key is pressed (event)!");
-
-            GZ_TRACE("{0}", (char) e.GetKeyCode());
-        }
+        m_CameraController.OnEvent(event);
     };
 
 private:
@@ -223,12 +200,7 @@ private:
 
     Gaze::Ref<Gaze::Texture2D> m_Texture, m_ChernoLogoTexture;
 
-    Gaze::OrthographicCamera m_Camera;
-    glm::vec3 m_CameraPosition;
-    float m_CameraMoveSpeed = 5.0f;
-
-    float m_CameraRotation = 0.0f;
-    float m_CameraRotationSpeed = 180.0f;
+    Gaze::OrthographicCameraController m_CameraController;
 
     glm::vec3 m_SquareColor = {0.2f, 0.3f, 0.8f};
 
