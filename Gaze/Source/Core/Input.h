@@ -10,7 +10,14 @@
 namespace Gaze {
 
     class Input {
+    protected:
+        Input() = default;
+
     public:
+        Input(const Input &) = delete;
+
+        Input &operator=(const Input &) = delete;
+
         static bool IsKeyPressed(KeyCode key);
 
         static bool IsMouseButtonPressed(MouseCode button);
