@@ -47,7 +47,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_DEBUG)
 
 if (WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_PLATFORM_WINDOWS)
+#    target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_PLATFORM_WINDOWS)
 elseif (UNIX AND NOT APPLE)
 elseif (APPLE)
     #    target_link_libraries(Gaze PRIVATE "-framework OpenGL")
