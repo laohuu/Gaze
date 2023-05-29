@@ -22,7 +22,7 @@ namespace Gaze {
 
         virtual const Gaze::Ref<IndexBuffer> &GetIndexBuffer() const = 0;
 
-        static VertexArray *Create();
+        static Gaze::Ref<VertexArray> Create();
     };
 
 } // Gaze
