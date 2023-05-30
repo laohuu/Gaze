@@ -16,10 +16,6 @@ namespace Gaze {
         GZ_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
     }
 
-    Gaze::Scope<Window> Window::Create(const WindowProps &props) {
-        return CreateScope<WindowsWindow>(props);
-    }
-
     WindowsWindow::WindowsWindow(const WindowProps &props) {
         GZ_PROFILE_FUNCTION();
 
