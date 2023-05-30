@@ -44,7 +44,6 @@ target_include_directories(${PROJECT_NAME}
 target_precompile_headers(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/Source/GazePCH.h")
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
-target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_DEBUG)
 
 if (WIN32)
 #    target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_PLATFORM_WINDOWS)
