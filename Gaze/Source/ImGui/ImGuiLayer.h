@@ -12,13 +12,13 @@ namespace Gaze {
     public:
         ImGuiLayer();
 
-        ~ImGuiLayer() = default;
+        ~ImGuiLayer() override = default;
 
-        virtual void OnAttach() override;
+        void OnAttach() override;
 
-        virtual void OnDetach() override;
+        void OnDetach() override;
 
-        virtual void OnImGuiRender() override;
+        void OnImGuiRender() override;
 
         void Begin();
 

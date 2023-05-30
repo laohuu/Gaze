@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Platform/OpenGL/OpenGLShader.h"
+#include "Core/Timer.h"
 
 Sandbox2D::Sandbox2D()
         : Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f) {
@@ -21,10 +21,16 @@ void Sandbox2D::OnDetach() {
 }
 
 void Sandbox2D::OnUpdate(Gaze::Timestep ts) {
+
+
+
     // Update
+    Gaze::Timer timer;
     m_CameraController.OnUpdate(ts);
+    GZ_CORE_WARN("OnUpdate took {0} ms", timer.ElapsedMillis());
 
     // Render
+    timer.Reset();
     Gaze::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
     Gaze::RenderCommand::Clear();
 
@@ -35,6 +41,7 @@ void Sandbox2D::OnUpdate(Gaze::Timestep ts) {
     Gaze::Renderer2D::DrawQuad({0.0f, 0.0f, -0.1f}, {1.0f, 1.0f}, m_CheckerboardTexture);
 
     Gaze::Renderer2D::EndScene();
+    GZ_CORE_WARN("Render took {0} ms", timer.ElapsedMillis());
 }
 
 void Sandbox2D::OnImGuiRender() {
