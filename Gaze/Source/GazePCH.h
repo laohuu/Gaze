@@ -16,4 +16,6 @@
 
 #include "Core/Log.h"
 
+#include "Debug/Instrumentor.h"
+
 #endif //GAZE_GAZEPCH_H

@@ -1,7 +1,9 @@
 #ifndef GAZE_GAZE_H
 #define GAZE_GAZE_H
 
-// For use by Meteora applications
+// For use by Gaze applications
+
+#include "Core/Core.h"
 
 #include "Core/Application.h"
 #include "Core/Layer.h"

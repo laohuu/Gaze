@@ -17,7 +17,7 @@ namespace Gaze {
         GZ_CORE_ASSERT(!s_Instance, "Application already exists!");
         s_Instance = this;
 
-        m_Window = Gaze::Scope<Window>(Window::Create());
+        m_Window = Window::Create();
         m_Window->SetEventCallback(GZ_BIND_EVENT_FN(Application::OnEvent));
 
         Renderer::Init();
