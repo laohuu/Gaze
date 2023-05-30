@@ -7,30 +7,17 @@ namespace Gaze {
 
     static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {
         switch (type) {
-            case Gaze::ShaderDataType::Float:
-                return GL_FLOAT;
-            case Gaze::ShaderDataType::Float2:
-                return GL_FLOAT;
-            case Gaze::ShaderDataType::Float3:
-                return GL_FLOAT;
-            case Gaze::ShaderDataType::Float4:
-                return GL_FLOAT;
-            case Gaze::ShaderDataType::Mat3:
-                return GL_FLOAT;
-            case Gaze::ShaderDataType::Mat4:
-                return GL_FLOAT;
-            case Gaze::ShaderDataType::Int:
-                return GL_INT;
-            case Gaze::ShaderDataType::Int2:
-                return GL_INT;
-            case Gaze::ShaderDataType::Int3:
-                return GL_INT;
-            case Gaze::ShaderDataType::Int4:
-                return GL_INT;
-            case Gaze::ShaderDataType::Bool:
-                return GL_BOOL;
-            case ShaderDataType::None: GZ_CORE_ASSERT(false, "None ShaderDataType!");
-                break;
+            case ShaderDataType::Float:    return GL_FLOAT;
+            case ShaderDataType::Float2:   return GL_FLOAT;
+            case ShaderDataType::Float3:   return GL_FLOAT;
+            case ShaderDataType::Float4:   return GL_FLOAT;
+            case ShaderDataType::Mat3:     return GL_FLOAT;
+            case ShaderDataType::Mat4:     return GL_FLOAT;
+            case ShaderDataType::Int:      return GL_INT;
+            case ShaderDataType::Int2:     return GL_INT;
+            case ShaderDataType::Int3:     return GL_INT;
+            case ShaderDataType::Int4:     return GL_INT;
+            case ShaderDataType::Bool:     return GL_BOOL;
         }
 
         GZ_CORE_ASSERT(false, "Unknown ShaderDataType!");

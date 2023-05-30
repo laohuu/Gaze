@@ -25,6 +25,8 @@ namespace Gaze {
 
         inline static API GetAPI() { return s_API; }
 
+        static Gaze::Scope<RendererAPI> Create();
+
     public:
         static API s_API;
 

@@ -18,12 +18,16 @@ namespace Gaze {
         s_Instance = this;
 
         m_Window = Gaze::Scope<Window>(Window::Create());
-        m_Window->SetEventCallback(GZ_BIND_EVENT_FN(OnEvent));
+        m_Window->SetEventCallback(GZ_BIND_EVENT_FN(Application::OnEvent));
 
         Renderer::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
+    }
+
+    Application::~Application() {
+        Renderer::Shutdown();
     }
 
     void Application::PushLayer(Layer *layer) {
