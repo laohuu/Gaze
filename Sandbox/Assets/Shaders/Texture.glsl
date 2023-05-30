@@ -14,7 +14,7 @@ out vec2 v_TexCoord;
 void main()
 {
     v_TexCoord = a_TexCoord;
-    gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+    gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0f);
 }
 
 #type fragment
@@ -28,5 +28,5 @@ uniform sampler2D u_Texture;
 
 void main()
 {
-    color = texture(u_Texture, v_TexCoord);
+    color = texture(u_Texture, v_TexCoord * 10.0f) * vec4(1.0f, 0.8f, 0.8f, 1.0f);
 }

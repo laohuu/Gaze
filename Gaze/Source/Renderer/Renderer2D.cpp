@@ -10,6 +10,7 @@ namespace Gaze {
     struct Renderer2DStorage {
         Gaze::Ref<VertexArray> QuadVertexArray;
         Gaze::Ref<Shader> FlatColorShader;
+        Gaze::Ref<Shader> TextureShader;
     };
 
     static Renderer2DStorage *s_Data;
@@ -19,16 +20,17 @@ namespace Gaze {
         s_Data->QuadVertexArray = VertexArray::Create();
 
         float squareVertices[5 * 4] = {
-                -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f,
-                0.5f, 0.5f, 0.0f,
-                -0.5f, 0.5f, 0.0f
+                -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+                0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+                0.5f, 0.5f, 0.0f, 1.0f, 1.0f,
+                -0.5f, 0.5f, 0.0f, 0.0f, 1.0f
         };
 
         Gaze::Ref<Gaze::VertexBuffer> squareVB;
         squareVB = Gaze::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
         squareVB->SetLayout({
-                                    {Gaze::ShaderDataType::Float3, "a_Position"}
+                                    {ShaderDataType::Float3, "a_Position"},
+                                    {ShaderDataType::Float2, "a_TexCoord"}
                             });
         s_Data->QuadVertexArray->AddVertexBuffer(squareVB);
 
@@ -39,6 +41,10 @@ namespace Gaze {
 
         s_Data->FlatColorShader = Gaze::Shader::Create(
                 "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Shaders/FlatColor.glsl");
+
+        s_Data->TextureShader = Shader::Create("C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Shaders/Texture.glsl");
+        s_Data->TextureShader->Bind();
+        s_Data->TextureShader->SetInt("u_Texture", 0);
     }
 
     void Renderer2D::Shutdown() {
@@ -48,7 +54,9 @@ namespace Gaze {
     void Renderer2D::BeginScene(const OrthographicCamera &camera) {
         s_Data->FlatColorShader->Bind();
         s_Data->FlatColorShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-        s_Data->FlatColorShader->SetMat4("u_Transform", glm::mat4(1.0f));
+
+        s_Data->TextureShader->Bind();
+        s_Data->TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
     }
 
     void Renderer2D::EndScene() {
@@ -63,6 +71,26 @@ namespace Gaze {
         s_Data->FlatColorShader->Bind();
         s_Data->FlatColorShader->SetFloat4("u_Color", color);
 
+        glm::mat4 transform =
+                glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
+        s_Data->FlatColorShader->SetMat4("u_Transform", transform);
+
+        s_Data->QuadVertexArray->Bind();
+        RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
+    }
+
+    void Renderer2D::DrawQuad(const glm::vec2 &position, const glm::vec2 &size, const Gaze::Ref<Texture2D> &texture) {
+        DrawQuad({position.x, position.y, 0.0f}, size, texture);
+    }
+
+    void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const Gaze::Ref<Texture2D> &texture) {
+        s_Data->TextureShader->Bind();
+
+        glm::mat4 transform =
+                glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
+        s_Data->TextureShader->SetMat4("u_Transform", transform);
+
+        texture->Bind();
         s_Data->QuadVertexArray->Bind();
         RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
     }

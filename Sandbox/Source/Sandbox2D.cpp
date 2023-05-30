@@ -13,7 +13,8 @@ Sandbox2D::Sandbox2D()
 }
 
 void Sandbox2D::OnAttach() {
-
+    m_CheckerboardTexture = Gaze::Texture2D::Create(
+            "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Textures/Checkerboard.png");
 }
 
 void Sandbox2D::OnDetach() {
@@ -29,13 +30,11 @@ void Sandbox2D::OnUpdate(Gaze::Timestep ts) {
 
     Gaze::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-    Gaze::Renderer2D::DrawQuad({0.0f, 0.0f}, {1.0f, 1.0f}, {0.8f, 0.2f, 0.3f, 1.0f});
+    Gaze::Renderer2D::DrawQuad({-1.0f, 0.0f}, {0.8f, 0.8f}, {0.8f, 0.2f, 0.3f, 1.0f});
+    Gaze::Renderer2D::DrawQuad({0.5f, -0.5f}, {0.5f, 0.75f}, {0.2f, 0.3f, 0.8f, 1.0f});
+    Gaze::Renderer2D::DrawQuad({0.0f, 0.0f, -0.1f}, {1.0f, 1.0f}, m_CheckerboardTexture);
 
     Gaze::Renderer2D::EndScene();
-
-//    m_FlatColorShader->Bind();
-//    m_FlatColorShader->SetFloat4("u_Color", m_SquareColor);
-
 }
 
 void Sandbox2D::OnImGuiRender() {
