@@ -13,6 +13,8 @@ namespace Gaze {
     }
 
     void OpenGLContext::Init() {
+        GZ_PROFILE_FUNCTION();
+
         glfwMakeContextCurrent(m_WindowHandle);
         int status = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
         GZ_CORE_ASSERT(status, "Failed to initialize Glad!");
@@ -28,6 +30,8 @@ namespace Gaze {
     }
 
     void OpenGLContext::SwapBuffers() {
+        GZ_PROFILE_FUNCTION();
+
         glfwSwapBuffers(m_WindowHandle);
     }
 } // Gaze

@@ -13,11 +13,14 @@ Sandbox2D::Sandbox2D()
 }
 
 void Sandbox2D::OnAttach() {
+    GZ_PROFILE_FUNCTION();
+
     m_CheckerboardTexture = Gaze::Texture2D::Create(
             "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Textures/Checkerboard.png");
 }
 
 void Sandbox2D::OnDetach() {
+    GZ_PROFILE_FUNCTION();
 }
 
 void Sandbox2D::OnUpdate(Gaze::Timestep ts) {
@@ -25,10 +28,8 @@ void Sandbox2D::OnUpdate(Gaze::Timestep ts) {
     GZ_PROFILE_FUNCTION();
 
     // Update
-    {
-        GZ_PROFILE_SCOPE("CameraController::OnUpdate");
-        m_CameraController.OnUpdate(ts);
-    }
+    m_CameraController.OnUpdate(ts);
+
 
     // Render
     {

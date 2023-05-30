@@ -19,6 +19,8 @@ namespace Gaze {
     }
 
     void ImGuiLayer::OnAttach() {
+        GZ_PROFILE_FUNCTION();
+
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -51,6 +53,8 @@ namespace Gaze {
     }
 
     void ImGuiLayer::OnDetach() {
+        GZ_PROFILE_FUNCTION();
+
         // Cleanup
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -58,6 +62,8 @@ namespace Gaze {
     }
 
     void ImGuiLayer::Begin() {
+        GZ_PROFILE_FUNCTION();
+
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -65,6 +71,8 @@ namespace Gaze {
     }
 
     void ImGuiLayer::End() {
+        GZ_PROFILE_FUNCTION();
+
         ImGuiIO &io = ImGui::GetIO();
         Application &app = Application::Get();
         io.DisplaySize = ImVec2((float) app.GetWindow().GetWidth(), (float) app.GetWindow().GetHeight());
