@@ -15,9 +15,9 @@ namespace Gaze {
     public:
         static void Init();
 
-        inline static Gaze::Ref<spdlog::logger> &GetCoreLogger() { return s_CoreLogger; }
+        static Gaze::Ref<spdlog::logger> &GetCoreLogger() { return s_CoreLogger; }
 
-        inline static Gaze::Ref<spdlog::logger> &GetClientLogger() { return s_ClientLogger; }
+        static Gaze::Ref<spdlog::logger> &GetClientLogger() { return s_ClientLogger; }
 
     private:
         static Gaze::Ref<spdlog::logger> s_CoreLogger;

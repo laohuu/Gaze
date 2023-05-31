@@ -30,7 +30,7 @@ namespace Gaze {
 
         void PushOverlay(Layer *layer);
 
-        inline Window &GetWindow() { return *m_Window; }
+        Window &GetWindow() { return *m_Window; }
 
         static Application &Get() { return *s_Instance; }
 

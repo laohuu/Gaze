@@ -94,9 +94,9 @@ namespace Gaze {
             CalculateOffsetsAndStride();
         }
 
-        inline uint32_t GetStride() const { return m_Stride; }
+        uint32_t GetStride() const { return m_Stride; }
 
-        inline const std::vector<BufferElement> &GetElements() const {
+        const std::vector<BufferElement> &GetElements() const {
             return m_Elements;
         }
 
