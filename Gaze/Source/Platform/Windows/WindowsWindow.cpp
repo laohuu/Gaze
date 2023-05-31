@@ -42,7 +42,7 @@ namespace Gaze {
             GZ_PROFILE_SCOPE("glfwInit");
             int success = glfwInit();
             if (!success) {
-                GZ_CORE_ERROR("Could not intialize GLFW!");
+                GZ_CORE_ERROR("Could not initialize GLFW!");
             }
             glfwSetErrorCallback(GLFWErrorCallback);
         }
