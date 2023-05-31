@@ -15,7 +15,7 @@ namespace Gaze {
 
         void Clear() override;
 
-        void DrawIndexed(const Gaze::Ref<VertexArray> &vertexArray) override;
+        void DrawIndexed(const Gaze::Ref<VertexArray> &vertexArray, uint32_t indexCount) override;
     };
 
 } // Gaze
