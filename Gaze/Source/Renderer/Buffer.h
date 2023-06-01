@@ -64,9 +64,9 @@ namespace Gaze {
                 case ShaderDataType::Float4:
                     return 4;
                 case ShaderDataType::Mat3:
-                    return 3 * 3;
+                    return 3;   // 3* float3
                 case ShaderDataType::Mat4:
-                    return 4 * 4;
+                    return 4;   // 4* float4
                 case ShaderDataType::Int:
                     return 1;
                 case ShaderDataType::Int2:
@@ -99,7 +99,6 @@ namespace Gaze {
         const std::vector<BufferElement> &GetElements() const {
             return m_Elements;
         }
-
 
         std::vector<BufferElement>::iterator begin() { return m_Elements.begin(); }
 
