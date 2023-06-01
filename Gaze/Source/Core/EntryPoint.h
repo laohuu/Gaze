@@ -1,7 +1,7 @@
 #ifndef GAZE_ENTRYPOINT_H
 #define GAZE_ENTRYPOINT_H
 
-#include "Core/Core.h"
+#include "Core/Base.h"
 
 int main(int argc, char **argv) {
     Gaze::Log::Init();

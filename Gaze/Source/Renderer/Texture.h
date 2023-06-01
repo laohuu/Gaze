@@ -1,7 +1,7 @@
 #ifndef GAZE_ENGINE_TEXTURE_H
 #define GAZE_ENGINE_TEXTURE_H
 
-#include "Core/Core.h"
+#include "Core/Base.h"
 
 #include <string>
 

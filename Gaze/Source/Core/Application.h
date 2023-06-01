@@ -1,7 +1,7 @@
 #ifndef GAZE_APPLICATION_H
 #define GAZE_APPLICATION_H
 
-#include "Core.h"
+#include "Base.h"
 #include "Core/Log.h"
 
 #include "Core/Window.h"

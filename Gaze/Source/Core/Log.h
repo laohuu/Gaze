@@ -1,7 +1,7 @@
 #ifndef GAZEENGINE_LOG_H
 #define GAZEENGINE_LOG_H
 
-#include "Core.h"
+#include "Base.h"
 
 #define GLM_ENABLE_EXPERIMENTAL
 

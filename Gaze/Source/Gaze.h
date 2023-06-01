@@ -3,7 +3,7 @@
 
 // For use by Gaze applications
 
-#include "Core/Core.h"
+#include "Core/Base.h"
 
 #include "Core/Application.h"
 #include "Core/Layer.h"

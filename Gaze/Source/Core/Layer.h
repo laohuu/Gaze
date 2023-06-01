@@ -1,7 +1,7 @@
 #ifndef GAZE_ENGINE_LAYER_H
 #define GAZE_ENGINE_LAYER_H
 
-#include "Core/Core.h"
+#include "Core/Base.h"
 #include "Events/Event.h"
 #include "Timestep.h"
 

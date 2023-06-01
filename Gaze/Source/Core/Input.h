@@ -1,7 +1,7 @@
 #ifndef GAZE_ENGINE_INPUT_H
 #define GAZE_ENGINE_INPUT_H
 
-#include "Core.h"
+#include "Base.h"
 #include "KeyCodes.h"
 #include "MouseCodes.h"
 

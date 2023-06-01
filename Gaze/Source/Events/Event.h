@@ -2,7 +2,7 @@
 #define GAZE_EVENT_H
 
 #include "GazePCH.h"
-#include "Core/Core.h"
+#include "Core/Base.h"
 
 namespace Gaze {
 
