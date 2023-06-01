@@ -48,6 +48,9 @@ namespace Gaze {
         layer->OnAttach();
     }
 
+    void Application::Close() {
+        m_Running = false;
+    }
 
     void Application::OnEvent(Event &e) {
         GZ_PROFILE_FUNCTION();
