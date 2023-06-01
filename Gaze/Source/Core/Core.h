@@ -44,16 +44,25 @@
 #endif // _WIN32
 
 #ifdef GZ_DEBUG
-    #ifdef GZ_PLATFORM_WINDOWS
-        #define GZ_ASSERT(x, ...) { if(!(x)) { GZ_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-        #define GZ_CORE_ASSERT(x, ...) { if(!(x)) { GZ_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-    #else
-        #define GZ_ASSERT(x, ...) { if(!(x)) { GZ_ERROR("Assertion Failed: {0}", __VA_ARGS__); } }
-        #define GZ_CORE_ASSERT(x, ...) { if(!(x)) { GZ_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); } }
-    #endif
+    #define GZ_ENABLE_ASSERTS
 #else
-#define GZ_ASSERT(x, ...)
-#define GZ_CORE_ASSERT(x, ...)
+
+#endif
+
+#ifdef GZ_ENABLE_ASSERTS
+    #if defined(GZ_PLATFORM_WINDOWS)
+		#define GZ_DEBUGBREAK() __debugbreak()
+	#elif defined(HZ_PLATFORM_LINUX)
+		#include <signal.h>
+		#define GZ_DEBUGBREAK() raise(SIGTRAP)
+	#else
+		#error "Platform doesn't support debugbreak yet!"
+	#endif
+    #define GZ_ASSERT(x, ...) { if(!(x)) { GZ_ERROR("Assertion Failed: {0}", __VA_ARGS__); GZ_DEBUGBREAK(); } }
+    #define GZ_CORE_ASSERT(x, ...) { if(!(x)) { GZ_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); GZ_DEBUGBREAK(); } }
+#else
+    #define GZ_ASSERT(x, ...)
+    #define GZ_CORE_ASSERT(x, ...)
 #endif
 
 
