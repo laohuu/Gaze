@@ -183,7 +183,7 @@ namespace Gaze {
 
     void Renderer2D::DrawQuad(const glm::vec2 &position, const glm::vec2 &size, const Gaze::Ref<Texture2D> &texture,
                               float tilingFactor, const glm::vec4 &tintColor) {
-        DrawQuad({position.x, position.y, 0.0f}, size, texture);
+        DrawQuad({position.x, position.y, 0.0f}, size, texture, tilingFactor, tintColor);
     }
 
     void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const Gaze::Ref<Texture2D> &texture,
@@ -194,7 +194,6 @@ namespace Gaze {
             FlushAndReset();
 
         constexpr size_t quadVertexCount = 4;
-        constexpr glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
         constexpr glm::vec2 textureCoords[] = {{0.0f, 0.0f},
                                                {1.0f, 0.0f},
                                                {1.0f, 1.0f},
@@ -221,7 +220,7 @@ namespace Gaze {
 
         for (size_t i = 0; i < quadVertexCount; i++) {
             s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-            s_Data.QuadVertexBufferPtr->Color = color;
+            s_Data.QuadVertexBufferPtr->Color = tintColor;
             s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
             s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
             s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
@@ -282,7 +281,6 @@ namespace Gaze {
             FlushAndReset();
 
         constexpr size_t quadVertexCount = 4;
-        constexpr glm::vec4 color = {1.0f, 1.0f, 1.0f, 1.0f};
         constexpr glm::vec2 textureCoords[] = {{0.0f, 0.0f},
                                                {1.0f, 0.0f},
                                                {1.0f, 1.0f},
@@ -310,7 +308,7 @@ namespace Gaze {
 
         for (size_t i = 0; i < quadVertexCount; i++) {
             s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-            s_Data.QuadVertexBufferPtr->Color = color;
+            s_Data.QuadVertexBufferPtr->Color = tintColor;
             s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
             s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
             s_Data.QuadVertexBufferPtr->TilingFactor = tilingFactor;
