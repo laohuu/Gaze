@@ -16,6 +16,8 @@ namespace Gaze {
     public:
         Input(const Input &) = delete;
 
+        virtual ~Input() = default;
+
         Input &operator=(const Input &) = delete;
 
         static bool IsKeyPressed(KeyCode key);
