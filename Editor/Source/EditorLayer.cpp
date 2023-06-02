@@ -16,10 +16,17 @@ namespace Gaze {
         m_CheckerboardTexture = Gaze::Texture2D::Create(
                 "C:/Users/hangh/Documents/GitHub/Gaze/Editor/Assets/Textures/Checkerboard.png");
 
-        Gaze::FramebufferSpecification fbSpec;
+        FramebufferSpecification fbSpec;
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
-        m_Framebuffer = Gaze::Framebuffer::Create(fbSpec);
+        m_Framebuffer = Framebuffer::Create(fbSpec);
+
+        m_ActiveScene = CreateRef<Scene>();
+
+        m_SquareEntity = m_ActiveScene->CreateEntity();
+        m_ActiveScene->Reg().emplace<TransformComponent>(m_SquareEntity);
+        m_ActiveScene->Reg().emplace<SpriteRendererComponent>(m_SquareEntity, glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
+
     }
 
     void EditorLayer::OnDetach() {
@@ -36,7 +43,6 @@ namespace Gaze {
             (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y)) {
             m_Framebuffer->Resize((uint32_t) m_ViewportSize.x, (uint32_t) m_ViewportSize.y);
             m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-            GZ_INFO("Framebuffer Resize");
         }
 
         // Update
@@ -45,38 +51,17 @@ namespace Gaze {
 
         // Render
         Gaze::Renderer2D::ResetStats();
-
-        {
-            GZ_PROFILE_SCOPE("Renderer Prep");
-            m_Framebuffer->Bind();
-            Gaze::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
-            Gaze::RenderCommand::Clear();
-        }
+        m_Framebuffer->Bind();
+        Gaze::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
+        Gaze::RenderCommand::Clear();
 
         {
             GZ_PROFILE_SCOPE("Renderer Draw");
-
-            static float rotation = 0.0f;
-            rotation += ts * 50.0f;
-
             Gaze::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-            Gaze::Renderer2D::DrawRotatedQuad({1.0f, 0.0f}, {0.8f, 0.8f}, -45.0f, {0.8f, 0.2f, 0.3f, 1.0f});
-            Gaze::Renderer2D::DrawQuad({-1.0f, 0.0f}, {0.8f, 0.8f}, {0.8f, 0.2f, 0.3f, 1.0f});
-            Gaze::Renderer2D::DrawQuad({0.5f, -0.5f}, {0.5f, 0.75f}, m_SquareColor);
-            Gaze::Renderer2D::DrawQuad({0.0f, 0.0f, -0.1f}, {20.0f, 20.0f}, m_CheckerboardTexture, 10.0f);
-            Gaze::Renderer2D::DrawRotatedQuad({-2.0f, 0.0f, 0.0f}, {1.0f, 1.0f}, rotation, m_CheckerboardTexture,
-                                              20.0f);
+            // Update scene
+            m_ActiveScene->OnUpdate(ts);
 
-            Gaze::Renderer2D::EndScene();
-
-            Gaze::Renderer2D::BeginScene(m_CameraController.GetCamera());
-            for (float y = -5.0f; y < 5.0f; y += 0.5f) {
-                for (float x = -5.0f; x < 5.0f; x += 0.5f) {
-                    glm::vec4 color = {(x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f};
-                    Gaze::Renderer2D::DrawQuad({x, y}, {0.45f, 0.45f}, color);
-                }
-            }
             Gaze::Renderer2D::EndScene();
         }
 

@@ -13,6 +13,9 @@
 
 #include "ImGui/ImGuiLayer.h"
 
+#include "Scene/Scene.h"
+#include "Scene/Components.h"
+
 #include "Core/Input.h"
 #include "Core/KeyCodes.h"
 #include "Core/MouseCodes.h"

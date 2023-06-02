@@ -29,6 +29,9 @@ namespace Gaze {
         Gaze::Ref<Gaze::Shader> m_FlatColorShader;
         Gaze::Ref<Gaze::Framebuffer> m_Framebuffer;
 
+        Gaze::Ref<Scene> m_ActiveScene;
+        entt::entity m_SquareEntity;
+
         Gaze::Ref<Gaze::Texture2D> m_CheckerboardTexture;
 
         bool m_ViewportFocused = false, m_ViewportHovered = false;

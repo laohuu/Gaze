@@ -34,6 +34,11 @@ if (NOT TARGET stb)
     set_target_properties(stb PROPERTIES FOLDER ${third_party_folder}/stb)
 endif ()
 
+if (NOT TARGET entt)
+    include(entt.cmake)
+    set_target_properties(entt PROPERTIES FOLDER ${third_party_folder}/entt)
+endif ()
+
 if (NOT TARGET glad)
     add_subdirectory(glad)
     set_target_properties(glad PROPERTIES FOLDER ${third_party_folder}/glad)
