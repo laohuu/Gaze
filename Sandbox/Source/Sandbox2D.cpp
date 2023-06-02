@@ -18,6 +18,11 @@ void Sandbox2D::OnAttach() {
     m_CheckerboardTexture = Gaze::Texture2D::Create(
             "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Textures/Checkerboard.png");
 
+    Gaze::FramebufferSpecification fbSpec;
+    fbSpec.Width = 1280;
+    fbSpec.Height = 720;
+    m_Framebuffer = Gaze::Framebuffer::Create(fbSpec);
+
     // Init here
     m_Particle.ColorBegin = {254 / 255.0f, 212 / 255.0f, 123 / 255.0f, 1.0f};
     m_Particle.ColorEnd = {254 / 255.0f, 109 / 255.0f, 41 / 255.0f, 1.0f};
@@ -45,6 +50,7 @@ void Sandbox2D::OnUpdate(Gaze::Timestep ts) {
 
     {
         GZ_PROFILE_SCOPE("Renderer Prep");
+        m_Framebuffer->Bind();
         Gaze::RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1});
         Gaze::RenderCommand::Clear();
     }
@@ -75,23 +81,25 @@ void Sandbox2D::OnUpdate(Gaze::Timestep ts) {
         Gaze::Renderer2D::EndScene();
     }
 
-    if (Gaze::Input::IsMouseButtonPressed(Gaze::Mouse::ButtonLeft)) {
-        auto mousePos = Gaze::Input::GetMousePosition();
-        auto x = mousePos.x, y = mousePos.y;
-        auto width = Gaze::Application::Get().GetWindow().GetWidth();
-        auto height = Gaze::Application::Get().GetWindow().GetHeight();
+//    if (Gaze::Input::IsMouseButtonPressed(Gaze::Mouse::ButtonLeft)) {
+//        auto mousePos = Gaze::Input::GetMousePosition();
+//        auto x = mousePos.x, y = mousePos.y;
+//        auto width = Gaze::Application::Get().GetWindow().GetWidth();
+//        auto height = Gaze::Application::Get().GetWindow().GetHeight();
+//
+//        auto bounds = m_CameraController.GetBounds();
+//        auto pos = m_CameraController.GetCamera().GetPosition();
+//        x = (x / width) * bounds.GetWidth() - bounds.GetWidth() * 0.5f;
+//        y = bounds.GetHeight() * 0.5f - (y / height) * bounds.GetHeight();
+//        m_Particle.Position = {x + pos.x, y + pos.y};
+//        for (int i = 0; i < 5; i++)
+//            m_ParticleSystem.Emit(m_Particle);
+//    }
+//
+//    m_ParticleSystem.OnUpdate(ts);
+//    m_ParticleSystem.OnRender(m_CameraController.GetCamera());
 
-        auto bounds = m_CameraController.GetBounds();
-        auto pos = m_CameraController.GetCamera().GetPosition();
-        x = (x / width) * bounds.GetWidth() - bounds.GetWidth() * 0.5f;
-        y = bounds.GetHeight() * 0.5f - (y / height) * bounds.GetHeight();
-        m_Particle.Position = {x + pos.x, y + pos.y};
-        for (int i = 0; i < 5; i++)
-            m_ParticleSystem.Emit(m_Particle);
-    }
-
-    m_ParticleSystem.OnUpdate(ts);
-    m_ParticleSystem.OnRender(m_CameraController.GetCamera());
+    m_Framebuffer->Unbind();
 
 }
 
@@ -99,7 +107,7 @@ void Sandbox2D::OnImGuiRender() {
     GZ_PROFILE_FUNCTION();
 
 // Note: Switch this to true to enable dockspace
-    static bool dockingEnabled = false;
+    static bool dockingEnabled = true;
     if (dockingEnabled) {
         static bool dockspaceOpen = true;
         static bool opt_fullscreen_persistant = true;
@@ -168,11 +176,12 @@ void Sandbox2D::OnImGuiRender() {
 
         ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
 
-        uint32_t textureID = m_CheckerboardTexture->GetRendererID();
-        ImGui::Image((void *) textureID, ImVec2{256.0f, 256.0f});
+        uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
+        ImGui::Image((void *) textureID, ImVec2{1280.0f, 720.0f});
         ImGui::End();
 
         ImGui::End();
+
     } else {
         ImGui::Begin("Settings");
 
@@ -186,7 +195,7 @@ void Sandbox2D::OnImGuiRender() {
         ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
 
         uint32_t textureID = m_CheckerboardTexture->GetRendererID();
-        ImGui::Image((void *) textureID, ImVec2{256.0f, 256.0f});
+        ImGui::Image((void *) textureID, ImVec2{1280.0f, 720.0f});
         ImGui::End();
     }
 }
