@@ -4,6 +4,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Scene/Entity.h"
+
 namespace Gaze {
 
     EditorLayer::EditorLayer()
@@ -23,10 +25,8 @@ namespace Gaze {
 
         m_ActiveScene = CreateRef<Scene>();
 
-        m_SquareEntity = m_ActiveScene->CreateEntity();
-        m_ActiveScene->Reg().emplace<TransformComponent>(m_SquareEntity);
-        m_ActiveScene->Reg().emplace<SpriteRendererComponent>(m_SquareEntity, glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
-
+        m_SquareEntity = m_ActiveScene->CreateEntity("Green Square");
+        m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
     }
 
     void EditorLayer::OnDetach() {
@@ -136,7 +136,17 @@ namespace Gaze {
         ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
         ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
 
-        ImGui::ColorEdit4("Square Color", glm::value_ptr(m_SquareColor));
+        if (m_SquareEntity) {
+            ImGui::Separator();
+            auto &tag = m_SquareEntity.GetComponent<TagComponent>().Tag;
+            ImGui::Text("%s", tag.c_str());
+
+            if (m_SquareEntity.HasComponent<SpriteRendererComponent>()) {
+                auto &squareColor = m_SquareEntity.GetComponent<SpriteRendererComponent>().Color;
+                ImGui::ColorEdit4("Square Color", glm::value_ptr(squareColor));
+            }
+            ImGui::Separator();
+        }
 
         ImGui::End();
 

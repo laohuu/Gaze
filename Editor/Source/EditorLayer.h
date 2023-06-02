@@ -3,6 +3,7 @@
 
 #include "Gaze.h"
 
+
 namespace Gaze {
 
     class EditorLayer : public Layer {
@@ -30,7 +31,7 @@ namespace Gaze {
         Gaze::Ref<Gaze::Framebuffer> m_Framebuffer;
 
         Gaze::Ref<Scene> m_ActiveScene;
-        entt::entity m_SquareEntity;
+        Entity m_SquareEntity;
 
         Gaze::Ref<Gaze::Texture2D> m_CheckerboardTexture;
 

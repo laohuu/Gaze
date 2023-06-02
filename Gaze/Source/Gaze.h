@@ -14,6 +14,7 @@
 #include "ImGui/ImGuiLayer.h"
 
 #include "Scene/Scene.h"
+#include "Scene/Entity.h"
 #include "Scene/Components.h"
 
 #include "Core/Input.h"
