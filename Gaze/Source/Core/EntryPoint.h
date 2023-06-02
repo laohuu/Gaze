@@ -8,16 +8,15 @@ int main(int argc, char **argv) {
 
     GZ_CORE_WARN("Hello Gaze Engine");
 
-    GZ_PROFILE_BEGIN_SESSION("Startup", "C:/Users/hangh/Documents/GitHub/Gaze/GazeProfile-Startup.json");
+    GZ_PROFILE_BEGIN_SESSION("Startup", "GazeProfile-Startup.json");
     auto app = Gaze::CreateApplication();
     GZ_PROFILE_END_SESSION();
 
-
-    GZ_PROFILE_BEGIN_SESSION("Runtime", "C:/Users/hangh/Documents/GitHub/Gaze/GazeProfile-Runtime.json");
+    GZ_PROFILE_BEGIN_SESSION("Runtime", "GazeProfile-Runtime.json");
     app->Run();
     GZ_PROFILE_END_SESSION();
 
-    GZ_PROFILE_BEGIN_SESSION("Startup", "C:/Users/hangh/Documents/GitHub/Gaze/GazeProfile-Shutdown.json");
+    GZ_PROFILE_BEGIN_SESSION("Shutdown", "GazeProfile-Shutdown.json");
     delete app;
     GZ_PROFILE_END_SESSION();
     return 0;

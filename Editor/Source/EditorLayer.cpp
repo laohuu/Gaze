@@ -44,7 +44,8 @@ namespace Gaze {
         }
 
         // Update
-        m_CameraController.OnUpdate(ts);
+        if (m_ViewportFocused)
+            m_CameraController.OnUpdate(ts);
 
         // Render
         Gaze::Renderer2D::ResetStats();
@@ -158,7 +159,11 @@ namespace Gaze {
 
         ImGui::End();
 
-        ImGui::Begin("Settings");
+        ImGui::Begin("Viewport");
+
+        m_ViewportFocused = ImGui::IsWindowFocused();
+        m_ViewportHovered = ImGui::IsWindowHovered();
+        Application::Get().GetImGuiLayer()->BlockEvents(!(m_ViewportFocused && m_ViewportHovered));
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
 

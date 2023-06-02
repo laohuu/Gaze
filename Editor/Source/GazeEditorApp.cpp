@@ -4,6 +4,7 @@
 #include "EditorLayer.h"
 
 namespace Gaze {
+
     class GazeEditorApp : public Application {
     public:
         GazeEditorApp(const ApplicationSpecification &spec)
