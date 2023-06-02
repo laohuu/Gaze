@@ -1,12 +1,8 @@
-
 #include "EditorLayer.h"
 
 #include <imgui.h>
 
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "Core/Timer.h"
 
 namespace Gaze {
 
@@ -168,7 +164,7 @@ namespace Gaze {
         m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
 
         uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
-        ImGui::Image((void *) textureID, viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
+        ImGui::Image(reinterpret_cast<void *>(textureID), viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
 
         ImGui::End();
 

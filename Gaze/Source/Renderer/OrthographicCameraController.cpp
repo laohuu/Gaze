@@ -1,7 +1,6 @@
 #include "GazePCH.h"
 #include "OrthographicCameraController.h"
 
-
 #include "Core/Input.h"
 #include "Core/KeyCodes.h"
 
