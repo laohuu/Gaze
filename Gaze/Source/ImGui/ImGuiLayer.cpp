@@ -92,16 +92,11 @@ namespace Gaze {
         }
     }
 
-    void ImGuiLayer::OnImGuiRender() {
-        bool show_demo_window = true;
-        ImGui::ShowDemoWindow(&show_demo_window);
-    }
 
     void ImGuiLayer::OnEvent(Event &e) {
         ImGuiIO &io = ImGui::GetIO();
         e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
         e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
     }
-
 
 }

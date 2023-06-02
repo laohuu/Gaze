@@ -13,13 +13,14 @@ namespace Gaze {
 
     Application *Application::s_Instance = nullptr;
 
-    Application::Application() {
+    Application::Application(const ApplicationSpecification &specification)
+            : m_Specification(specification) {
         GZ_PROFILE_FUNCTION();
 
         GZ_CORE_ASSERT(!s_Instance, "Application already exists!");
         s_Instance = this;
 
-        m_Window = Window::Create();
+        m_Window = Window::Create(WindowProps(m_Specification.Name));
         m_Window->SetEventCallback(GZ_BIND_EVENT_FN(Application::OnEvent));
 
         Renderer::Init();

@@ -20,8 +20,6 @@ namespace Gaze {
 
         void OnEvent(Event &e) override;
 
-        void OnImGuiRender() override;
-
         void Begin();
 
         void End();

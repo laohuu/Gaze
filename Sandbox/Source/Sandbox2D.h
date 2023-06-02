@@ -26,7 +26,6 @@ private:
     // Temp
     Gaze::Ref<Gaze::VertexArray> m_SquareVA;
     Gaze::Ref<Gaze::Shader> m_FlatColorShader;
-    Gaze::Ref<Gaze::Framebuffer> m_Framebuffer;
 
     Gaze::Ref<Gaze::Texture2D> m_CheckerboardTexture;
 

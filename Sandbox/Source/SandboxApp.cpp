@@ -4,10 +4,10 @@
 #include "Sandbox2D.h"
 #include "ExampleLayer.h"
 
-
 class Sandbox : public Gaze::Application {
 public:
-    Sandbox() {
+    Sandbox(const Gaze::ApplicationSpecification &specification)
+            : Gaze::Application(specification) {
 //        PushLayer(new ExampleLayer());
         PushLayer(new Sandbox2D());
     }
@@ -19,5 +19,8 @@ private:
 };
 
 Gaze::Application *Gaze::CreateApplication() {
-    return new Sandbox();
+    ApplicationSpecification spec;
+    spec.Name = "Sandbox";
+
+    return new Sandbox(spec);
 }

@@ -18,9 +18,13 @@ int main(int argc, char **argv);
 
 namespace Gaze {
 
+    struct ApplicationSpecification {
+        std::string Name = "Gaze Application";
+    };
+
     class Application {
     public:
-        Application();
+        Application(const ApplicationSpecification &specification);
 
         virtual ~Application();
 
@@ -44,6 +48,7 @@ namespace Gaze {
         bool OnWindowResize(WindowResizeEvent &e);
 
     private:
+        ApplicationSpecification m_Specification;
         Gaze::Scope<Window> m_Window;
 
         ImGuiLayer *m_ImGuiLayer;
