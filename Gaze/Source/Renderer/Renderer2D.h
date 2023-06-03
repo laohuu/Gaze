@@ -1,6 +1,7 @@
 #ifndef GAZE_ENGINE_RENDERER2D_H
 #define GAZE_ENGINE_RENDERER2D_H
 
+#include "Camera.h"
 #include "OrthographicCamera.h"
 #include "Texture.h"
 
@@ -12,7 +13,8 @@ namespace Gaze {
 
         static void Shutdown();
 
-        static void BeginScene(const OrthographicCamera &camera);
+        static void BeginScene(const OrthographicCamera &camera); // TODO: Remove
+        static void BeginScene(const Camera& camera, const glm::mat4& transform);
 
         static void EndScene();
 

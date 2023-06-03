@@ -10,11 +10,11 @@ namespace Gaze {
 
     class Scene {
     public:
-        Scene();
+        Scene() = default;
 
-        ~Scene();
+        ~Scene() = default;
 
-        Entity CreateEntity(const std::string& name = std::string());
+        Entity CreateEntity(const std::string &name = std::string());
 
         void OnUpdate(Timestep ts);
 
