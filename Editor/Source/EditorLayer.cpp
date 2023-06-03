@@ -62,6 +62,8 @@ namespace Gaze {
 
         m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
         m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+        m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
     void EditorLayer::OnDetach() {
@@ -69,7 +71,6 @@ namespace Gaze {
     }
 
     void EditorLayer::OnUpdate(Gaze::Timestep ts) {
-
         GZ_PROFILE_FUNCTION();
 
         // Resize
@@ -155,6 +156,8 @@ namespace Gaze {
 
             ImGui::EndMenuBar();
         }
+
+        m_SceneHierarchyPanel.OnImGuiRender();
 
         ImGui::Begin("Settings");
 
