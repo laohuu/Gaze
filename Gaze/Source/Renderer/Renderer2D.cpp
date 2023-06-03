@@ -88,7 +88,8 @@ namespace Gaze {
                 "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Shaders/Texture.glsl");
         s_Data.TextureShader->Bind();
         s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
-        // Set all texture slots to 0
+
+        // Set first texture slot to 0
         s_Data.TextureSlots[0] = s_Data.WhiteTexture;
         s_Data.TextureSlotIndex = 1;
 

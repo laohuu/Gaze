@@ -201,7 +201,7 @@ namespace Gaze {
         ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
         m_ViewportSize = {viewportPanelSize.x, viewportPanelSize.y};
 
-        uint32_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
+        uint64_t textureID = m_Framebuffer->GetColorAttachmentRendererID();
         ImGui::Image(reinterpret_cast<void *>(textureID), viewportPanelSize, ImVec2{0, 1}, ImVec2{1, 0});
 
         ImGui::End();

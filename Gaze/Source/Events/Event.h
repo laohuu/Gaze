@@ -1,7 +1,8 @@
 #ifndef GAZE_EVENT_H
 #define GAZE_EVENT_H
 
-#include "GazePCH.h"
+#include <functional>
+#include "Debug/Instrumentor.h"
 #include "Core/Base.h"
 
 namespace Gaze {
