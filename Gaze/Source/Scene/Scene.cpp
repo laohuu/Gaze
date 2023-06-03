@@ -45,7 +45,7 @@ namespace Gaze {
         }
 
         if (mainCamera) {
-            Renderer2D::BeginScene(mainCamera->GetProjection(), cameraTransform);
+            Renderer2D::BeginScene(*mainCamera, cameraTransform);
 
             // Draw sprites
             {
