@@ -38,7 +38,7 @@ namespace Gaze {
 
                 if (camera.Primary) {
                     mainCamera = &camera.Camera;
-                    cameraTransform = transform.Transform;
+                    cameraTransform = transform.GetTransform();
                     break;
                 }
             }
@@ -53,7 +53,7 @@ namespace Gaze {
                 for (auto entity: group) {
                     auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
-                    Renderer2D::DrawQuad(transform, sprite.Color);
+                    Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
                 }
             }
 

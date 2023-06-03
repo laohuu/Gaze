@@ -41,7 +41,8 @@ namespace Gaze {
         class CameraController : public ScriptableEntity {
         public:
             void OnCreate() override {
-                GZ_INFO("OnCreate");
+                auto &translation = GetComponent<TransformComponent>().Translation;
+                translation.x = rand() % 10 - 5.0f;
             }
 
             void OnDestroy() override {
@@ -49,17 +50,17 @@ namespace Gaze {
             }
 
             void OnUpdate(Timestep ts) override {
-                auto &transform = GetComponent<TransformComponent>().Transform;
+                auto&translation = GetComponent<TransformComponent>().Translation;
                 float speed = 5.0f;
 
                 if (Input::IsKeyPressed(Key::A))
-                    transform[3][0] -= speed * ts;
+                    translation.x -= speed * ts;
                 if (Input::IsKeyPressed(Key::D))
-                    transform[3][0] += speed * ts;
+                    translation.x += speed * ts;
                 if (Input::IsKeyPressed(Key::W))
-                    transform[3][1] += speed * ts;
+                    translation.y += speed * ts;
                 if (Input::IsKeyPressed(Key::S))
-                    transform[3][1] -= speed * ts;
+                    translation.y -= speed * ts;
             }
         };
 

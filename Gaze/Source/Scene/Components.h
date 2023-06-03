@@ -1,26 +1,38 @@
 #ifndef GAZE_ENGINE_COMPONENTS_H
 #define GAZE_ENGINE_COMPONENTS_H
 
-#include <glm/glm.hpp>
 #include "Renderer/Camera.h"
 #include "SceneCamera.h"
 #include "ScriptableEntity.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+
+#include <glm/gtx/quaternion.hpp>
+
 namespace Gaze {
 
     struct TransformComponent {
-        glm::mat4 Transform{1.0f};
+        glm::vec3 Translation = {0.0f, 0.0f, 0.0f};
+        glm::vec3 Rotation = {0.0f, 0.0f, 0.0f};
+        glm::vec3 Scale = {1.0f, 1.0f, 1.0f};
 
         TransformComponent() = default;
 
         TransformComponent(const TransformComponent &) = default;
 
-        TransformComponent(const glm::mat4 &transform)
-                : Transform(transform) {}
+        TransformComponent(const glm::vec3 &translation)
+                : Translation(translation) {}
 
-        operator glm::mat4 &() { return Transform; }
+        glm::mat4 GetTransform() const {
+            glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
 
-        operator const glm::mat4 &() const { return Transform; }
+            return glm::translate(glm::mat4(1.0f), Translation)
+                   * rotation
+                   * glm::scale(glm::mat4(1.0f), Scale);
+        }
     };
 
     struct SpriteRendererComponent {
