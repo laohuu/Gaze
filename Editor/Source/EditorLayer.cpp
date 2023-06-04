@@ -24,6 +24,7 @@ namespace Gaze {
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
         m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene->OnViewportResize(fbSpec.Width, fbSpec.Height);
 
         m_SquareEntity = m_ActiveScene->CreateEntity("Green Square");
         m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
@@ -50,7 +51,7 @@ namespace Gaze {
             }
 
             void OnUpdate(Timestep ts) override {
-                auto&translation = GetComponent<TransformComponent>().Translation;
+                auto &translation = GetComponent<TransformComponent>().Translation;
                 float speed = 5.0f;
 
                 if (Input::IsKeyPressed(Key::A))
