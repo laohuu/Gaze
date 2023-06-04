@@ -13,9 +13,11 @@ namespace Gaze {
 
         SceneHierarchyPanel(const Gaze::Ref<Scene> &scene);
 
-        void SetContext(const Gaze::Ref<Scene> &scene);
-
         void OnImGuiRender();
+
+        Entity GetSelectedEntity() const { return m_SelectionContext; }
+
+        void SetContext(const Gaze::Ref<Scene> &scene);
 
     private:
         void DrawEntityNode(Entity entity);

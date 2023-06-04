@@ -16,3 +16,6 @@
 [submodule "Gaze/Packages/yaml-cpp"]
 	path = Gaze/Packages/yaml-cpp
 	url = https://github.com/laohuu/yaml-cpp.git
+[submodule "Gaze/Packages/ImGuizmo"]
+	path = Gaze/Packages/ImGuizmo
+	url = https://github.com/laohuu/ImGuizmo.git

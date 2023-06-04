@@ -11,6 +11,7 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
+#include "ImGuizmo.h"
 
 namespace Gaze {
 
@@ -77,6 +78,7 @@ namespace Gaze {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
     }
 
     void ImGuiLayer::End() {

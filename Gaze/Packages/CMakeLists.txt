@@ -48,3 +48,10 @@ if (NOT TARGET yaml-cpp)
     add_subdirectory(yaml-cpp)
     set_target_properties(yaml-cpp PROPERTIES FOLDER ${third_party_folder}/yaml-cpp)
 endif ()
+
+if (NOT TARGET ImGuizmo)
+    include(ImGuizmo.cmake)
+    set_target_properties(ImGuizmo PROPERTIES FOLDER ${third_party_folder}/ImGuizmo)
+endif ()
+
+

@@ -30,6 +30,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC glad)
 target_link_libraries(${PROJECT_NAME} PUBLIC glm)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 target_link_libraries(${PROJECT_NAME} PUBLIC imgui)
+target_link_libraries(${PROJECT_NAME} PUBLIC ImGuizmo)
 target_link_libraries(${PROJECT_NAME} PUBLIC opengl32)
 target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp)
 
