@@ -16,7 +16,7 @@ namespace Gaze {
         GZ_PROFILE_FUNCTION();
 
         m_CheckerboardTexture = Gaze::Texture2D::Create(
-                "C:/Users/hangh/Documents/GitHub/Gaze/Editor/Assets/Textures/Checkerboard.png");
+                "Assets/Textures/Checkerboard.png");
 
         FramebufferSpecification fbSpec;
         fbSpec.Width = 1280;
@@ -144,10 +144,15 @@ namespace Gaze {
 
         // DockSpace
         ImGuiIO &io = ImGui::GetIO();
+        ImGuiStyle &style = ImGui::GetStyle();
+        float minWinSizeX = style.WindowMinSize.x;
+        style.WindowMinSize.x = 370.0f;
         if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
             ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
         }
+
+        style.WindowMinSize.x = minWinSizeX;
 
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("File")) {

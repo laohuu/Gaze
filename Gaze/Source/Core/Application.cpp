@@ -70,10 +70,6 @@ namespace Gaze {
     void Application::Run() {
         GZ_PROFILE_FUNCTION();
 
-        WindowResizeEvent e(1280, 720);
-        if (e.IsInCategory(EventCategoryApplication)) {
-            GZ_TRACE(e.ToString());
-        }
         while (m_Running) {
             GZ_PROFILE_SCOPE("RunLoop");
 
