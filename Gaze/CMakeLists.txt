@@ -31,6 +31,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC glm)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 target_link_libraries(${PROJECT_NAME} PUBLIC imgui)
 target_link_libraries(${PROJECT_NAME} PUBLIC opengl32)
+target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp)
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC
@@ -39,6 +40,7 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/Packages/GLFW/include
         ${PROJECT_SOURCE_DIR}/Packages/glm
         ${PROJECT_SOURCE_DIR}/Packages/entt/include
+        ${PROJECT_SOURCE_DIR}/Packages/yaml-cpp/include
         ${PROJECT_SOURCE_DIR}/Source
         )
 

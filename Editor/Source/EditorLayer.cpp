@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Scene/Entity.h"
+#include "Scene/SceneSerializer.h"
 
 namespace Gaze {
 
@@ -159,6 +160,16 @@ namespace Gaze {
                 // Disabling fullscreen would allow the window to be moved to the front of other windows,
                 // which we can't undo at the moment without finer window depth/z control.
                 //ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
+
+                if (ImGui::MenuItem("Serialize")) {
+                    SceneSerializer serializer(m_ActiveScene);
+                    serializer.Serialize("Assets/Scenes/Example.scene");
+                }
+
+                if (ImGui::MenuItem("Deserialize")) {
+                    SceneSerializer serializer(m_ActiveScene);
+                    serializer.Deserialize("Assets/Scenes/Example.scene");
+                }
 
                 if (ImGui::MenuItem("Exit")) Gaze::Application::Get().Close();
                 ImGui::EndMenu();

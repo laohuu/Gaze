@@ -13,3 +13,6 @@
 [submodule "Gaze/Packages/stb"]
 	path = Gaze/Packages/stb
 	url = https://github.com/laohuu/stb.git
+[submodule "Gaze/Packages/yaml-cpp"]
+	path = Gaze/Packages/yaml-cpp
+	url = https://github.com/laohuu/yaml-cpp.git
