@@ -85,7 +85,7 @@ namespace Gaze {
             samplers[i] = i;
 
         s_Data.TextureShader = Shader::Create(
-                "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Shaders/Texture.glsl");
+                "Assets/Shaders/Texture.glsl");
         s_Data.TextureShader->Bind();
         s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 

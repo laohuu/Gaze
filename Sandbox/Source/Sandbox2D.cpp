@@ -16,7 +16,7 @@ void Sandbox2D::OnAttach() {
     GZ_PROFILE_FUNCTION();
 
     m_CheckerboardTexture = Gaze::Texture2D::Create(
-            "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Textures/Checkerboard.png");
+            "Assets/Textures/Checkerboard.png");
 
     Gaze::FramebufferSpecification fbSpec;
     fbSpec.Width = 1280;

@@ -121,13 +121,13 @@ ExampleLayer::ExampleLayer() : Layer("Example"), m_CameraController(1280.0f / 72
     m_FlatColorShader = Gaze::Shader::Create("FlatColor", flatColorShaderVertexSrc, flatColorShaderFragmentSrc);
 
     auto textureShader = m_ShaderLibrary.Load(
-            "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Shaders/Texture.glsl");
+            "Assets/Shaders/Texture.glsl");
 
     m_Texture = Gaze::Texture2D::Create(
-            "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Textures/Checkerboard.png");
+            "Assets/Textures/Checkerboard.png");
 
     m_ChernoLogoTexture = Gaze::Texture2D::Create(
-            "C:/Users/hangh/Documents/GitHub/Gaze/Sandbox/Assets/Textures/ChernoLogo.png");
+            "Assets/Textures/ChernoLogo.png");
 
     textureShader->Bind();
     textureShader->SetInt("u_Texture", 0);
