@@ -23,6 +23,15 @@ namespace Gaze {
         void OnEvent(Gaze::Event &e) override;
 
     private:
+        bool OnKeyPressed(KeyPressedEvent &e);
+
+        void NewScene();
+
+        void OpenScene();
+
+        void SaveSceneAs();
+
+    private:
         Gaze::OrthographicCameraController m_CameraController;
 
         // Temp
