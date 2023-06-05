@@ -53,7 +53,6 @@ namespace Gaze {
             glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(multiSampled), id, 0);
         }
 
-
         static bool IsDepthFormat(FramebufferTextureFormat format) {
             switch (format) {
                 case FramebufferTextureFormat::DEPTH24STENCIL8:
@@ -61,6 +60,18 @@ namespace Gaze {
             }
 
             return false;
+        }
+
+        static GLenum FBTextureFormatToGL(FramebufferTextureFormat format) {
+            switch (format) {
+                case FramebufferTextureFormat::RGBA8:
+                    return GL_RGBA8;
+                case FramebufferTextureFormat::RED_INTEGER:
+                    return GL_RED_INTEGER;
+            }
+
+            GZ_CORE_ASSERT(false);
+            return 0;
         }
 
     }
@@ -177,6 +188,14 @@ namespace Gaze {
         int pixelData;
         glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
         return pixelData;
+    }
+
+    void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value) {
+        GZ_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
+
+        auto &spec = m_ColorAttachmentSpecifications[attachmentIndex];
+        glClearTexImage(m_ColorAttachments[attachmentIndex], 0,
+                        Utils::FBTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
     }
 
 } // Gaze
