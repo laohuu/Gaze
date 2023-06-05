@@ -32,6 +32,8 @@ namespace Gaze {
         m_ActiveScene = CreateRef<Scene>();
         m_ActiveScene->OnViewportResize(fbSpec.Width, fbSpec.Height);
 
+        m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+
         m_SquareEntity = m_ActiveScene->CreateEntity("Green Square");
         m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
 
@@ -90,12 +92,15 @@ namespace Gaze {
             (spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y)) {
             m_Framebuffer->Resize((uint32_t) m_ViewportSize.x, (uint32_t) m_ViewportSize.y);
             m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+            m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
             m_ActiveScene->OnViewportResize((uint32_t) m_ViewportSize.x, (uint32_t) m_ViewportSize.y);
         }
 
         // Update
         if (m_ViewportFocused)
             m_CameraController.OnUpdate(ts);
+
+        m_EditorCamera.OnUpdate(ts);
 
         // Render
         Gaze::Renderer2D::ResetStats();
@@ -104,7 +109,7 @@ namespace Gaze {
         Gaze::RenderCommand::Clear();
 
         // Update scene
-        m_ActiveScene->OnUpdate(ts);
+        m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
         m_Framebuffer->Unbind();
     }
@@ -217,10 +222,14 @@ namespace Gaze {
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
             // Camera
-            auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-            const auto &camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-            const glm::mat4 &cameraProjection = camera.GetProjection();
-            glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+            // Runtime camera from entity
+//            auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+//            const auto &camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+//            const glm::mat4 &cameraProjection = camera.GetProjection();
+//            glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+            // Editor camera
+            const glm::mat4 &cameraProjection = m_EditorCamera.GetProjection();
+            glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
 
             // Entity transform
             auto &tc = selectedEntity.GetComponent<TransformComponent>();
@@ -258,6 +267,8 @@ namespace Gaze {
 
     void EditorLayer::OnEvent(Gaze::Event &e) {
         m_CameraController.OnEvent(e);
+
+        m_EditorCamera.OnEvent(e);
 
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<KeyPressedEvent>(GZ_BIND_EVENT_FN(EditorLayer::OnKeyPressed));

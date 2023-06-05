@@ -3,6 +3,7 @@
 
 #include "Gaze.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Renderer/EditorCamera.h"
 
 namespace Gaze {
 
@@ -54,6 +55,8 @@ namespace Gaze {
         glm::vec4 m_SquareColor = {0.2f, 0.3f, 0.8f, 1.0f};
 
         int m_GizmoType = -1;
+
+        EditorCamera m_EditorCamera;
 
         // Panels
         SceneHierarchyPanel m_SceneHierarchyPanel;

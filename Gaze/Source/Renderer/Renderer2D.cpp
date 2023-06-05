@@ -125,6 +125,17 @@ namespace Gaze {
         StartBatch();
     }
 
+    void Renderer2D::BeginScene(const EditorCamera &camera) {
+        GZ_PROFILE_FUNCTION();
+
+        glm::mat4 viewProj = camera.GetViewProjection();
+
+        s_Data.TextureShader->Bind();
+        s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
+
+        StartBatch();
+    }
+
     void Renderer2D::EndScene() {
         GZ_PROFILE_FUNCTION();
 

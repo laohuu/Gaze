@@ -19,7 +19,7 @@ namespace Gaze {
         m_Registry.destroy(entity);
     }
 
-    void Scene::OnUpdate(Timestep ts) {
+    void Scene::OnUpdateRuntime(Timestep ts) {
         // Update scripts
         {
             m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto &nsc) {
@@ -53,9 +53,9 @@ namespace Gaze {
 
             // Draw sprites
             {
-                auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
-                for (auto entity: group) {
-                    auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+                auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+                for (auto entity: view) {
+                    auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
 
                     Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
                 }
@@ -64,6 +64,22 @@ namespace Gaze {
             Renderer2D::EndScene();
         }
 
+    }
+
+    void Scene::OnUpdateEditor(Timestep ts, EditorCamera &camera) {
+        Renderer2D::BeginScene(camera);
+
+        // Draw sprites
+        {
+            auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+            for (auto entity: view) {
+                auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
+
+                Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+            }
+        }
+
+        Renderer2D::EndScene();
     }
 
     template<typename T>
