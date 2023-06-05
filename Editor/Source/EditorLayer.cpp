@@ -25,6 +25,7 @@ namespace Gaze {
                 "Assets/Textures/Checkerboard.png");
 
         FramebufferSpecification fbSpec;
+        fbSpec.Attachments = {FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth};
         fbSpec.Width = 1280;
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
