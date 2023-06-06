@@ -16,6 +16,7 @@ namespace Gaze {
         void OnImGuiRender();
 
         Entity GetSelectedEntity() const { return m_SelectionContext; }
+        void SetSelectedEntity(Entity entity);
 
         void SetContext(const Gaze::Ref<Scene> &scene);
 

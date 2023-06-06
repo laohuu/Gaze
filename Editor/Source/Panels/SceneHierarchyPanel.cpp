@@ -304,4 +304,8 @@ namespace Gaze {
         });
     }
 
+    void SceneHierarchyPanel::SetSelectedEntity(Entity entity) {
+        m_SelectionContext = entity;
+    }
+
 } // Gaze
