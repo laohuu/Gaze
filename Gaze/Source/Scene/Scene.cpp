@@ -57,7 +57,7 @@ namespace Gaze {
                 for (auto entity: view) {
                     auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
 
-                    Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+                    Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int) entity);
                 }
             }
 
@@ -74,8 +74,7 @@ namespace Gaze {
             auto view = m_Registry.view<TransformComponent, SpriteRendererComponent>();
             for (auto entity: view) {
                 auto [transform, sprite] = view.get<TransformComponent, SpriteRendererComponent>(entity);
-
-                Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+                Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int) entity);
             }
         }
 
