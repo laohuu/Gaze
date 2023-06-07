@@ -34,50 +34,14 @@ namespace Gaze {
         m_ActiveScene = CreateRef<Scene>();
         m_ActiveScene->OnViewportResize(fbSpec.Width, fbSpec.Height);
 
+        auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
+        if (commandLineArgs.Count > 1) {
+            auto sceneFilePath = commandLineArgs[1];
+            SceneSerializer serializer(m_ActiveScene);
+            serializer.Deserialize(sceneFilePath);
+        }
+
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
-
-        m_SquareEntity = m_ActiveScene->CreateEntity("Green Square");
-        m_SquareEntity.AddComponent<SpriteRendererComponent>(glm::vec4{0.0f, 1.0f, 0.0f, 1.0f});
-
-        m_CameraEntity = m_ActiveScene->CreateEntity("Camera A");
-        m_CameraEntity.AddComponent<CameraComponent>();
-
-        auto redSquare = m_ActiveScene->CreateEntity("Red Square");
-        redSquare.AddComponent<SpriteRendererComponent>(glm::vec4{1.0f, 0.0f, 0.0f, 1.0f});
-
-        m_SecondCamera = m_ActiveScene->CreateEntity("Camera B");
-        auto &cc = m_SecondCamera.AddComponent<CameraComponent>();
-        cc.Primary = false;
-
-        class CameraController : public ScriptableEntity {
-        public:
-            void OnCreate() override {
-                auto &translation = GetComponent<TransformComponent>().Translation;
-                translation.x = rand() % 10 - 5.0f;
-            }
-
-            void OnDestroy() override {
-
-            }
-
-            void OnUpdate(Timestep ts) override {
-                auto &translation = GetComponent<TransformComponent>().Translation;
-                float speed = 5.0f;
-
-                if (Input::IsKeyPressed(Key::A))
-                    translation.x -= speed * ts;
-                if (Input::IsKeyPressed(Key::D))
-                    translation.x += speed * ts;
-                if (Input::IsKeyPressed(Key::W))
-                    translation.y += speed * ts;
-                if (Input::IsKeyPressed(Key::S))
-                    translation.y -= speed * ts;
-            }
-        };
-
-        m_CameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-        m_SecondCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 

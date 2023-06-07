@@ -18,8 +18,19 @@ int main(int argc, char **argv);
 
 namespace Gaze {
 
+    struct ApplicationCommandLineArgs {
+        int Count = 0;
+        char **Args = nullptr;
+
+        const char *operator[](int index) const {
+            GZ_CORE_ASSERT(index < Count);
+            return Args[index];
+        }
+    };
+
     struct ApplicationSpecification {
         std::string Name = "Gaze Application";
+        ApplicationCommandLineArgs CommandLineArgs;
     };
 
     class Application {
@@ -38,9 +49,11 @@ namespace Gaze {
 
         void Close();
 
-        ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+        ImGuiLayer *GetImGuiLayer() { return m_ImGuiLayer; }
 
         static Application &Get() { return *s_Instance; }
+
+        const ApplicationSpecification &GetSpecification() const { return m_Specification; }
 
     private:
         void Run();
@@ -66,7 +79,8 @@ namespace Gaze {
         friend int::main(int argc, char **argv);
     };
 
-    Application *CreateApplication();
+    // To be defined in CLIENT
+    Application *CreateApplication(ApplicationCommandLineArgs args);
 
 } // Gaze
 

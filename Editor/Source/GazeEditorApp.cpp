@@ -18,9 +18,11 @@ namespace Gaze {
 
     };
 
-    Application *CreateApplication() {
+    Application* CreateApplication(ApplicationCommandLineArgs args)
+    {
         ApplicationSpecification spec;
-        spec.Name = "GazeEditorApp";
+        spec.Name = "EditorApp";
+        spec.CommandLineArgs = args;
 
         return new GazeEditorApp(spec);
     }

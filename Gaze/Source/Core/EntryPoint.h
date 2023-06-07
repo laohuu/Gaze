@@ -2,6 +2,9 @@
 #define GAZE_ENTRYPOINT_H
 
 #include "Core/Base.h"
+#include "Core/Application.h"
+
+extern Gaze::Application *Gaze::CreateApplication(ApplicationCommandLineArgs args);
 
 int main(int argc, char **argv) {
     Gaze::Log::Init();
@@ -9,7 +12,7 @@ int main(int argc, char **argv) {
     GZ_CORE_WARN("Hello Gaze Engine");
 
     GZ_PROFILE_BEGIN_SESSION("Startup", "GazeProfile-Startup.json");
-    auto app = Gaze::CreateApplication();
+    auto app = Gaze::CreateApplication({argc, argv});
     GZ_PROFILE_END_SESSION();
 
     GZ_PROFILE_BEGIN_SESSION("Runtime", "GazeProfile-Runtime.json");

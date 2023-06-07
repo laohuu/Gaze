@@ -1,9 +1,11 @@
 #include "GazePCH.h"
 #include "Renderer2D.h"
+#include "UniformBuffer.h"
 
 #include "VertexArray.h"
 #include "Shader.h"
 #include "RenderCommand.h"
+
 
 namespace Gaze {
 
@@ -39,6 +41,12 @@ namespace Gaze {
         glm::vec4 QuadVertexPositions[4];
 
         Renderer2D::Statistics Stats;
+
+        struct CameraData {
+            glm::mat4 ViewProjection;
+        };
+        CameraData CameraBuffer;
+        Gaze::Ref<UniformBuffer> CameraUniformBuffer;
     };
 
     static Renderer2DData s_Data;
@@ -101,6 +109,8 @@ namespace Gaze {
         s_Data.QuadVertexPositions[1] = {0.5f, -0.5f, 0.0f, 1.0f};
         s_Data.QuadVertexPositions[2] = {0.5f, 0.5f, 0.0f, 1.0f};
         s_Data.QuadVertexPositions[3] = {-0.5f, 0.5f, 0.0f, 1.0f};
+
+        s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
     }
 
     void Renderer2D::Shutdown() {
@@ -112,8 +122,8 @@ namespace Gaze {
     void Renderer2D::BeginScene(const OrthographicCamera &camera) {
         GZ_PROFILE_FUNCTION();
 
-        s_Data.TextureShader->Bind();
-        s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+        s_Data.CameraBuffer.ViewProjection = camera.GetViewProjectionMatrix();
+        s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
         StartBatch();
     }
@@ -121,10 +131,8 @@ namespace Gaze {
     void Renderer2D::BeginScene(const Camera &camera, const glm::mat4 &transform) {
         GZ_PROFILE_FUNCTION();
 
-        glm::mat4 viewProj = camera.GetProjection() * glm::inverse(transform);
-
-        s_Data.TextureShader->Bind();
-        s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
+        s_Data.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
+        s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
         StartBatch();
     }
@@ -132,10 +140,8 @@ namespace Gaze {
     void Renderer2D::BeginScene(const EditorCamera &camera) {
         GZ_PROFILE_FUNCTION();
 
-        glm::mat4 viewProj = camera.GetViewProjection();
-
-        s_Data.TextureShader->Bind();
-        s_Data.TextureShader->SetMat4("u_ViewProjection", viewProj);
+        s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
+        s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
         StartBatch();
     }
@@ -158,6 +164,7 @@ namespace Gaze {
         for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
             s_Data.TextureSlots[i]->Bind(i);
 
+        s_Data.TextureShader->Bind();
         RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
         s_Data.Stats.DrawCalls++;
     }

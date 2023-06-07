@@ -15,14 +15,26 @@ project(Gaze VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
+set(BUILD_SHARED_LIBS OFF)
 
 add_subdirectory(Packages)
 
-file(GLOB_RECURSE HEADER_FILES "*.h")
+file(GLOB_RECURSE HEADER_FILES "Source/*.h")
 file(GLOB_RECURSE SOURCE_FILES "Source/*.cpp")
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    set(DEBUG_SUFFIX "d")
+else ()
+    set(DEBUG_SUFFIX "")
+endif ()
+set(VK_SDK_PATH $ENV{VK_SDK_PATH})
+set(VK_SDK_INCLUDE ${VK_SDK_PATH}/Include)
+set(VK_SDK_LIB ${VK_SDK_PATH}/Lib/vulkan-1.lib)
+set(ShaderC_LIB ${VK_SDK_PATH}/Lib/shaderc_shared${DEBUG_SUFFIX}.lib)
+set(SPIRV_Cross_LIB ${VK_SDK_PATH}/Lib/spirv-cross-core${DEBUG_SUFFIX}.lib)
+set(SPIRV_Cross_GLSL_LIB ${VK_SDK_PATH}/Lib/spirv-cross-glsl${DEBUG_SUFFIX}.lib)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog)
 target_link_libraries(${PROJECT_NAME} PRIVATE stb)
@@ -33,6 +45,9 @@ target_link_libraries(${PROJECT_NAME} PUBLIC imgui)
 target_link_libraries(${PROJECT_NAME} PUBLIC ImGuizmo)
 target_link_libraries(${PROJECT_NAME} PUBLIC opengl32)
 target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${ShaderC_LIB})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SPIRV_Cross_LIB})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${SPIRV_Cross_GLSL_LIB})
 
 target_include_directories(${PROJECT_NAME}
         PUBLIC
@@ -42,6 +57,7 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/Packages/glm
         ${PROJECT_SOURCE_DIR}/Packages/entt/include
         ${PROJECT_SOURCE_DIR}/Packages/yaml-cpp/include
+        ${VK_SDK_INCLUDE}
         ${PROJECT_SOURCE_DIR}/Source
         )
 
@@ -50,7 +66,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/Source/
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 
 if (WIN32)
-#    target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_PLATFORM_WINDOWS)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_PLATFORM_WINDOWS)
 elseif (UNIX AND NOT APPLE)
 elseif (APPLE)
     #    target_link_libraries(Gaze PRIVATE "-framework OpenGL")
@@ -58,13 +74,13 @@ elseif (APPLE)
 else ()
 endif (WIN32)
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_DEBUG)
-elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+elseif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
     target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_RELEASE)
-elseif (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+elseif (${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
     target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_REL_WITH_DEB_INFO)
-elseif (CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+elseif (${CMAKE_BUILD_TYPE} STREQUAL "MinSizeRel")
     target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_MIN_SIZE_REL)
 endif ()
 

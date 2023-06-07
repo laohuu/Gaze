@@ -25,7 +25,8 @@ namespace Gaze {
 
     private:
         bool OnKeyPressed(KeyPressedEvent &e);
-        bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+
+        bool OnMouseButtonPressed(MouseButtonPressedEvent &e);
 
         void NewScene();
 
