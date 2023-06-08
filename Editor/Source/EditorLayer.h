@@ -24,6 +24,13 @@ namespace Gaze {
 
         void OnEvent(Gaze::Event &e) override;
 
+        void OnScenePlay();
+
+        void OnSceneStop();
+
+        // UI Panels
+        void UI_Toolbar();
+
     private:
         bool OnKeyPressed(KeyPressedEvent &e);
 
@@ -66,9 +73,17 @@ namespace Gaze {
 
         EditorCamera m_EditorCamera;
 
+        enum class SceneState {
+            Edit = 0, Play = 1, Simulate = 2
+        };
+        SceneState m_SceneState = SceneState::Edit;
+
         // Panels
         SceneHierarchyPanel m_SceneHierarchyPanel;
         ContentBrowserPanel m_ContentBrowserPanel;
+
+        // Editor resources
+        Gaze::Ref<Gaze::Texture2D> m_IconPlay, m_IconStop;
     };
 }
 
