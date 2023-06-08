@@ -3,6 +3,7 @@
 
 #include "Gaze.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "Panels/ContentBrowserPanel.h"
 #include "Renderer/EditorCamera.h"
 
 namespace Gaze {
@@ -65,6 +66,7 @@ namespace Gaze {
 
         // Panels
         SceneHierarchyPanel m_SceneHierarchyPanel;
+        ContentBrowserPanel m_ContentBrowserPanel;
     };
 }
 
