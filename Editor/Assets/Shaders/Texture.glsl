@@ -47,7 +47,6 @@ struct VertexOutput
 {
     vec4 Color;
     vec2 TexCoord;
-    float TexIndex;
     float TilingFactor;
 };
 
