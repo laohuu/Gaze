@@ -11,6 +11,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include <glm/gtx/quaternion.hpp>
+#include "Renderer/Texture.h"
 
 namespace Gaze {
 
@@ -37,6 +38,8 @@ namespace Gaze {
 
     struct SpriteRendererComponent {
         glm::vec4 Color{1.0f, 1.0f, 1.0f, 1.0f};
+        Ref<Texture2D> Texture;
+        float TilingFactor = 1.0f;
 
         SpriteRendererComponent() = default;
 
