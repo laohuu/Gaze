@@ -32,7 +32,7 @@ namespace Gaze {
         if (columnCount < 1)
             columnCount = 1;
 
-        ImGui::Columns(columnCount, 0, false);
+        ImGui::Columns(columnCount, nullptr, false);
 
         for (auto &directoryEntry: std::filesystem::directory_iterator(m_CurrentDirectory)) {
             const auto &path = directoryEntry.path();
@@ -56,7 +56,7 @@ namespace Gaze {
                     m_CurrentDirectory /= path.filename();
             }
 
-            ImGui::TextWrapped(filenameString.c_str());
+            ImGui::TextWrapped("%s", filenameString.c_str());
 
             ImGui::NextColumn();
 
