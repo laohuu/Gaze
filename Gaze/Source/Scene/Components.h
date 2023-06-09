@@ -3,7 +3,7 @@
 
 #include "Renderer/Camera.h"
 #include "SceneCamera.h"
-#include "ScriptableEntity.h"
+#include "Core/UUID.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -14,6 +14,14 @@
 #include "Renderer/Texture.h"
 
 namespace Gaze {
+
+    struct IDComponent {
+        UUID ID;
+
+        IDComponent() = default;
+
+        IDComponent(const IDComponent &) = default;
+    };
 
     struct TransformComponent {
         glm::vec3 Translation = {0.0f, 0.0f, 0.0f};
@@ -69,6 +77,9 @@ namespace Gaze {
 
         CameraComponent(const CameraComponent &) = default;
     };
+
+    // Forward declaration
+    class ScriptableEntity;
 
     struct NativeScriptComponent {
         ScriptableEntity *Instance = nullptr;

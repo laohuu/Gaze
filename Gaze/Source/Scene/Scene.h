@@ -3,6 +3,7 @@
 
 #include "entt.hpp"
 #include "Core/Timestep.h"
+#include "Core/UUID.h"
 
 #include "Renderer/EditorCamera.h"
 
@@ -19,6 +20,8 @@ namespace Gaze {
         ~Scene() = default;
 
         Entity CreateEntity(const std::string &name = std::string());
+
+        Entity CreateEntityWithUUID(UUID uuid, const std::string &name = std::string());
 
         void DestroyEntity(Entity entity);
 

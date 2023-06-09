@@ -127,8 +127,10 @@ namespace Gaze {
     }
 
     static void SerializeEntity(YAML::Emitter &out, Entity entity) {
+        GZ_CORE_ASSERT(entity.HasComponent<IDComponent>());
+
         out << YAML::BeginMap; // Entity
-        out << YAML::Key << "Entity" << YAML::Value << (uint32_t) entity; // TODO: Entity ID goes here
+        out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
 
         if (entity.HasComponent<TagComponent>()) {
             out << YAML::Key << "TagComponent";
@@ -270,7 +272,7 @@ namespace Gaze {
 
                 GZ_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-                Entity deserializedEntity = m_Scene->CreateEntity(name);
+                Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
 
                 auto transformComponent = entity["TransformComponent"];
                 if (transformComponent) {
