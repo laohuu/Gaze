@@ -45,14 +45,16 @@ target_link_libraries(${PROJECT_NAME} PUBLIC imgui)
 target_link_libraries(${PROJECT_NAME} PUBLIC ImGuizmo)
 target_link_libraries(${PROJECT_NAME} PUBLIC opengl32)
 target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp)
+target_link_libraries(${PROJECT_NAME} PUBLIC box2d)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${ShaderC_LIB})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SPIRV_Cross_LIB})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SPIRV_Cross_GLSL_LIB})
 
+target_precompile_headers(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/Source/GazePCH.h")
+
 target_include_directories(${PROJECT_NAME}
         PUBLIC
         ${PROJECT_SOURCE_DIR}/Packages/spdlog/include
-        ${PROJECT_SOURCE_DIR}/Packages/stb
         ${PROJECT_SOURCE_DIR}/Packages/GLFW/include
         ${PROJECT_SOURCE_DIR}/Packages/glm
         ${PROJECT_SOURCE_DIR}/Packages/entt/include
@@ -60,8 +62,6 @@ target_include_directories(${PROJECT_NAME}
         ${VK_SDK_INCLUDE}
         ${PROJECT_SOURCE_DIR}/Source
         )
-
-target_precompile_headers(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/Source/GazePCH.h")
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 

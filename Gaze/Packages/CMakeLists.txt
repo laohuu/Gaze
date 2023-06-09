@@ -54,4 +54,9 @@ if (NOT TARGET ImGuizmo)
     set_target_properties(ImGuizmo PROPERTIES FOLDER ${third_party_folder}/ImGuizmo)
 endif ()
 
+if (NOT TARGET box2d)
+    include(box2d.cmake)
+    set_target_properties(box2d PROPERTIES FOLDER ${third_party_folder}/Box2D)
+endif ()
+
 

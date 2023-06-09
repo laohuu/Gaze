@@ -19,3 +19,6 @@
 [submodule "Gaze/Packages/ImGuizmo"]
 	path = Gaze/Packages/ImGuizmo
 	url = https://github.com/laohuu/ImGuizmo.git
+[submodule "Gaze/Packages/Box2D"]
+	path = Gaze/Packages/Box2D
+	url = https://github.com/laohuu/box2d.git
