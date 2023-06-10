@@ -30,8 +30,8 @@ void main()
 {
     Output.Color = a_Color;
     Output.TexCoord = a_TexCoord;
-    v_TexIndex = a_TexIndex;
     Output.TilingFactor = a_TilingFactor;
+    v_TexIndex = a_TexIndex;
     v_EntityID = a_EntityID;
 
     gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
