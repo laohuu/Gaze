@@ -36,6 +36,8 @@ namespace Gaze {
 
         bool OnMouseButtonPressed(MouseButtonPressedEvent &e);
 
+        void OnOverlayRender();
+
         void NewScene();
 
         void OpenScene();
@@ -73,6 +75,7 @@ namespace Gaze {
         glm::vec4 m_SquareColor = {0.2f, 0.3f, 0.8f, 1.0f};
 
         int m_GizmoType = -1;
+        bool m_ShowPhysicsColliders = false;
 
         EditorCamera m_EditorCamera;
 
