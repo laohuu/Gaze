@@ -18,11 +18,11 @@ namespace Gaze {
 
         void OnDetach() override;
 
-        void OnUpdate(Gaze::Timestep ts) override;
+        void OnUpdate(Timestep ts) override;
 
         void OnImGuiRender() override;
 
-        void OnEvent(Gaze::Event &e) override;
+        void OnEvent(Event &e) override;
 
         void OnScenePlay();
 
@@ -42,26 +42,29 @@ namespace Gaze {
 
         void OpenScene(const std::filesystem::path &path);
 
+        void SaveScene();
+
         void SaveSceneAs();
 
+        void SerializeScene(Ref<Scene> scene, const std::filesystem::path &path);
+
+        void OnDuplicateEntity();
+
     private:
-        Gaze::OrthographicCameraController m_CameraController;
+        OrthographicCameraController m_CameraController;
 
         // Temp
-        Gaze::Ref<Gaze::VertexArray> m_SquareVA;
-        Gaze::Ref<Gaze::Shader> m_FlatColorShader;
-        Gaze::Ref<Gaze::Framebuffer> m_Framebuffer;
+        Ref<VertexArray> m_SquareVA;
+        Ref<Shader> m_FlatColorShader;
+        Ref<Framebuffer> m_Framebuffer;
 
-        Gaze::Ref<Scene> m_ActiveScene;
-        Entity m_SquareEntity;
-        Entity m_CameraEntity;
-        Entity m_SecondCamera;
+        Ref<Scene> m_ActiveScene;
+        Ref<Scene> m_EditorScene;
+        std::filesystem::path m_EditorScenePath;
 
         Entity m_HoveredEntity;
 
-        bool m_PrimaryCamera = true;
-
-        Gaze::Ref<Gaze::Texture2D> m_CheckerboardTexture;
+        Ref<Texture2D> m_CheckerboardTexture;
 
         bool m_ViewportFocused = false, m_ViewportHovered = false;
         glm::vec2 m_ViewportSize = {0.0f, 0.0f};
@@ -83,7 +86,7 @@ namespace Gaze {
         ContentBrowserPanel m_ContentBrowserPanel;
 
         // Editor resources
-        Gaze::Ref<Gaze::Texture2D> m_IconPlay, m_IconStop;
+        Ref<Texture2D> m_IconPlay, m_IconStop;
     };
 }
 

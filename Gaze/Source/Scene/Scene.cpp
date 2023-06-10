@@ -28,6 +28,58 @@ namespace Gaze {
         return b2_staticBody;
     }
 
+    template<typename Component>
+    static void CopyComponent(entt::registry &dst, entt::registry &src,
+                              const std::unordered_map<UUID, entt::entity> &enttMap) {
+        auto view = src.view<Component>();
+        for (auto srcEntity: view) {
+            entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).ID);
+
+            auto &srcComponent = src.get<Component>(srcEntity);
+            dst.emplace_or_replace<Component>(dstEntity, srcComponent);
+        }
+    }
+
+    template<typename Component>
+    static void CopyComponentIfExists(Entity dst, Entity src) {
+        if (src.HasComponent<Component>())
+            dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+    }
+
+    Scene::~Scene() {
+        delete m_PhysicsWorld;
+    }
+
+    Gaze::Ref<Scene> Scene::Copy(Gaze::Ref<Scene> other) {
+        Gaze::Ref<Scene> newScene = CreateRef<Scene>();
+
+        newScene->m_ViewportWidth = other->m_ViewportWidth;
+        newScene->m_ViewportHeight = other->m_ViewportHeight;
+
+        auto &srcSceneRegistry = other->m_Registry;
+        auto &dstSceneRegistry = newScene->m_Registry;
+        std::unordered_map<UUID, entt::entity> enttMap;
+
+        // Create entities in new scene
+        auto idView = srcSceneRegistry.view<IDComponent>();
+        for (auto e: idView) {
+            UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
+            const auto &name = srcSceneRegistry.get<TagComponent>(e).Tag;
+            Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
+            enttMap[uuid] = (entt::entity) newEntity;
+        }
+
+        // Copy components (except IDComponent and TagComponent)
+        CopyComponent<TransformComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<SpriteRendererComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<CameraComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<NativeScriptComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<Rigidbody2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+        CopyComponent<BoxCollider2DComponent>(dstSceneRegistry, srcSceneRegistry, enttMap);
+
+        return newScene;
+    }
+
     Entity Scene::CreateEntity(const std::string &name) {
         return CreateEntityWithUUID(UUID(), name);
     }
@@ -42,6 +94,18 @@ namespace Gaze {
 //        m_EntityMap[uuid] = entity;
 
         return entity;
+    }
+
+    void Scene::DuplicateEntity(Entity entity) {
+        std::string name = entity.GetName();
+        Entity newEntity = CreateEntity(name);
+
+        CopyComponentIfExists<TransformComponent>(newEntity, entity);
+        CopyComponentIfExists<SpriteRendererComponent>(newEntity, entity);
+        CopyComponentIfExists<CameraComponent>(newEntity, entity);
+        CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
+        CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
+        CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
     }
 
     void Scene::DestroyEntity(Entity entity) {
@@ -185,7 +249,8 @@ namespace Gaze {
 
     template<>
     void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent &component) {
-        component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+        if (m_ViewportWidth > 0 && m_ViewportHeight > 0)
+            component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
     }
 
     template<>
