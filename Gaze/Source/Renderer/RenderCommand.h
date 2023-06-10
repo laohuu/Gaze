@@ -23,12 +23,20 @@ namespace Gaze {
             s_RendererAPI->Clear();
         }
 
-        static void DrawIndexed(const Gaze::Ref<VertexArray> &vertexArray, uint32_t count = 0) {
-            s_RendererAPI->DrawIndexed(vertexArray, count);
+        static void DrawIndexed(const Gaze::Ref<VertexArray> &vertexArray, uint32_t indexCount = 0) {
+            s_RendererAPI->DrawIndexed(vertexArray, indexCount);
+        }
+
+        static void DrawLines(const Ref<VertexArray> &vertexArray, uint32_t vertexCount) {
+            s_RendererAPI->DrawLines(vertexArray, vertexCount);
+        }
+
+        static void SetLineWidth(float width) {
+            s_RendererAPI->SetLineWidth(width);
         }
 
     private:
-        static Scope <RendererAPI> s_RendererAPI;
+        static Scope<RendererAPI> s_RendererAPI;
     };
 
 } // Gaze

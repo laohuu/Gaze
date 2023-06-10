@@ -16,6 +16,10 @@ namespace Gaze {
         void Clear() override;
 
         void DrawIndexed(const Gaze::Ref<VertexArray> &vertexArray, uint32_t indexCount) override;
+
+        void DrawLines(const Gaze::Ref<VertexArray> &vertexArray, uint32_t vertexCount) override;
+
+        void SetLineWidth(float width) override;
     };
 
 } // Gaze
