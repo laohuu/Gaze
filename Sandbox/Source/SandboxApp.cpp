@@ -18,9 +18,11 @@ private:
 
 };
 
-Gaze::Application *Gaze::CreateApplication() {
+Gaze::Application *Gaze::CreateApplication(Gaze::ApplicationCommandLineArgs args) {
     ApplicationSpecification spec;
     spec.Name = "Sandbox";
+    spec.WorkingDirectory = "../Editor";
+    spec.CommandLineArgs = args;
 
     return new Sandbox(spec);
 }

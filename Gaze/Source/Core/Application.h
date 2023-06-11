@@ -30,6 +30,7 @@ namespace Gaze {
 
     struct ApplicationSpecification {
         std::string Name = "Gaze Application";
+        std::string WorkingDirectory;
         ApplicationCommandLineArgs CommandLineArgs;
     };
 
