@@ -43,6 +43,7 @@ namespace Gaze {
         }
 
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+        Renderer2D::SetLineWidth(4.0f);
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
