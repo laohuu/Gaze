@@ -31,7 +31,13 @@ namespace Gaze {
 
         void OnRuntimeStop();
 
+        void OnSimulationStart();
+
+        void OnSimulationStop();
+
         void OnUpdateRuntime(Timestep ts);
+
+        void OnUpdateSimulation(Timestep ts, EditorCamera &camera);
 
         void OnUpdateEditor(Timestep ts, EditorCamera &camera);
 
@@ -49,6 +55,12 @@ namespace Gaze {
     private:
         template<typename T>
         void OnComponentAdded(Entity entity, T &component);
+
+        void OnPhysics2DStart();
+
+        void OnPhysics2DStop();
+
+        void RenderScene(EditorCamera &camera);
 
     private:
         entt::registry m_Registry;

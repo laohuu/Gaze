@@ -26,6 +26,8 @@ namespace Gaze {
 
         void OnScenePlay();
 
+        void OnSceneSimulate();
+
         void OnSceneStop();
 
         // UI Panels
@@ -89,7 +91,7 @@ namespace Gaze {
         ContentBrowserPanel m_ContentBrowserPanel;
 
         // Editor resources
-        Ref<Texture2D> m_IconPlay, m_IconStop;
+        Ref<Texture2D> m_IconPlay, m_IconSimulate, m_IconStop;
     };
 }
 
