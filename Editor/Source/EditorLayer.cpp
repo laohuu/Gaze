@@ -350,7 +350,9 @@ namespace Gaze {
     void EditorLayer::OnEvent(Gaze::Event &e) {
         m_CameraController.OnEvent(e);
 
-        m_EditorCamera.OnEvent(e);
+        if (m_SceneState == SceneState::Edit) {
+            m_EditorCamera.OnEvent(e);
+        }
 
         EventDispatcher dispatcher(e);
         dispatcher.Dispatch<KeyPressedEvent>(GZ_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
