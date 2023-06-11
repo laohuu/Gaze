@@ -1,8 +1,6 @@
 #ifndef GAZE_ENGINE_UUID_H
 #define GAZE_ENGINE_UUID_H
 
-#include "xhash"
-
 namespace Gaze {
 
     class UUID {
