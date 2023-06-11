@@ -323,7 +323,7 @@ namespace Gaze {
 
     template<typename T>
     void Scene::OnComponentAdded(Entity entity, T &component) {
-        static_assert(true, "Default OnComponentAdded Called");
+        static_assert(sizeof(T) == 0);
     }
 
     template<>
