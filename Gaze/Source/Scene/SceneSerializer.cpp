@@ -336,9 +336,7 @@ namespace Gaze {
                     src.Color = spriteRendererComponent["Color"].as<glm::vec4>();
 
                     if (spriteRendererComponent["TexturePath"]) {
-                        std::string texturePath = spriteRendererComponent["TexturePath"].as<std::string>();
-                        auto path = texturePath;
-                        src.Texture = Texture2D::Create(path);
+                        src.Texture = Texture2D::Create(spriteRendererComponent["TexturePath"].as<std::string>());
                     }
 
                     if (spriteRendererComponent["TilingFactor"])
