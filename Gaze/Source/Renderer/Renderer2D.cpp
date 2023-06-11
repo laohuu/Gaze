@@ -424,7 +424,7 @@ namespace Gaze {
         glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
         glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
 
-        DrawLine(p0, p1, color);
+        DrawLine(p0, p1, color, entityID);
         DrawLine(p1, p2, color, entityID);
         DrawLine(p2, p3, color, entityID);
         DrawLine(p3, p0, color, entityID);
