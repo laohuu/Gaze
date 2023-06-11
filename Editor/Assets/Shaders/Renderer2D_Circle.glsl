@@ -65,8 +65,9 @@ void main()
     float circle = smoothstep(0.0, Input.Fade, distance);
     circle *= smoothstep(Input.Thickness + Input.Fade, Input.Thickness, distance);
 
-    if (circle == 0.0)
+    if (circle == 0.0){
         discard;
+    }
 
     // Set output color
     o_Color = Input.Color;
