@@ -1,14 +1,14 @@
 #include "GazePCH.h"
 #include "Utils/PlatformUtils.h"
 
+#include "Core/Application.h"
+
 #include <commdlg.h>
 #include <GLFW/glfw3.h>
 
 #define GLFW_EXPOSE_NATIVE_WIN32
 
 #include <GLFW/glfw3native.h>
-
-#include "Core/Application.h"
 
 namespace Gaze {
 

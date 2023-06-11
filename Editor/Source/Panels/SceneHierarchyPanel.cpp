@@ -1,10 +1,10 @@
 #include "SceneHierarchyPanel.h"
 
+#include "Scene/Components.h"
+
 #include <imgui.h>
 #include <imgui_internal.h>
-
 #include <glm/gtc/type_ptr.hpp>
-#include "Scene/Components.h"
 
 #include <cstring>
 

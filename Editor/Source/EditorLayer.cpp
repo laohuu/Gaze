@@ -1,16 +1,13 @@
 #include "EditorLayer.h"
 
-#include <imgui.h>
-
-#include <glm/gtc/type_ptr.hpp>
-
-#include "Scene/Entity.h"
 #include "Scene/SceneSerializer.h"
 #include "Utils/PlatformUtils.h"
+#include "Math/Math.h"
+
+#include <imgui.h>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "ImGuizmo.h"
-
-#include "Math/Math.h"
 
 namespace Gaze {
 

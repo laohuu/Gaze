@@ -1,8 +1,9 @@
 #ifndef GAZE_ENGINE_CONTENTBROWSERPANEL_H
 #define GAZE_ENGINE_CONTENTBROWSERPANEL_H
 
-#include <filesystem>
 #include "Renderer/Texture.h"
+
+#include <filesystem>
 
 namespace Gaze {
 

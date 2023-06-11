@@ -1,10 +1,10 @@
 #include "GazePCH.h"
 #include "Scene.h"
 
+#include "Entity.h"
 #include "Components.h"
 #include "ScriptableEntity.h"
 #include "Renderer/Renderer2D.h"
-#include "Entity.h"
 
 // Box2D
 #include "box2d/b2_world.h"

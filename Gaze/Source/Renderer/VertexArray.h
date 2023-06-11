@@ -1,8 +1,9 @@
 #ifndef GAZE_ENGINE_VERTEXARRAY_H
 #define GAZE_ENGINE_VERTEXARRAY_H
 
-#include <memory>
 #include "Renderer/Buffer.h"
+
+#include <memory>
 
 namespace Gaze {
 
