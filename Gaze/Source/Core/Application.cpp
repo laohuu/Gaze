@@ -2,10 +2,8 @@
 #include "Application.h"
 
 #include "Core/Log.h"
-
 #include "Renderer/Renderer.h"
-
-#include <GLFW/glfw3.h>
+#include "Utils/PlatformUtils.h"
 
 #include <memory>
 
@@ -73,7 +71,7 @@ namespace Gaze {
         while (m_Running) {
             GZ_PROFILE_SCOPE("RunLoop");
 
-            float time = (float) glfwGetTime();
+            float time = Time::GetTime();
             Timestep timestep = time - m_LastFrameTime;
             m_LastFrameTime = time;
 

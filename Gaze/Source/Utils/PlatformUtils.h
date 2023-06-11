@@ -13,6 +13,10 @@ namespace Gaze {
         static std::string SaveFile(const char *filter);
     };
 
+    class Time {
+    public:
+        static float GetTime();
+    };
 }
 
 #endif //GAZE_ENGINE_PLATFORMUTILS_H
