@@ -26,9 +26,12 @@ add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
     set(DEBUG_SUFFIX "d")
+    set(MONO_LIB ${PROJECT_SOURCE_DIR}/Packages/mono/lib/Debug/libmono-static-sgen.lib)
 else ()
     set(DEBUG_SUFFIX "")
+    set(MONO_LIB ${PROJECT_SOURCE_DIR}/Packages/mono/lib/Release/libmono-static-sgen.lib)
 endif ()
+
 set(VK_SDK_PATH $ENV{VK_SDK_PATH})
 set(VK_SDK_INCLUDE ${VK_SDK_PATH}/Include)
 set(VK_SDK_LIB ${VK_SDK_PATH}/Lib/vulkan-1.lib)
@@ -49,6 +52,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC box2d)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${ShaderC_LIB})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SPIRV_Cross_LIB})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SPIRV_Cross_GLSL_LIB})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${MONO_LIB})
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/Source/GazePCH.h")
 
@@ -59,6 +63,7 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/Packages/glm
         ${PROJECT_SOURCE_DIR}/Packages/entt/include
         ${PROJECT_SOURCE_DIR}/Packages/yaml-cpp/include
+        ${PROJECT_SOURCE_DIR}/Packages/mono/include
         ${VK_SDK_INCLUDE}
         ${PROJECT_SOURCE_DIR}/Source
         )
@@ -66,7 +71,10 @@ target_include_directories(${PROJECT_NAME}
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 
 if (WIN32)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE GZ_PLATFORM_WINDOWS)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Ws2_32.lib)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Winmm.lib)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Version.lib)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Bcrypt.lib)
 elseif (UNIX AND NOT APPLE)
 elseif (APPLE)
     #    target_link_libraries(Gaze PRIVATE "-framework OpenGL")
