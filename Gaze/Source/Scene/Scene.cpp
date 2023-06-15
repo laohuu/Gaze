@@ -102,6 +102,9 @@ namespace Gaze {
         entity.AddComponent<TransformComponent>();
         auto &tag = entity.AddComponent<TagComponent>();
         tag.Tag = name.empty() ? "Entity" : name;
+
+        m_EntityMap[uuid] = entity;
+
         return entity;
     }
 
@@ -112,6 +115,7 @@ namespace Gaze {
 
     void Scene::DestroyEntity(Entity entity) {
         m_Registry.destroy(entity);
+        m_EntityMap.erase(entity.GetUUID());
     }
 
     void Scene::OnRuntimeStart() {
@@ -260,6 +264,14 @@ namespace Gaze {
     void Scene::OnUpdateEditor(Timestep ts, EditorCamera &camera) {
         // Render
         RenderScene(camera);
+    }
+
+    Entity Scene::GetEntityByUUID(UUID uuid) {
+        // TODO: Maybe should be assert
+        if (m_EntityMap.find(uuid) != m_EntityMap.end())
+            return {m_EntityMap.at(uuid), this};
+
+        return {};
     }
 
     void Scene::OnPhysics2DStart() {

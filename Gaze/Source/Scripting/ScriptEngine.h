@@ -13,37 +13,6 @@ typedef struct _MonoImage MonoImage;
 
 namespace Gaze {
 
-    class ScriptEngine {
-    public:
-        static void Init();
-
-        static void Shutdown();
-
-        static void LoadAssembly(const std::filesystem::path &filepath);
-
-        static void OnRuntimeStart(Scene *scene);
-
-        static void OnRuntimeStop();
-
-        static bool EntityClassExists(const std::string &fullClassName);
-
-        static void OnCreateEntity(Entity entity);
-
-        static void OnUpdateEntity(Entity entity, Timestep ts);
-
-
-    private:
-        static void InitMono();
-
-        static void ShutdownMono();
-
-        static void LoadAssemblyClasses(MonoAssembly *assembly);
-
-        static MonoObject *InstantiateClass(MonoClass *monoClass);
-
-        friend class ScriptClass;
-    };
-
     class ScriptClass {
     public:
         ScriptClass() = default;
@@ -78,6 +47,44 @@ namespace Gaze {
         MonoMethod *m_Constructor = nullptr;
         MonoMethod *m_OnCreateMethod = nullptr;
         MonoMethod *m_OnUpdateMethod = nullptr;
+    };
+
+    class ScriptEngine {
+    public:
+        static void Init();
+
+        static void Shutdown();
+
+        static void LoadAssembly(const std::filesystem::path &filepath);
+
+        static void OnRuntimeStart(Scene *scene);
+
+        static void OnRuntimeStop();
+
+        static bool EntityClassExists(const std::string &fullClassName);
+
+        static void OnCreateEntity(Entity entity);
+
+        static void OnUpdateEntity(Entity entity, Timestep ts);
+
+        static Scene *GetSceneContext();
+
+        static std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses();
+
+        static MonoImage *GetCoreAssemblyImage();
+
+    private:
+        static void InitMono();
+
+        static void ShutdownMono();
+
+        static void LoadAssemblyClasses(MonoAssembly *assembly);
+
+        static MonoObject *InstantiateClass(MonoClass *monoClass);
+
+        friend class ScriptClass;
+
+        friend class ScriptGlue;
     };
 
 } // Gaze

@@ -104,7 +104,11 @@ namespace Gaze {
         LoadAssembly("Resources/Scripts/ScriptCore.dll");
         LoadAssemblyClasses(s_Data->CoreAssembly);
 
+        ScriptGlue::RegisterComponents();
         ScriptGlue::RegisterFunctions();
+
+        // Retrieve and instantiate class
+        s_Data->EntityClass = ScriptClass("Gaze", "Entity");
     }
 
     void ScriptEngine::Shutdown() {
@@ -172,6 +176,18 @@ namespace Gaze {
         instance->InvokeOnUpdate((float) ts);
     }
 
+    Scene *ScriptEngine::GetSceneContext() {
+        return s_Data->SceneContext;
+    }
+
+    std::unordered_map<std::string, Gaze::Ref<ScriptClass>> ScriptEngine::GetEntityClasses() {
+        return s_Data->EntityClasses;
+    }
+
+    MonoImage *ScriptEngine::GetCoreAssemblyImage() {
+        return s_Data->CoreAssemblyImage;
+    }
+
     void ScriptEngine::LoadAssemblyClasses(MonoAssembly *assembly) {
         s_Data->EntityClasses.clear();
 
@@ -233,7 +249,7 @@ namespace Gaze {
             : m_ScriptClass(scriptClass) {
         m_Instance = scriptClass->Instantiate();
 
-        //m_Constructor = s_Data->EntityClass.GetMethod(".ctor", 1);
+        m_Constructor = s_Data->EntityClass.GetMethod(".ctor", 1);
         m_OnCreateMethod = scriptClass->GetMethod("OnCreate", 0);
         m_OnUpdateMethod = scriptClass->GetMethod("OnUpdate", 1);
 
@@ -241,7 +257,7 @@ namespace Gaze {
         {
             UUID entityID = entity.GetUUID();
             void *param = &entityID;
-            //m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, &param);
+            m_ScriptClass->InvokeMethod(m_Instance, m_Constructor, &param);
         }
     }
 
