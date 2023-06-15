@@ -1,10 +1,14 @@
 #ifndef GAZE_ENGINE_SCRIPTENGINE_H
 #define GAZE_ENGINE_SCRIPTENGINE_H
 
+#include "Scene/Entity.h"
+
 extern "C" {
 typedef struct _MonoClass MonoClass;
 typedef struct _MonoObject MonoObject;
 typedef struct _MonoMethod MonoMethod;
+typedef struct _MonoAssembly MonoAssembly;
+typedef struct _MonoImage MonoImage;
 }
 
 namespace Gaze {
@@ -17,10 +21,23 @@ namespace Gaze {
 
         static void LoadAssembly(const std::filesystem::path &filepath);
 
+        static void OnRuntimeStart(Scene *scene);
+
+        static void OnRuntimeStop();
+
+        static bool EntityClassExists(const std::string &fullClassName);
+
+        static void OnCreateEntity(Entity entity);
+
+        static void OnUpdateEntity(Entity entity, Timestep ts);
+
+
     private:
         static void InitMono();
 
         static void ShutdownMono();
+
+        static void LoadAssemblyClasses(MonoAssembly *assembly);
 
         static MonoObject *InstantiateClass(MonoClass *monoClass);
 
@@ -45,6 +62,24 @@ namespace Gaze {
 
         MonoClass *m_MonoClass = nullptr;
     };
+
+    class ScriptInstance {
+    public:
+        ScriptInstance(Ref<ScriptClass> scriptClass, Entity entity);
+
+        void InvokeOnCreate();
+
+        void InvokeOnUpdate(float ts);
+
+    private:
+        Ref<ScriptClass> m_ScriptClass;
+
+        MonoObject *m_Instance = nullptr;
+        MonoMethod *m_Constructor = nullptr;
+        MonoMethod *m_OnCreateMethod = nullptr;
+        MonoMethod *m_OnUpdateMethod = nullptr;
+    };
+
 } // Gaze
 
 #endif //GAZE_ENGINE_SCRIPTENGINE_H

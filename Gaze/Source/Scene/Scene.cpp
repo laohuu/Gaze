@@ -5,6 +5,7 @@
 #include "Components.h"
 #include "ScriptableEntity.h"
 #include "Renderer/Renderer2D.h"
+#include "Scripting/ScriptEngine.h"
 
 // Box2D
 #include "box2d/b2_world.h"
@@ -12,6 +13,7 @@
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_circle_shape.h"
+
 
 namespace Gaze {
 
@@ -114,10 +116,24 @@ namespace Gaze {
 
     void Scene::OnRuntimeStart() {
         OnPhysics2DStart();
+
+        // Scripting
+        {
+            ScriptEngine::OnRuntimeStart(this);
+            // Instantiate all script entities
+
+            auto view = m_Registry.view<ScriptComponent>();
+            for (auto e: view) {
+                Entity entity = {e, this};
+                ScriptEngine::OnCreateEntity(entity);
+            }
+        }
     }
 
     void Scene::OnRuntimeStop() {
         OnPhysics2DStop();
+
+        ScriptEngine::OnRuntimeStop();
     }
 
     void Scene::OnSimulationStart() {
@@ -131,6 +147,13 @@ namespace Gaze {
     void Scene::OnUpdateRuntime(Timestep ts) {
         // Update scripts
         {
+            // C# Entity OnUpdate
+            auto view = m_Registry.view<ScriptComponent>();
+            for (auto e: view) {
+                Entity entity = {e, this};
+                ScriptEngine::OnUpdateEntity(entity, ts);
+            }
+
             m_Registry.view<NativeScriptComponent>().each([=](auto entity, auto &nsc) {
                 if (!nsc.Instance) {
                     nsc.Instance = nsc.InstantiateScript();
@@ -139,6 +162,7 @@ namespace Gaze {
                 }
                 nsc.Instance->OnUpdate(ts);
             });
+
         }
 
         // Physics
@@ -338,6 +362,10 @@ namespace Gaze {
     void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent &component) {
         if (m_ViewportWidth > 0 && m_ViewportHeight > 0)
             component.Camera.SetViewportSize(m_ViewportWidth, m_ViewportHeight);
+    }
+
+    template<>
+    void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent &component) {
     }
 
     template<>
