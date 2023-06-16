@@ -1,15 +1,22 @@
 cmake_minimum_required(VERSION 3.23)
-project(ScriptCore VERSION 0.1.0 LANGUAGES CSharp)
+project(Sandbox VERSION 0.1.0 LANGUAGES CSharp)
 
 file(GLOB_RECURSE SOURCE_FILES "Source/**.cs")
 file(GLOB_RECURSE PROPERTIES_FILES "Properties/**.cs")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${PROPERTIES_FILES})
 
+target_include_directories(${PROJECT_NAME}
+        PRIVATE
+        ${CMAKE_BINARY_DIR}/ScriptCore/Source
+        )
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ScriptCore)
+
 # Set the .NET Framework version for the executable.
 set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.7.2")
 
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/Editor/Resources/Scripts/Binaries)
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Assets/Scripts/Binaries)
 
 # 指定dll的生成目录
 SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LANGUAGES CSharp
