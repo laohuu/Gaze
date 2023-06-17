@@ -41,6 +41,8 @@ namespace Gaze
         return glm::dot(*parameter, *parameter);
     }
 
+    static MonoObject* GetScriptInstance(UUID entityID) { return ScriptEngine::GetManagedInstance(entityID); }
+
     static bool Entity_HasComponent(UUID entityID, MonoReflectionType* componentType)
     {
         Scene* scene = ScriptEngine::GetSceneContext();
@@ -51,6 +53,21 @@ namespace Gaze
         MonoType* managedType = mono_reflection_type_get_type(componentType);
         GZ_CORE_ASSERT(s_EntityHasComponentFuncs.find(managedType) != s_EntityHasComponentFuncs.end());
         return s_EntityHasComponentFuncs.at(managedType)(entity);
+    }
+
+    static uint64_t Entity_FindEntityByName(MonoString* name)
+    {
+        char* nameCStr = mono_string_to_utf8(name);
+
+        Scene* scene = ScriptEngine::GetSceneContext();
+        GZ_CORE_ASSERT(scene);
+        Entity entity = scene->FindEntityByName(nameCStr);
+        mono_free(nameCStr);
+
+        if (!entity)
+            return 0;
+
+        return entity.GetUUID();
     }
 
     static void TransformComponent_GetTranslation(UUID entityID, glm::vec3* outTranslation)
@@ -105,7 +122,10 @@ namespace Gaze
         GZ_ADD_INTERNAL_CALL(NativeLog_Vector);
         GZ_ADD_INTERNAL_CALL(NativeLog_VectorDot);
 
+        GZ_ADD_INTERNAL_CALL(GetScriptInstance);
+
         GZ_ADD_INTERNAL_CALL(Entity_HasComponent);
+        GZ_ADD_INTERNAL_CALL(Entity_FindEntityByName);
         GZ_ADD_INTERNAL_CALL(TransformComponent_GetTranslation);
         GZ_ADD_INTERNAL_CALL(TransformComponent_SetTranslation);
 

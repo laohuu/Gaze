@@ -39,6 +39,7 @@ namespace Gaze
 
         void DuplicateEntity(Entity entity);
 
+        Entity FindEntityByName(std::string_view name);
         Entity GetEntityByUUID(UUID uuid);
 
         Entity GetPrimaryCameraEntity();
