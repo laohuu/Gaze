@@ -17,6 +17,10 @@
 
 namespace Gaze {
 
+    Scene::~Scene() {
+        delete m_PhysicsWorld;
+    }
+
     static b2BodyType Rigidbody2DTypeToBox2DBody(Rigidbody2DComponent::BodyType bodyType) {
         switch (bodyType) {
             case Rigidbody2DComponent::BodyType::Static:
@@ -62,10 +66,6 @@ namespace Gaze {
     template<typename... Component>
     static void CopyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src) {
         CopyComponentIfExists<Component...>(dst, src);
-    }
-
-    Scene::~Scene() {
-        delete m_PhysicsWorld;
     }
 
     Gaze::Ref<Scene> Scene::Copy(Gaze::Ref<Scene> other) {
@@ -119,6 +119,8 @@ namespace Gaze {
     }
 
     void Scene::OnRuntimeStart() {
+        m_IsRunning = true;
+
         OnPhysics2DStart();
 
         // Scripting
@@ -135,6 +137,8 @@ namespace Gaze {
     }
 
     void Scene::OnRuntimeStop() {
+        m_IsRunning = false;
+
         OnPhysics2DStop();
 
         ScriptEngine::OnRuntimeStop();

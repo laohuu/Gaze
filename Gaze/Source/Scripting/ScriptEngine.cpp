@@ -177,8 +177,9 @@ namespace Gaze
 
         ScriptClass EntityClass;
 
-        std::unordered_map<std::string, Gaze::Ref<ScriptClass>> EntityClasses;
-        std::unordered_map<UUID, Ref<ScriptInstance>>           EntityInstances;
+        std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
+        std::unordered_map<UUID, Ref<ScriptInstance>>     EntityInstances;
+        std::unordered_map<UUID, ScriptFieldMap>          EntityScriptFields;
 
         // Runtime
         Scene* SceneContext = nullptr;
@@ -269,8 +270,18 @@ namespace Gaze
         const auto& sc = entity.GetComponent<ScriptComponent>();
         if (ScriptEngine::EntityClassExists(sc.ClassName))
         {
-            Gaze::Ref<ScriptInstance> instance = CreateRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
-            s_Data->EntityInstances[entity.GetUUID()] = instance;
+            UUID                entityID      = entity.GetUUID();
+            Ref<ScriptInstance> instance      = CreateRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
+            s_Data->EntityInstances[entityID] = instance;
+
+            // Copy field values
+            if (s_Data->EntityScriptFields.find(entityID) != s_Data->EntityScriptFields.end())
+            {
+                const ScriptFieldMap& fieldMap = s_Data->EntityScriptFields.at(entityID);
+                for (const auto& [name, fieldInstance] : fieldMap)
+                    instance->SetFieldValueInternal(name, fieldInstance.m_Buffer);
+            }
+
             instance->InvokeOnCreate();
         }
     }
@@ -280,15 +291,28 @@ namespace Gaze
         UUID entityUUID = entity.GetUUID();
         GZ_CORE_ASSERT(s_Data->EntityInstances.find(entityUUID) != s_Data->EntityInstances.end());
 
-        Gaze::Ref<ScriptInstance> instance = s_Data->EntityInstances[entityUUID];
+        Ref<ScriptInstance> instance = s_Data->EntityInstances[entityUUID];
         instance->InvokeOnUpdate((float)ts);
     }
 
     Scene* ScriptEngine::GetSceneContext() { return s_Data->SceneContext; }
 
-    std::unordered_map<std::string, Gaze::Ref<ScriptClass>> ScriptEngine::GetEntityClasses()
+    Ref<ScriptClass> ScriptEngine::GetEntityClass(const std::string& name)
     {
-        return s_Data->EntityClasses;
+        if (s_Data->EntityClasses.find(name) == s_Data->EntityClasses.end())
+            return nullptr;
+
+        return s_Data->EntityClasses.at(name);
+    }
+
+    std::unordered_map<std::string, Ref<ScriptClass>> ScriptEngine::GetEntityClasses() { return s_Data->EntityClasses; }
+
+    ScriptFieldMap& ScriptEngine::GetScriptFieldMap(Entity entity)
+    {
+        GZ_CORE_ASSERT(entity);
+
+        UUID entityID = entity.GetUUID();
+        return s_Data->EntityScriptFields[entityID];
     }
 
     Ref<ScriptInstance> ScriptEngine::GetEntityScriptInstance(UUID entityID)
@@ -389,7 +413,7 @@ namespace Gaze
         return mono_runtime_invoke(method, instance, params, nullptr);
     }
 
-    ScriptInstance::ScriptInstance(Gaze::Ref<ScriptClass> scriptClass, Entity entity) : m_ScriptClass(scriptClass)
+    ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass, Entity entity) : m_ScriptClass(scriptClass)
     {
         m_Instance = scriptClass->Instantiate();
 
