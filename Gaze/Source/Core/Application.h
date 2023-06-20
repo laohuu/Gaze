@@ -4,85 +4,89 @@
 #include "Base.h"
 #include "Core/Log.h"
 
-#include "Core/Window.h"
 #include "Core/LayerStack.h"
-#include "Events/Event.h"
+#include "Core/Window.h"
 #include "Events/ApplicationEvent.h"
+#include "Events/Event.h"
 
 #include "Timestep.h"
 
 #include "ImGui/ImGuiLayer.h"
 
+int main(int argc, char** argv);
 
-int main(int argc, char **argv);
+namespace Gaze
+{
 
-namespace Gaze {
+    struct ApplicationCommandLineArgs
+    {
+        int    Count = 0;
+        char** Args  = nullptr;
 
-    struct ApplicationCommandLineArgs {
-        int Count = 0;
-        char **Args = nullptr;
-
-        const char *operator[](int index) const {
+        const char* operator[](int index) const
+        {
             GZ_CORE_ASSERT(index < Count);
             return Args[index];
         }
     };
 
-    struct ApplicationSpecification {
-        std::string Name = "Gaze Application";
-        std::string WorkingDirectory;
+    struct ApplicationSpecification
+    {
+        std::string                Name = "Gaze Application";
+        std::string                WorkingDirectory;
         ApplicationCommandLineArgs CommandLineArgs;
     };
 
-    class Application {
+    class Application
+    {
     public:
-        Application(const ApplicationSpecification &specification);
-
+        Application(const ApplicationSpecification& specification);
         virtual ~Application();
 
-        void OnEvent(Event &e);
+        void OnEvent(Event& e);
 
-        void PushLayer(Layer *layer);
+        void PushLayer(Layer* layer);
+        void PushOverlay(Layer* layer);
 
-        void PushOverlay(Layer *layer);
-
-        Window &GetWindow() { return *m_Window; }
+        Window& GetWindow() { return *m_Window; }
 
         void Close();
 
-        ImGuiLayer *GetImGuiLayer() { return m_ImGuiLayer; }
+        ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 
-        static Application &Get() { return *s_Instance; }
+        static Application& Get() { return *s_Instance; }
 
-        const ApplicationSpecification &GetSpecification() const { return m_Specification; }
+        const ApplicationSpecification& GetSpecification() const { return m_Specification; }
+
+        void SubmitToMainThread(const std::function<void()>& function);
 
     private:
         void Run();
+        bool OnWindowClose(WindowCloseEvent& e);
+        bool OnWindowResize(WindowResizeEvent& e);
 
-        bool OnWindowClose(WindowCloseEvent &e);
-
-        bool OnWindowResize(WindowResizeEvent &e);
+        void ExecuteMainThreadQueue();
 
     private:
         ApplicationSpecification m_Specification;
-        Gaze::Scope<Window> m_Window;
+        Scope<Window>            m_Window;
+        ImGuiLayer*              m_ImGuiLayer;
+        bool                     m_Running   = true;
+        bool                     m_Minimized = false;
+        LayerStack               m_LayerStack;
+        float                    m_LastFrameTime = 0.0f;
 
-        ImGuiLayer *m_ImGuiLayer;
-        bool m_Running = true;
-        LayerStack m_LayerStack;
-
-        bool m_Minimized;
-        float m_LastFrameTime = 0.0f;
+        std::vector<std::function<void()>> m_MainThreadQueue;
+        std::mutex                         m_MainThreadQueueMutex;
 
     private:
-        static Application *s_Instance;
-
-        friend int::main(int argc, char **argv);
+        static Application* s_Instance;
+        friend int ::main(int argc, char** argv);
     };
 
     // To be defined in CLIENT
-    Application *CreateApplication(ApplicationCommandLineArgs args);
+    Application* CreateApplication(ApplicationCommandLineArgs args);
 
-} // Gaze
+} // namespace Gaze
 
-#endif //GAZE_APPLICATION_H
+#endif // GAZE_APPLICATION_H

@@ -61,6 +61,7 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/Packages/spdlog/include
         ${PROJECT_SOURCE_DIR}/Packages/GLFW/include
         ${PROJECT_SOURCE_DIR}/Packages/glm
+        ${PROJECT_SOURCE_DIR}/Packages/filewatch
         ${PROJECT_SOURCE_DIR}/Packages/entt/include
         ${PROJECT_SOURCE_DIR}/Packages/yaml-cpp/include
         ${PROJECT_SOURCE_DIR}/Packages/mono/include

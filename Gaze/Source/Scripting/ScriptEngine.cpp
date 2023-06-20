@@ -1,6 +1,9 @@
 #include "ScriptEngine.h"
 #include "GazePCH.h"
 
+#include "Core/Application.h"
+#include "Core/Timer.h"
+#include "FileWatch.h"
 #include "ScriptGlue.h"
 
 #include "mono/jit/jit.h"
@@ -144,11 +147,27 @@ namespace Gaze
         std::unordered_map<UUID, Ref<ScriptInstance>>     EntityInstances;
         std::unordered_map<UUID, ScriptFieldMap>          EntityScriptFields;
 
+        Scope<filewatch::FileWatch<std::string>> AppAssemblyFileWatcher;
+        bool                                     AssemblyReloadPending = false;
+
         // Runtime
         Scene* SceneContext = nullptr;
     };
 
     static ScriptEngineData* s_Data = nullptr;
+
+    static void OnAppAssemblyFileSystemEvent(const std::string& path, const filewatch::Event change_type)
+    {
+        if (!s_Data->AssemblyReloadPending && change_type == filewatch::Event::modified)
+        {
+            s_Data->AssemblyReloadPending = true;
+
+            Application::Get().SubmitToMainThread([]() {
+                s_Data->AppAssemblyFileWatcher.reset();
+                ScriptEngine::ReloadAssembly();
+            });
+        }
+    }
 
     void ScriptEngine::Init()
     {
@@ -211,10 +230,12 @@ namespace Gaze
         // Move this maybe
         s_Data->AppAssemblyFilepath = filepath;
         s_Data->AppAssembly         = Utils::LoadMonoAssembly(filepath);
-        auto assemb                 = s_Data->AppAssembly;
         s_Data->AppAssemblyImage    = mono_assembly_get_image(s_Data->AppAssembly);
-        auto assembi                = s_Data->AppAssemblyImage;
         // Utils::PrintAssemblyTypes(s_Data->AppAssembly);
+
+        s_Data->AppAssemblyFileWatcher =
+            CreateScope<filewatch::FileWatch<std::string>>(filepath.string(), OnAppAssemblyFileSystemEvent);
+        s_Data->AssemblyReloadPending = false;
     }
 
     void ScriptEngine::ReloadAssembly()

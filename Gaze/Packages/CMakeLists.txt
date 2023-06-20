@@ -59,4 +59,9 @@ if (NOT TARGET box2d)
     set_target_properties(box2d PROPERTIES FOLDER ${third_party_folder}/Box2D)
 endif ()
 
+if (NOT TARGET filewatch)
+    include(filewatch.cmake)
+    set_target_properties(filewatch PROPERTIES FOLDER ${third_party_folder}/filewatch)
+endif ()
+
 
