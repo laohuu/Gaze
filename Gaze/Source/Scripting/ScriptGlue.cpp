@@ -163,6 +163,10 @@ namespace Gaze
         RegisterComponent<Component...>();
     }
 
-    void ScriptGlue::RegisterComponents() { RegisterComponent(AllComponents {}); }
+    void ScriptGlue::RegisterComponents()
+    {
+        s_EntityHasComponentFuncs.clear();
+        RegisterComponent(AllComponents {});
+    }
 
 } // namespace Gaze

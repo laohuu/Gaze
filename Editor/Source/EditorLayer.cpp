@@ -2,6 +2,7 @@
 
 #include "Math/Math.h"
 #include "Scene/SceneSerializer.h"
+#include "Scripting/ScriptEngine.h"
 #include "Utils/PlatformUtils.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -197,6 +198,14 @@ namespace Gaze
 
                 if (ImGui::MenuItem("Exit"))
                     Gaze::Application::Get().Close();
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Script"))
+            {
+                if (ImGui::MenuItem("Reload assembly"))
+                    ScriptEngine::ReloadAssembly();
+
                 ImGui::EndMenu();
             }
 
