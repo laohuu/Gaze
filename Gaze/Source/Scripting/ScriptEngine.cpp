@@ -8,8 +8,10 @@
 
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
+#include "mono/metadata/mono-debug.h"
 #include "mono/metadata/object.h"
 #include "mono/metadata/tabledefs.h"
+#include "mono/metadata/threads.h"
 
 namespace Gaze
 {
@@ -66,7 +68,7 @@ namespace Gaze
             return buffer;
         }
 
-        static MonoAssembly* LoadMonoAssembly(const std::filesystem::path& assemblyPath)
+        static MonoAssembly* LoadMonoAssembly(const std::filesystem::path& assemblyPath, bool loadPDB = false)
         {
             uint32_t fileSize = 0;
             char*    fileData = ReadBytes(assemblyPath, &fileSize);
@@ -81,6 +83,21 @@ namespace Gaze
                 const char* errorMessage = mono_image_strerror(status);
                 // Log some error message using the errorMessage data
                 return nullptr;
+            }
+
+            if (loadPDB)
+            {
+                std::filesystem::path pdbPath = assemblyPath;
+                pdbPath.replace_extension(".pdb");
+
+                if (std::filesystem::exists(pdbPath))
+                {
+                    uint32_t pdbFileSize = 0;
+                    char*    pdbFileData = ReadBytes(pdbPath, &pdbFileSize);
+                    mono_debug_open_image_from_memory(image, (const mono_byte*)pdbFileData, pdbFileSize);
+                    GZ_CORE_INFO("Loaded PDB {}", pdbPath);
+                    delete[] pdbFileData;
+                }
             }
 
             std::string   pathString = assemblyPath.string();
@@ -150,6 +167,8 @@ namespace Gaze
         Scope<filewatch::FileWatch<std::string>> AppAssemblyFileWatcher;
         bool                                     AssemblyReloadPending = false;
 
+        bool EnableDebugging = false;
+
         // Runtime
         Scene* SceneContext = nullptr;
     };
@@ -195,11 +214,26 @@ namespace Gaze
     {
         mono_set_assemblies_path("Mono/lib");
 
+        if (s_Data->EnableDebugging)
+        {
+            const char* argv[2] = {"--debugger-agent=transport=dt_socket,address=127.0.0.1:2550,server=y,suspend=n,"
+                                   "loglevel=3,logfile=MonoDebugger.log",
+                                   "--soft-breakpoints"};
+
+            mono_jit_parse_options(2, (char**)argv);
+            mono_debug_init(MONO_DEBUG_FORMAT_MONO);
+        }
+
         MonoDomain* rootDomain = mono_jit_init("GazeJITRuntime");
         GZ_CORE_ASSERT(rootDomain);
 
         // Store the root domain pointer
         s_Data->RootDomain = rootDomain;
+
+        if (s_Data->EnableDebugging)
+            mono_debug_domain_create(s_Data->RootDomain);
+
+        mono_thread_set_main(mono_thread_current());
     }
 
     void ScriptEngine::ShutdownMono()
@@ -221,7 +255,7 @@ namespace Gaze
 
         // Move this maybe
         s_Data->CoreAssemblyFilepath = filepath;
-        s_Data->CoreAssembly         = Utils::LoadMonoAssembly(filepath);
+        s_Data->CoreAssembly         = Utils::LoadMonoAssembly(filepath, s_Data->EnableDebugging);
         s_Data->CoreAssemblyImage    = mono_assembly_get_image(s_Data->CoreAssembly);
     }
 
@@ -229,7 +263,7 @@ namespace Gaze
     {
         // Move this maybe
         s_Data->AppAssemblyFilepath = filepath;
-        s_Data->AppAssembly         = Utils::LoadMonoAssembly(filepath);
+        s_Data->AppAssembly         = Utils::LoadMonoAssembly(filepath, s_Data->EnableDebugging);
         s_Data->AppAssemblyImage    = mono_assembly_get_image(s_Data->AppAssembly);
         // Utils::PrintAssemblyTypes(s_Data->AppAssembly);
 
@@ -418,7 +452,8 @@ namespace Gaze
 
     MonoObject* ScriptClass::InvokeMethod(MonoObject* instance, MonoMethod* method, void** params)
     {
-        return mono_runtime_invoke(method, instance, params, nullptr);
+        MonoObject* exception = nullptr;
+        return mono_runtime_invoke(method, instance, params, &exception);
     }
 
     ScriptInstance::ScriptInstance(Ref<ScriptClass> scriptClass, Entity entity) : m_ScriptClass(scriptClass)
