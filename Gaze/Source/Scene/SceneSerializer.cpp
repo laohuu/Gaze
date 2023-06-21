@@ -237,6 +237,7 @@ namespace Gaze
             out << YAML::Key << "ScriptComponent";
             out << YAML::BeginMap; // ScriptComponent
             out << YAML::Key << "ClassName" << YAML::Value << scriptComponent.ClassName;
+
             // Fields
             Ref<ScriptClass> entityClass = ScriptEngine::GetEntityClass(scriptComponent.ClassName);
             const auto&      fields      = entityClass->GetFields();
@@ -280,6 +281,7 @@ namespace Gaze
                 }
                 out << YAML::EndSeq;
             }
+
             out << YAML::EndMap; // ScriptComponent
         }
 

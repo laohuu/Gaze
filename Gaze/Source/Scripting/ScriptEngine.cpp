@@ -216,7 +216,7 @@ namespace Gaze
         s_Data->RootDomain = nullptr;
     }
 
-    void ScriptEngine::LoadAssembly(const std::filesystem::path& filepath)
+    bool ScriptEngine::LoadAssembly(const std::filesystem::path& filepath)
     {
         // Create an App Domain
         s_Data->AppDomain = mono_domain_create_appdomain("GazeScriptRuntime", nullptr);
@@ -225,20 +225,28 @@ namespace Gaze
         // Move this maybe
         s_Data->CoreAssemblyFilepath = filepath;
         s_Data->CoreAssembly         = Utils::LoadMonoAssembly(filepath, s_Data->EnableDebugging);
-        s_Data->CoreAssemblyImage    = mono_assembly_get_image(s_Data->CoreAssembly);
+        if (s_Data->CoreAssembly == nullptr)
+            return false;
+
+        s_Data->CoreAssemblyImage = mono_assembly_get_image(s_Data->CoreAssembly);
+        return true;
     }
 
-    void ScriptEngine::LoadAppAssembly(const std::filesystem::path& filepath)
+    bool ScriptEngine::LoadAppAssembly(const std::filesystem::path& filepath)
     {
         // Move this maybe
         s_Data->AppAssemblyFilepath = filepath;
         s_Data->AppAssembly         = Utils::LoadMonoAssembly(filepath, s_Data->EnableDebugging);
-        s_Data->AppAssemblyImage    = mono_assembly_get_image(s_Data->AppAssembly);
+        if (s_Data->AppAssembly == nullptr)
+            return false;
+
+        s_Data->AppAssemblyImage = mono_assembly_get_image(s_Data->AppAssembly);
         // Utils::PrintAssemblyTypes(s_Data->AppAssembly);
 
         s_Data->AppAssemblyFileWatcher =
             CreateScope<filewatch::FileWatch<std::string>>(filepath.string(), OnAppAssemblyFileSystemEvent);
         s_Data->AssemblyReloadPending = false;
+        return true;
     }
 
     void ScriptEngine::ReloadAssembly()
@@ -294,10 +302,15 @@ namespace Gaze
     void ScriptEngine::OnUpdateEntity(Entity entity, Timestep ts)
     {
         UUID entityUUID = entity.GetUUID();
-        GZ_CORE_ASSERT(s_Data->EntityInstances.find(entityUUID) != s_Data->EntityInstances.end());
-
-        Ref<ScriptInstance> instance = s_Data->EntityInstances[entityUUID];
-        instance->InvokeOnUpdate((float)ts);
+        if (s_Data->EntityInstances.find(entityUUID) != s_Data->EntityInstances.end())
+        {
+            Ref<ScriptInstance> instance = s_Data->EntityInstances[entityUUID];
+            instance->InvokeOnUpdate((float)ts);
+        }
+        else
+        {
+            GZ_CORE_ERROR("Could not find ScriptInstance for entity {}", entityUUID);
+        }
     }
 
     Scene* ScriptEngine::GetSceneContext() { return s_Data->SceneContext; }
