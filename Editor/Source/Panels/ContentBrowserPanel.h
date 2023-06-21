@@ -5,9 +5,11 @@
 
 #include <filesystem>
 
-namespace Gaze {
+namespace Gaze
+{
 
-    class ContentBrowserPanel {
+    class ContentBrowserPanel
+    {
     public:
         ContentBrowserPanel();
 
@@ -21,6 +23,6 @@ namespace Gaze {
         Ref<Texture2D> m_FileIcon;
     };
 
-} // Gaze
+} // namespace Gaze
 
-#endif //GAZE_ENGINE_CONTENTBROWSERPANEL_H
+#endif // GAZE_ENGINE_CONTENTBROWSERPANEL_H

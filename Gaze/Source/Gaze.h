@@ -6,27 +6,29 @@
 #include "Core/Base.h"
 
 #include "Core/Application.h"
+#include "Core/Assert.h"
 #include "Core/Layer.h"
 #include "Core/Log.h"
-#include "Core/Assert.h"
 
 #include "Core/Timestep.h"
 
 #include "ImGui/ImGuiLayer.h"
 
-#include "Scene/Scene.h"
-#include "Scene/Entity.h"
-#include "Scene/ScriptableEntity.h"
 #include "Scene/Components.h"
+#include "Scene/Entity.h"
+#include "Scene/Scene.h"
+#include "Scene/ScriptableEntity.h"
+
+#include "Project/Project.h"
 
 #include "Core/Input.h"
 #include "Core/KeyCodes.h"
 #include "Core/MouseCodes.h"
 
 // ---Renderer------------------------
+#include "Renderer/RenderCommand.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Renderer2D.h"
-#include "Renderer/RenderCommand.h"
 
 #include "Renderer/Buffer.h"
 #include "Renderer/Framebuffer.h"
@@ -38,4 +40,4 @@
 #include "Renderer/OrthographicCameraController.h"
 // -----------------------------------
 
-#endif //GAZE_GAZE_H
+#endif // GAZE_GAZE_H

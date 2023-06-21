@@ -43,8 +43,13 @@ namespace Gaze
         auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
         if (commandLineArgs.Count > 1)
         {
-            auto sceneFilePath = commandLineArgs[1];
-            OpenScene(sceneFilePath);
+            auto projectFilePath = commandLineArgs[1];
+            OpenProject(projectFilePath);
+        }
+        else
+        {
+            // TODO: prompt the user to select a directory
+            NewProject();
         }
 
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
@@ -215,7 +220,7 @@ namespace Gaze
         }
 
         m_SceneHierarchyPanel.OnImGuiRender();
-        m_ContentBrowserPanel.OnImGuiRender();
+        m_ContentBrowserPanel->OnImGuiRender();
 
         ImGui::Begin("Stats");
 
@@ -588,6 +593,23 @@ namespace Gaze
         }
 
         Renderer2D::EndScene();
+    }
+
+    void EditorLayer::NewProject() { Project::New(); }
+
+    void EditorLayer::OpenProject(const std::filesystem::path& path)
+    {
+        if (Project::Load(path))
+        {
+            auto startScenePath = Project::GetAssetFileSystemPath(Project::GetActive()->GetConfig().StartScene);
+            OpenScene(startScenePath);
+            m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
+        }
+    }
+
+    void EditorLayer::SaveProject()
+    {
+        // Project::SaveActive();
     }
 
     void EditorLayer::NewScene()

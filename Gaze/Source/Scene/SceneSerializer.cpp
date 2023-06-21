@@ -4,6 +4,7 @@
 #include "Components.h"
 #include "Core/UUID.h"
 #include "Entity.h"
+#include "Project/Project.h"
 #include "Scripting/ScriptEngine.h"
 
 #include <fstream>
@@ -507,7 +508,9 @@ namespace Gaze
 
                     if (spriteRendererComponent["TexturePath"])
                     {
-                        src.Texture = Texture2D::Create(spriteRendererComponent["TexturePath"].as<std::string>());
+                        std::string texturePath = spriteRendererComponent["TexturePath"].as<std::string>();
+                        auto        path        = Project::GetAssetFileSystemPath(texturePath);
+                        src.Texture             = Texture2D::Create(path.string());
                     }
 
                     if (spriteRendererComponent["TilingFactor"])
