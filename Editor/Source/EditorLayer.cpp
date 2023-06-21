@@ -48,8 +48,10 @@ namespace Gaze
         }
         else
         {
-            // TODO: prompt the user to select a directory
-            NewProject();
+            // If no project is opened, close Editor
+            // NOTE: this is while we don't have a new project path
+            if (!OpenProject())
+                Application::Get().Close();
         }
 
         m_EditorCamera = EditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
@@ -191,17 +193,21 @@ namespace Gaze
                 // which we can't undo at the moment without finer window depth/z control.
                 // ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen_persistant);
 
+                if (ImGui::MenuItem("Open Project...", "Ctrl+O"))
+                    OpenProject();
+
+                ImGui::Separator();
+
                 if (ImGui::MenuItem("New", "Ctrl+N"))
                     NewScene();
-
-                if (ImGui::MenuItem("Open...", "Ctrl+O"))
-                    OpenScene();
 
                 if (ImGui::MenuItem("Save", "Ctrl+S"))
                     SaveScene();
 
                 if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
                     SaveSceneAs();
+
+                ImGui::Separator();
 
                 if (ImGui::MenuItem("Exit"))
                     Gaze::Application::Get().Close();
@@ -482,7 +488,7 @@ namespace Gaze
             }
             case Key::O: {
                 if (control)
-                    OpenScene();
+                    OpenProject();
 
                 break;
             }
@@ -596,6 +602,16 @@ namespace Gaze
     }
 
     void EditorLayer::NewProject() { Project::New(); }
+
+    bool EditorLayer::OpenProject()
+    {
+        std::string filepath = FileDialogs::OpenFile("Project File (*.proj)\0*.proj\0");
+        if (filepath.empty())
+            return false;
+
+        OpenProject(filepath);
+        return true;
+    }
 
     void EditorLayer::OpenProject(const std::filesystem::path& path)
     {

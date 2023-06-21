@@ -2,6 +2,7 @@
 
 #include "Scene/Components.h"
 #include "Scripting/ScriptEngine.h"
+#include "UI/UI.h"
 
 #include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
@@ -319,11 +320,13 @@ namespace Gaze
             static char buffer[64];
             strcpy_s(buffer, component.ClassName.c_str());
 
-            if (!scriptClassExists)
-                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f));
+            UI::ScopedStyleColor textColor(ImGuiCol_Text, ImVec4(0.9f, 0.2f, 0.3f, 1.0f), !scriptClassExists);
 
             if (ImGui::InputText("Class", buffer, sizeof(buffer)))
+            {
                 component.ClassName = buffer;
+                return;
+            }
 
             // Fields
             bool sceneRunning = scene->IsRunning();
@@ -387,9 +390,6 @@ namespace Gaze
                     }
                 }
             }
-
-            if (!scriptClassExists)
-                ImGui::PopStyleColor();
         });
 
         DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component) {
