@@ -406,7 +406,7 @@ namespace Gaze
             ImGui::SameLine();
             {
                 Ref<Texture2D> icon = m_IconPause;
-                if (ImGui::ImageButton((ImTextureID)(uint64_t)icon->GetRendererID(),
+                if (ImGui::ImageButton((ImTextureID)(uint64_t)(uint64_t)icon->GetRendererID(),
                                        ImVec2(size, size),
                                        ImVec2(0, 0),
                                        ImVec2(1, 1),
