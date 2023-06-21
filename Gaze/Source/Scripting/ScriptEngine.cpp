@@ -6,6 +6,7 @@
 #include "Core/FileSystem.h"
 #include "Core/Timer.h"
 #include "FileWatch.h"
+#include "Project/Project.h"
 #include "ScriptGlue.h"
 
 #include "mono/jit/jit.h"
@@ -166,11 +167,25 @@ namespace Gaze
         s_Data = new ScriptEngineData();
 
         InitMono();
-        LoadAssembly("SandboxProject/Assets/Scripts/Binaries/ScriptCore.dll");
-        LoadAppAssembly("SandboxProject/Assets/Scripts/Binaries/Sandbox.dll");
-        LoadAssemblyClasses();
-
         ScriptGlue::RegisterFunctions();
+
+        bool status =
+            LoadAssembly(Project::GetAssetDirectory() / std::filesystem::path("Scripts/Binaries/ScriptCore.dll"));
+        if (!status)
+        {
+            GZ_CORE_ERROR("[ScriptEngine] Could not load ScriptCore assembly.");
+            return;
+        }
+
+        auto scriptModulePath = Project::GetAssetDirectory() / Project::GetActive()->GetConfig().ScriptModulePath;
+        status                = LoadAppAssembly(scriptModulePath);
+        if (!status)
+        {
+            GZ_CORE_ERROR("[ScriptEngine] Could not load app assembly.");
+            return;
+        }
+
+        LoadAssemblyClasses();
         ScriptGlue::RegisterComponents();
 
         // Retrieve and instantiate class

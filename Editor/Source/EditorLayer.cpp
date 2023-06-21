@@ -5,8 +5,10 @@
 #include "Scripting/ScriptEngine.h"
 #include "Utils/PlatformUtils.h"
 
-#include <glm/gtc/type_ptr.hpp>
 #include <imgui.h>
+
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "ImGuizmo.h"
 
@@ -229,11 +231,6 @@ namespace Gaze
         m_ContentBrowserPanel->OnImGuiRender();
 
         ImGui::Begin("Stats");
-
-        std::string name = "None";
-        if (m_HoveredEntity)
-            name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
-        ImGui::Text("Hovered Entity: %s", name.c_str());
 
         auto stats = Gaze::Renderer2D::GetStats();
         ImGui::Text("Renderer2D Stats:");
@@ -503,14 +500,16 @@ namespace Gaze
 
                 break;
             }
-                // Scene Commands
+
+            // Scene Commands
             case Key::D: {
                 if (control)
                     OnDuplicateEntity();
 
                 break;
             }
-                // Gizmos
+
+            // Gizmos
             case Key::Q:
                 m_GizmoType = -1;
                 break;
@@ -523,6 +522,18 @@ namespace Gaze
             case Key::R:
                 m_GizmoType = ImGuizmo::OPERATION::SCALE;
                 break;
+            case Key::Delete: {
+                if (ImGuiLayer::GetActiveWidgetID() == 0)
+                {
+                    Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+                    if (selectedEntity)
+                    {
+                        m_SceneHierarchyPanel.SetSelectedEntity({});
+                        m_ActiveScene->DestroyEntity(selectedEntity);
+                    }
+                }
+                break;
+            }
         }
 
         return false;
@@ -617,6 +628,7 @@ namespace Gaze
     {
         if (Project::Load(path))
         {
+            ScriptEngine::Init();
             auto startScenePath = Project::GetAssetFileSystemPath(Project::GetActive()->GetConfig().StartScene);
             OpenScene(startScenePath);
             m_ContentBrowserPanel = CreateScope<ContentBrowserPanel>();
@@ -718,7 +730,10 @@ namespace Gaze
 
         Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
         if (selectedEntity)
-            m_EditorScene->DuplicateEntity(selectedEntity);
+        {
+            Entity newEntity = m_EditorScene->DuplicateEntity(selectedEntity);
+            m_SceneHierarchyPanel.SetSelectedEntity(newEntity);
+        }
     }
 
     void EditorLayer::SaveScene()
