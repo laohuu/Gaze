@@ -49,6 +49,11 @@ if (NOT TARGET yaml-cpp)
     set_target_properties(yaml-cpp PROPERTIES FOLDER ${third_party_folder}/yaml-cpp)
 endif ()
 
+if (NOT TARGET msdf-atlas-gen)
+    add_subdirectory(msdf-atlas-gen)
+    set_target_properties(msdf-atlas-gen PROPERTIES FOLDER ${third_party_folder}/msdf-atlas-gen)
+endif ()
+
 if (NOT TARGET ImGuizmo)
     include(ImGuizmo.cmake)
     set_target_properties(ImGuizmo PROPERTIES FOLDER ${third_party_folder}/ImGuizmo)

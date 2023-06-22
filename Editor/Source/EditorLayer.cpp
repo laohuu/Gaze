@@ -1,6 +1,7 @@
 #include "EditorLayer.h"
 
 #include "Math/Math.h"
+#include "Renderer/Font.h"
 #include "Scene/SceneSerializer.h"
 #include "Scripting/ScriptEngine.h"
 #include "Utils/PlatformUtils.h"
@@ -15,10 +16,13 @@
 namespace Gaze
 {
 
+    static Ref<Font> s_Font;
+
     EditorLayer::EditorLayer() :
         Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f), m_SquareColor({0.2f, 0.3f, 0.8f, 1.0f})
     {
         m_EditorScenePath = std::filesystem::path();
+        s_Font            = CreateRef<Font>("Assets/Fonts/OpenSans/static/OpenSans-Regular.ttf");
     }
 
     void EditorLayer::OnAttach()
@@ -414,7 +418,7 @@ namespace Gaze
             ImGui::SameLine();
             {
                 Ref<Texture2D> icon = m_IconPause;
-                if (ImGui::ImageButton((ImTextureID)(uint64_t)(uint64_t)icon->GetRendererID(),
+                if (ImGui::ImageButton((ImTextureID)(uint64_t)icon->GetRendererID(),
                                        ImVec2(size, size),
                                        ImVec2(0, 0),
                                        ImVec2(1, 1),
