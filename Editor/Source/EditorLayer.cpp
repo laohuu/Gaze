@@ -247,6 +247,7 @@ namespace Gaze
 
         ImGui::Begin("Settings");
         ImGui::Checkbox("Show physics colliders", &m_ShowPhysicsColliders);
+        ImGui::Image((ImTextureID)(uint64_t)s_Font->GetAtlasTexture()->GetRendererID(), {512, 512}, {0, 1}, {1, 0});
         ImGui::End();
 
         ImGui::Begin("Viewport");

@@ -1,26 +1,33 @@
-#include "GazePCH.h"
 #include "Texture.h"
+#include "GazePCH.h"
 
-#include "Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
+#include "Renderer/Renderer.h"
 
-namespace Gaze {
+namespace Gaze
+{
 
-    Gaze::Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height) {
-        switch (Renderer::GetAPI()) {
-            case RendererAPI::API::None: GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+    Ref<Texture2D> Texture2D::Create(const TextureSpecification& specification)
+    {
+        switch (Renderer::GetAPI())
+        {
+            case RendererAPI::API::None:
+                GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return CreateRef<OpenGLTexture2D>(width, height);
+                return CreateRef<OpenGLTexture2D>(specification);
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }
 
-    Gaze::Ref<Texture2D> Texture2D::Create(const std::string &path) {
-        switch (Renderer::GetAPI()) {
-            case RendererAPI::API::None: GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+    Ref<Texture2D> Texture2D::Create(const std::string& path)
+    {
+        switch (Renderer::GetAPI())
+        {
+            case RendererAPI::API::None:
+                GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
                 return CreateRef<OpenGLTexture2D>(path);
@@ -30,4 +37,4 @@ namespace Gaze {
         return nullptr;
     }
 
-} // Gaze
+} // namespace Gaze

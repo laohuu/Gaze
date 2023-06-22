@@ -1,47 +1,46 @@
 #ifndef GAZE_ENGINE_OPENGLTEXTURE_H
 #define GAZE_ENGINE_OPENGLTEXTURE_H
 
-
 #include "Renderer/Texture.h"
 
 #include <glad/glad.h>
 
-namespace Gaze {
+namespace Gaze
+{
 
-    class OpenGLTexture2D : public Texture2D {
+    class OpenGLTexture2D : public Texture2D
+    {
     public:
-        OpenGLTexture2D(uint32_t width, uint32_t height);
+        OpenGLTexture2D(const TextureSpecification& specification);
+        OpenGLTexture2D(const std::string& path);
+        virtual ~OpenGLTexture2D();
 
-        OpenGLTexture2D(const std::string &path);
+        virtual const TextureSpecification& GetSpecification() const override { return m_Specification; }
 
-        ~OpenGLTexture2D() override;
+        virtual uint32_t GetWidth() const override { return m_Width; }
+        virtual uint32_t GetHeight() const override { return m_Height; }
+        virtual uint32_t GetRendererID() const override { return m_RendererID; }
 
-        uint32_t GetWidth() const override { return m_Width; }
+        virtual const std::string& GetPath() const override { return m_Path; }
 
-        uint32_t GetHeight() const override { return m_Height; }
+        virtual void SetData(void* data, uint32_t size) override;
 
-        uint32_t GetRendererID() const override { return m_RendererID; }
+        virtual void Bind(uint32_t slot = 0) const override;
 
-        const std::string &GetPath() const override { return m_Path; }
+        virtual bool IsLoaded() const override { return m_IsLoaded; }
 
-        void SetData(void *data, uint32_t size) override;
-
-        void Bind(uint32_t slot) const override;
-
-        bool IsLoaded() const override { return m_IsLoaded; }
-
-        bool operator==(const Texture &other) const override {
-            return m_RendererID == other.GetRendererID();
-        }
+        virtual bool operator==(const Texture& other) const override { return m_RendererID == other.GetRendererID(); }
 
     private:
+        TextureSpecification m_Specification;
+
         std::string m_Path;
-        bool m_IsLoaded = false;
-        uint32_t m_Width, m_Height;
-        uint32_t m_RendererID;
-        GLenum m_InternalFormat, m_DataFormat;
+        bool        m_IsLoaded = false;
+        uint32_t    m_Width, m_Height;
+        uint32_t    m_RendererID;
+        GLenum      m_InternalFormat, m_DataFormat;
     };
 
-} // Gaze
+} // namespace Gaze
 
-#endif //GAZE_ENGINE_OPENGLTEXTURE_H
+#endif // GAZE_ENGINE_OPENGLTEXTURE_H

@@ -2,10 +2,7 @@
 cmake_minimum_required(VERSION 3.15)
 include(cmake/version.cmake)
 
-option(MSDF_ATLAS_DYNAMIC_RUNTIME "Link dynamic runtime library instead of static" OFF)
-option(BUILD_SHARED_LIBS "Generate dynamic library files instead of static" OFF)
-
-set(MSDFGEN_DYNAMIC_RUNTIME ON)
+set(MSDF_ATLAS_DYNAMIC_RUNTIME ON)
 if (MSDF_ATLAS_DYNAMIC_RUNTIME)
     set(MSDF_ATLAS_MSVC_RUNTIME "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 else ()
