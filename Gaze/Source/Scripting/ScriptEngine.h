@@ -13,6 +13,7 @@ extern "C"
     typedef struct _MonoAssembly   MonoAssembly;
     typedef struct _MonoImage      MonoImage;
     typedef struct _MonoClassField MonoClassField;
+    typedef struct _MonoString     MonoString;
 }
 
 namespace Gaze
@@ -175,6 +176,8 @@ namespace Gaze
         static MonoImage* GetCoreAssemblyImage();
 
         static MonoObject* GetManagedInstance(UUID uuid);
+
+        static MonoString* CreateString(const char* string);
 
     private:
         static void InitMono();
