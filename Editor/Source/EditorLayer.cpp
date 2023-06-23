@@ -22,7 +22,7 @@ namespace Gaze
         Layer("EditorLayer"), m_CameraController(1280.0f / 720.0f), m_SquareColor({0.2f, 0.3f, 0.8f, 1.0f})
     {
         m_EditorScenePath = std::filesystem::path();
-        s_Font            = CreateRef<Font>("Assets/Fonts/OpenSans/static/OpenSans-Regular.ttf");
+        s_Font            = Font::GetDefault();
     }
 
     void EditorLayer::OnAttach()

@@ -3,94 +3,110 @@
 
 #include "Camera.h"
 #include "OrthographicCamera.h"
+#include "Renderer/EditorCamera.h"
+#include "Renderer/Font.h"
+#include "Scene/Components.h"
 #include "Texture.h"
 
-#include "Renderer/EditorCamera.h"
-#include "Scene/Components.h"
+namespace Gaze
+{
 
-namespace Gaze {
-
-    class Renderer2D {
+    class Renderer2D
+    {
     public:
         static void Init();
-
         static void Shutdown();
 
-        static void BeginScene(const OrthographicCamera &camera); // TODO: Remove
-        static void BeginScene(const Camera &camera, const glm::mat4 &transform);
-
-        static void BeginScene(const EditorCamera &camera);
-
+        static void BeginScene(const Camera& camera, const glm::mat4& transform);
+        static void BeginScene(const EditorCamera& camera);
+        static void BeginScene(const OrthographicCamera& camera); // TODO: Remove
         static void EndScene();
-
         static void Flush();
 
         // Primitives
-        static void DrawQuad(const glm::vec2 &position, const glm::vec2 &size, const glm::vec4 &color);
+        static void DrawQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color);
+        static void DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+        static void DrawQuad(const glm::vec2&      position,
+                             const glm::vec2&      size,
+                             const Ref<Texture2D>& texture,
+                             float                 tilingFactor = 1.0f,
+                             const glm::vec4&      tintColor    = glm::vec4(1.0f));
+        static void DrawQuad(const glm::vec3&      position,
+                             const glm::vec2&      size,
+                             const Ref<Texture2D>& texture,
+                             float                 tilingFactor = 1.0f,
+                             const glm::vec4&      tintColor    = glm::vec4(1.0f));
 
-        static void DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const glm::vec4 &color);
+        static void DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
+        static void DrawQuad(const glm::mat4&      transform,
+                             const Ref<Texture2D>& texture,
+                             float                 tilingFactor = 1.0f,
+                             const glm::vec4&      tintColor    = glm::vec4(1.0f),
+                             int                   entityID     = -1);
 
-        static void DrawQuad(const glm::vec2 &position, const glm::vec2 &size, const Gaze::Ref<Texture2D> &texture,
-                             float tilingFactor = 1.0f, const glm::vec4 &tintColor = glm::vec4(1.0f));
+        static void
+        DrawRotatedQuad(const glm::vec2& position, const glm::vec2& size, float rotation, const glm::vec4& color);
+        static void
+        DrawRotatedQuad(const glm::vec3& position, const glm::vec2& size, float rotation, const glm::vec4& color);
+        static void DrawRotatedQuad(const glm::vec2&      position,
+                                    const glm::vec2&      size,
+                                    float                 rotation,
+                                    const Ref<Texture2D>& texture,
+                                    float                 tilingFactor = 1.0f,
+                                    const glm::vec4&      tintColor    = glm::vec4(1.0f));
+        static void DrawRotatedQuad(const glm::vec3&      position,
+                                    const glm::vec2&      size,
+                                    float                 rotation,
+                                    const Ref<Texture2D>& texture,
+                                    float                 tilingFactor = 1.0f,
+                                    const glm::vec4&      tintColor    = glm::vec4(1.0f));
 
-        static void DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const Gaze::Ref<Texture2D> &texture,
-                             float tilingFactor = 1.0f, const glm::vec4 &tintColor = glm::vec4(1.0f));
+        static void DrawCircle(const glm::mat4& transform,
+                               const glm::vec4& color,
+                               float            thickness = 1.0f,
+                               float            fade      = 0.005f,
+                               int              entityID  = -1);
 
-        static void DrawQuad(const glm::mat4 &transform, const glm::vec4 &color, int entityID = -1);
+        static void DrawLine(const glm::vec3& p0, glm::vec3& p1, const glm::vec4& color, int entityID = -1);
 
-        static void DrawQuad(const glm::mat4 &transform, const Gaze::Ref<Texture2D> &texture, float tilingFactor = 1.0f,
-                             const glm::vec4 &tintColor = glm::vec4(1.0f), int entityID = -1);
+        static void
+        DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, int entityID = -1);
+        static void DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
 
-        static void DrawRotatedQuad(const glm::vec2 &position, const glm::vec2 &size, float rotation,
-                                    const glm::vec4 &color);
+        static void DrawSprite(const glm::mat4& transform, SpriteRendererComponent& src, int entityID);
 
-        static void DrawRotatedQuad(const glm::vec3 &position, const glm::vec2 &size, float rotation,
-                                    const glm::vec4 &color);
-
-        static void DrawRotatedQuad(const glm::vec2 &position, const glm::vec2 &size, float rotation,
-                                    const Gaze::Ref<Texture2D> &texture, float tilingFactor = 1.0f,
-                                    const glm::vec4 &tintColor = glm::vec4(1.0f));
-
-        static void DrawRotatedQuad(const glm::vec3 &position, const glm::vec2 &size, float rotation,
-                                    const Gaze::Ref<Texture2D> &texture, float tilingFactor = 1.0f,
-                                    const glm::vec4 &tintColor = glm::vec4(1.0f));
-
-        static void DrawLine(const glm::vec3 &p0,const glm::vec3 &p1, const glm::vec4 &color, int entityID = -1);
-
-        static void DrawRect(const glm::vec3 &position, const glm::vec2 &size,
-                             const glm::vec4 &color, int entityID = -1);
-
-        static void DrawRect(const glm::mat4 &transform, const glm::vec4 &color, int entityID = -1);
-
-        static void DrawCircle(const glm::mat4 &transform, const glm::vec4 &color,
-                               float thickness = 1.0f, float fade = 0.005f, int entityID = -1);
-
-        static void DrawSprite(const glm::mat4 &transform, SpriteRendererComponent &src, int entityID);
+        struct TextParams
+        {
+            glm::vec4 Color {1.0f};
+            float     Kerning     = 0.0f;
+            float     LineSpacing = 0.0f;
+        };
+        static void DrawString(const std::string& string,
+                               Ref<Font>          font,
+                               const glm::mat4&   transform,
+                               const TextParams&  textParams,
+                               int                entityID = -1);
 
         static float GetLineWidth();
-
-        static void SetLineWidth(float width);
+        static void  SetLineWidth(float width);
 
         // Stats
-        struct Statistics {
+        struct Statistics
+        {
             uint32_t DrawCalls = 0;
             uint32_t QuadCount = 0;
 
             uint32_t GetTotalVertexCount() const { return QuadCount * 4; }
-
             uint32_t GetTotalIndexCount() const { return QuadCount * 6; }
         };
-
-        static void ResetStats();
-
+        static void       ResetStats();
         static Statistics GetStats();
 
     private:
         static void StartBatch();
-
         static void NextBatch();
     };
 
-} // Gaze
+} // namespace Gaze
 
-#endif //GAZE_ENGINE_RENDERER2D_H
+#endif // GAZE_ENGINE_RENDERER2D_H

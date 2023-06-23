@@ -402,6 +402,8 @@ namespace Gaze
             }
         }
 
+        Renderer2D::DrawString("Gaze Engine", Font::GetDefault(), glm::mat4(1.0f),Renderer2D::TextParams());
+
         Renderer2D::EndScene();
     }
 
