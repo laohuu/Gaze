@@ -402,7 +402,16 @@ namespace Gaze
             }
         }
 
-        Renderer2D::DrawString("Gaze Engine", Font::GetDefault(), glm::mat4(1.0f),Renderer2D::TextParams());
+        // Draw text
+        {
+            auto view = m_Registry.view<TransformComponent, TextComponent>();
+            for (auto entity : view)
+            {
+                auto [transform, text] = view.get<TransformComponent, TextComponent>(entity);
+
+                Renderer2D::DrawString(text.TextString, transform.GetTransform(), text, (int)entity);
+            }
+        }
 
         Renderer2D::EndScene();
     }
@@ -458,6 +467,10 @@ namespace Gaze
 
     template<>
     void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
+    {}
+
+    template<>
+    void Scene::OnComponentAdded<TextComponent>(Entity entity, TextComponent& component)
     {}
 
     void Scene::OnViewportResize(uint32_t width, uint32_t height)
