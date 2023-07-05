@@ -69,4 +69,9 @@ if (NOT TARGET filewatch)
     set_target_properties(filewatch PROPERTIES FOLDER ${third_party_folder}/filewatch)
 endif ()
 
+if (NOT TARGET PhysX)
+    include(PhysX.cmake)
+    set_target_properties(PhysX PROPERTIES FOLDER ${third_party_folder}/PhysX)
+endif ()
+
 

@@ -65,7 +65,11 @@ namespace Gaze
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
     }
 
-    void EditorLayer::OnDetach() { GZ_PROFILE_FUNCTION(); }
+    void EditorLayer::OnDetach()
+    {
+        GZ_PROFILE_FUNCTION();
+        m_EditorScene->OnShutdown();
+    }
 
     void EditorLayer::OnUpdate(Gaze::Timestep ts)
     {

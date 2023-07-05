@@ -24,20 +24,28 @@ file(GLOB_RECURSE SOURCE_FILES "Source/*.cpp")
 
 add_library(${PROJECT_NAME} ${SOURCE_FILES})
 
-if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    set(DEBUG_SUFFIX "d")
-    set(MONO_LIB ${PROJECT_SOURCE_DIR}/Packages/mono/lib/Debug/libmono-static-sgen.lib)
-else ()
-    set(DEBUG_SUFFIX "")
-    set(MONO_LIB ${PROJECT_SOURCE_DIR}/Packages/mono/lib/Release/libmono-static-sgen.lib)
-endif ()
-
 set(VK_SDK_PATH $ENV{VK_SDK_PATH})
 set(VK_SDK_INCLUDE ${VK_SDK_PATH}/Include)
 set(VK_SDK_LIB ${VK_SDK_PATH}/Lib/vulkan-1.lib)
-set(ShaderC_LIB ${VK_SDK_PATH}/Lib/shaderc_shared${DEBUG_SUFFIX}.lib)
-set(SPIRV_Cross_LIB ${VK_SDK_PATH}/Lib/spirv-cross-core${DEBUG_SUFFIX}.lib)
-set(SPIRV_Cross_GLSL_LIB ${VK_SDK_PATH}/Lib/spirv-cross-glsl${DEBUG_SUFFIX}.lib)
+set(VK_UTILS_LIB ${VK_SDK_PATH}/Lib/VkLayer_utils.lib)
+
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    set(ShaderC_LIB ${VK_SDK_PATH}/Lib/shaderc_sharedd.lib)
+    set(ShaderC_Utils_LIB ${VK_SDK_PATH}/Lib/shaderc_utild.lib)
+    set(SPIRV_Cross_LIB ${VK_SDK_PATH}/Lib/spirv-cross-cored.lib)
+    set(SPIRV_Cross_GLSL_LIB ${VK_SDK_PATH}/Lib/spirv-cross-glsld.lib)
+    set(SPIRV_Tools_LIB ${VK_SDK_PATH}/Lib/SPIRV-Toolsd.lib)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${SPIRV_Tools_LIB})
+
+    set(MONO_LIB ${PROJECT_SOURCE_DIR}/Packages/mono/lib/Debug/libmono-static-sgen.lib)
+else ()
+    set(ShaderC_LIB ${VK_SDK_PATH}/Lib/shaderc_shared.lib)
+    set(ShaderC_Utils_LIB ${VK_SDK_PATH}/Lib/shaderc_util.lib)
+    set(SPIRV_Cross_LIB ${VK_SDK_PATH}/Lib/spirv-cross-core.lib)
+    set(SPIRV_Cross_GLSL_LIB ${VK_SDK_PATH}/Lib/spirv-cross-glsl.lib)
+
+    set(MONO_LIB ${PROJECT_SOURCE_DIR}/Packages/mono/lib/Release/libmono-static-sgen.lib)
+endif ()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC spdlog)
 target_link_libraries(${PROJECT_NAME} PRIVATE stb)
@@ -50,10 +58,34 @@ target_link_libraries(${PROJECT_NAME} PUBLIC opengl32)
 target_link_libraries(${PROJECT_NAME} PUBLIC yaml-cpp)
 target_link_libraries(${PROJECT_NAME} PUBLIC box2d)
 target_link_libraries(${PROJECT_NAME} PUBLIC msdf-atlas-gen)
+target_link_libraries(${PROJECT_NAME} PRIVATE PhysX)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${VK_SDK_LIB})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${VK_UTILS_LIB})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${ShaderC_LIB})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${ShaderC_Utils_LIB})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SPIRV_Cross_LIB})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${SPIRV_Cross_GLSL_LIB})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${MONO_LIB})
+
+#Physics
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+    set(PhysX_LIB_DIR ${PROJECT_SOURCE_DIR}/Packages/PhysX/lib/Debug)
+elseif (${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    set(PhysX_LIB_DIR ${PROJECT_SOURCE_DIR}/Packages/PhysX/lib/Release)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC NDEBUG) # -- PhysX Requires This
+else ()
+    set(PhysX_LIB_DIR ${PROJECT_SOURCE_DIR}/Packages/PhysX/lib/Release)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC NDEBUG) # -- PhysX Requires This
+endif ()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PhysX_LIB_DIR}/PhysX_static_64.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PhysX_LIB_DIR}/PhysXCharacterKinematic_static_64.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PhysX_LIB_DIR}/PhysXCommon_static_64.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PhysX_LIB_DIR}/PhysXCooking_static_64.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PhysX_LIB_DIR}/PhysXExtensions_static_64.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PhysX_LIB_DIR}/PhysXFoundation_static_64.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PhysX_LIB_DIR}/PhysXPvdSDK_static_64.lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PhysX_LIB_DIR}/PhysXVehicle_static_64.lib)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE "${PROJECT_SOURCE_DIR}/Source/GazePCH.h")
 
@@ -71,6 +103,7 @@ target_include_directories(${PROJECT_NAME}
         )
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
+target_compile_definitions(${PROJECT_NAME} PUBLIC PX_PHYSX_STATIC_LIB)
 
 if (WIN32)
     target_link_libraries(${PROJECT_NAME} PRIVATE Ws2_32.lib)

@@ -15,10 +15,31 @@
 #include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_world.h"
 
+#include "Physics/3D/PhysXManager.h"
+
 namespace Gaze
 {
 
+    static physx::PxDefaultErrorCallback s_PXErrorCallback;
+    static physx::PxDefaultAllocator     s_PXAllocator;
+    static physx::PxFoundation*          s_PXFoundation;
+
+    struct PhysXSceneComponent
+    {
+        // NOTE: PhysX does some internal ref counting, and thus doesn't allow unique_ptr
+        physx::PxScene* World;
+    };
+
     Scene::~Scene() { delete m_PhysicsWorld; }
+
+    void Scene::Init() {}
+
+    void Scene::OnShutdown()
+    {
+//        auto            physxView  = m_Registry.view<PhysXSceneComponent>();
+//        physx::PxScene* physxScene = m_Registry.get<PhysXSceneComponent>(physxView.front()).World;
+//        physxScene->release();
+    }
 
     template<typename... Component>
     static void

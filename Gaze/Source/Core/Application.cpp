@@ -2,6 +2,7 @@
 #include "GazePCH.h"
 
 #include "Core/Log.h"
+#include "Physics/3D/PhysXManager.h"
 #include "Renderer/Renderer.h"
 #include "Scripting/ScriptEngine.h"
 #include "Utils/PlatformUtils.h"
@@ -28,6 +29,7 @@ namespace Gaze
         m_Window->SetEventCallback(GZ_BIND_EVENT_FN(Application::OnEvent));
 
         Renderer::Init();
+        PhysXManager::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
@@ -37,6 +39,7 @@ namespace Gaze
     {
         GZ_PROFILE_FUNCTION();
 
+        PhysXManager::Shutdown();
         Renderer::Shutdown();
         ScriptEngine::Shutdown();
     }

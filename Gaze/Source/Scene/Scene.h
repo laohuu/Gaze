@@ -20,6 +20,9 @@ namespace Gaze
         Scene() = default;
         ~Scene();
 
+        void Init();
+        void OnShutdown();
+
         static Ref<Scene> Copy(Ref<Scene> other);
 
         Entity CreateEntity(const std::string& name = std::string());
