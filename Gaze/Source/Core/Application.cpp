@@ -1,5 +1,6 @@
-#include "Application.h"
 #include "GazePCH.h"
+
+#include "Application.h"
 
 #include "Core/Log.h"
 #include "Physics/3D/PhysXManager.h"

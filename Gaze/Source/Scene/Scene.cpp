@@ -3,7 +3,8 @@
 
 #include "Components.h"
 #include "Entity.h"
-#include "Physics/Physics2D.h"
+#include "Physics/2D/Physics2D.h"
+#include "Physics/3D/PhysXManager.h"
 #include "Renderer/Renderer2D.h"
 #include "ScriptableEntity.h"
 #include "Scripting/ScriptEngine.h"
@@ -15,14 +16,14 @@
 #include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_world.h"
 
-#include "Physics/3D/PhysXManager.h"
-
 namespace Gaze
 {
+    std::unordered_map<UUID, Scene*> s_ActiveScenes;
 
-    static physx::PxDefaultErrorCallback s_PXErrorCallback;
-    static physx::PxDefaultAllocator     s_PXAllocator;
-    static physx::PxFoundation*          s_PXFoundation;
+    struct SceneComponent
+    {
+        UUID SceneID;
+    };
 
     struct PhysXSceneComponent
     {
@@ -30,15 +31,39 @@ namespace Gaze
         physx::PxScene* World;
     };
 
-    Scene::~Scene() { delete m_PhysicsWorld; }
+    Scene::Scene(const std::string& name, bool isEditorScene, bool initalize) :
+        m_Name(name), m_IsEditorScene(isEditorScene)
+    {
+        m_SceneEntity = m_Registry.create();
+        m_Registry.emplace<SceneComponent>(m_SceneEntity, m_SceneID);
+        s_ActiveScenes[m_SceneID] = this;
+
+        if (!initalize)
+            return;
+
+        Box2DWorldComponent& b2dWorld =
+            m_Registry.emplace<Box2DWorldComponent>(m_SceneEntity, std::make_unique<b2World>(b2Vec2 {0.0f, -9.8f}));
+
+        //        m_Registry.emplace<PhysXSceneComponent>(m_SceneEntity);
+
+        Init();
+    }
+
+    Scene::~Scene()
+    {
+        // Clear the registry so that all callbacks are called
+        m_Registry.clear();
+
+        s_ActiveScenes.erase(m_SceneID);
+    }
 
     void Scene::Init() {}
 
     void Scene::OnShutdown()
     {
-//        auto            physxView  = m_Registry.view<PhysXSceneComponent>();
-//        physx::PxScene* physxScene = m_Registry.get<PhysXSceneComponent>(physxView.front()).World;
-//        physxScene->release();
+        //        auto            physxView  = m_Registry.view<PhysXSceneComponent>();
+        //        physx::PxScene* physxScene = m_Registry.get<PhysXSceneComponent>(physxView.front()).World;
+        //        physxScene->release();
     }
 
     template<typename... Component>
@@ -200,19 +225,22 @@ namespace Gaze
                 });
             }
 
-            // Physics
+            // Box2D physics
             {
-                const int32_t velocityIterations = 6;
-                const int32_t positionIterations = 2;
-                m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
-
-                // Retrieve transform from Box2D
-                auto view = m_Registry.view<Rigidbody2DComponent>();
+                auto    sceneView          = m_Registry.view<Box2DWorldComponent>();
+                auto&   box2DWorld         = m_Registry.get<Box2DWorldComponent>(sceneView.front()).World;
+                int32_t velocityIterations = 6;
+                int32_t positionIterations = 2;
+                box2DWorld->Step(ts, velocityIterations, positionIterations);
+            }
+            // Retrieve transform from Box2D
+            {
+                auto view = m_Registry.view<RigidBody2DComponent>();
                 for (auto e : view)
                 {
                     Entity entity    = {e, this};
                     auto&  transform = entity.GetComponent<TransformComponent>();
-                    auto&  rb2d      = entity.GetComponent<Rigidbody2DComponent>();
+                    auto&  rb2d      = entity.GetComponent<RigidBody2DComponent>();
 
                     b2Body* body = (b2Body*)rb2d.RuntimeBody;
 
@@ -277,19 +305,22 @@ namespace Gaze
     {
         if (!m_IsPaused || m_StepFrames-- > 0)
         {
-            // Physics
+            // Box2D physics
             {
-                const int32_t velocityIterations = 6;
-                const int32_t positionIterations = 2;
-                m_PhysicsWorld->Step(ts, velocityIterations, positionIterations);
-
+                auto    sceneView          = m_Registry.view<Box2DWorldComponent>();
+                auto&   box2DWorld         = m_Registry.get<Box2DWorldComponent>(sceneView.front()).World;
+                int32_t velocityIterations = 6;
+                int32_t positionIterations = 2;
+                box2DWorld->Step(ts, velocityIterations, positionIterations);
+            }
+            {
                 // Retrieve transform from Box2D
-                auto view = m_Registry.view<Rigidbody2DComponent>();
+                auto view = m_Registry.view<RigidBody2DComponent>();
                 for (auto e : view)
                 {
                     Entity entity    = {e, this};
                     auto&  transform = entity.GetComponent<TransformComponent>();
-                    auto&  rb2d      = entity.GetComponent<Rigidbody2DComponent>();
+                    auto&  rb2d      = entity.GetComponent<RigidBody2DComponent>();
 
                     b2Body*     body        = (b2Body*)rb2d.RuntimeBody;
                     const auto& position    = body->GetPosition();
@@ -335,21 +366,23 @@ namespace Gaze
 
     void Scene::OnPhysics2DStart()
     {
-        m_PhysicsWorld = new b2World({0.0f, -9.8f});
+        // Box2D physics
+        auto  sceneView = m_Registry.view<Box2DWorldComponent>();
+        auto& world     = m_Registry.get<Box2DWorldComponent>(sceneView.front()).World;
 
-        auto view = m_Registry.view<Rigidbody2DComponent>();
+        auto view = m_Registry.view<RigidBody2DComponent>();
         for (auto e : view)
         {
             Entity entity    = {e, this};
             auto&  transform = entity.GetComponent<TransformComponent>();
-            auto&  rb2d      = entity.GetComponent<Rigidbody2DComponent>();
+            auto&  rb2d      = entity.GetComponent<RigidBody2DComponent>();
 
             b2BodyDef bodyDef;
             bodyDef.type = Utils::Rigidbody2DTypeToBox2DBody(rb2d.Type);
             bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
             bodyDef.angle = transform.Rotation.z;
 
-            b2Body* body = m_PhysicsWorld->CreateBody(&bodyDef);
+            b2Body* body = world->CreateBody(&bodyDef);
             body->SetFixedRotation(rb2d.FixedRotation);
             rb2d.RuntimeBody = body;
 
@@ -391,11 +424,7 @@ namespace Gaze
         }
     }
 
-    void Scene::OnPhysics2DStop()
-    {
-        delete m_PhysicsWorld;
-        m_PhysicsWorld = nullptr;
-    }
+    void Scene::OnPhysics2DStop() {}
 
     void Scene::RenderScene(EditorCamera& camera)
     {
@@ -475,7 +504,7 @@ namespace Gaze
     {}
 
     template<>
-    void Scene::OnComponentAdded<Rigidbody2DComponent>(Entity entity, Rigidbody2DComponent& component)
+    void Scene::OnComponentAdded<RigidBody2DComponent>(Entity entity, RigidBody2DComponent& component)
     {}
 
     template<>
@@ -492,6 +521,14 @@ namespace Gaze
 
     template<>
     void Scene::OnComponentAdded<TextComponent>(Entity entity, TextComponent& component)
+    {}
+
+    template<>
+    void Scene::OnComponentAdded<SceneComponent>(Entity entity, SceneComponent& component)
+    {}
+
+    template<>
+    void Scene::OnComponentAdded<PhysXSceneComponent>(Entity entity, PhysXSceneComponent& component)
     {}
 
     void Scene::OnViewportResize(uint32_t width, uint32_t height)

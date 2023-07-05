@@ -17,7 +17,7 @@ namespace Gaze
     class Scene
     {
     public:
-        Scene() = default;
+        Scene(const std::string& name = "UntitledScene", bool isEditorScene = false, bool initalize = true);
         ~Scene();
 
         void Init();
@@ -70,13 +70,17 @@ namespace Gaze
         void RenderScene(EditorCamera& camera);
 
     private:
+        UUID           m_SceneID;
+        entt::entity   m_SceneEntity = entt::null;
         entt::registry m_Registry;
-        uint32_t       m_ViewportWidth = 0, m_ViewportHeight = 0;
-        bool           m_IsRunning  = false;
-        bool           m_IsPaused   = false;
-        int            m_StepFrames = 0;
 
-        b2World* m_PhysicsWorld = nullptr;
+        std::string m_Name;
+        bool        m_IsEditorScene = false;
+        uint32_t    m_ViewportWidth = 0, m_ViewportHeight = 0;
+
+        bool m_IsRunning  = false;
+        bool m_IsPaused   = false;
+        int  m_StepFrames = 0;
 
         std::unordered_map<UUID, entt::entity> m_EntityMap;
 

@@ -37,7 +37,10 @@ namespace Gaze
         {
             m_Context->m_Registry.each([&](auto entityID) {
                 Entity entity {entityID, m_Context.get()};
-                DrawEntityNode(entity);
+                if (entity.HasComponent<TagComponent>())
+                {
+                    DrawEntityNode(entity);
+                }
             });
 
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
@@ -240,7 +243,7 @@ namespace Gaze
             DisplayAddComponentEntry<ScriptComponent>("Script");
             DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
             DisplayAddComponentEntry<CircleRendererComponent>("Circle Renderer");
-            DisplayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D");
+            DisplayAddComponentEntry<RigidBody2DComponent>("Rigidbody 2D");
             DisplayAddComponentEntry<BoxCollider2DComponent>("Box Collider 2D");
             DisplayAddComponentEntry<CircleCollider2DComponent>("Circle Collider 2D");
             DisplayAddComponentEntry<TextComponent>("Text Component");
@@ -421,7 +424,7 @@ namespace Gaze
             ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);
         });
 
-        DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](auto& component) {
+        DrawComponent<RigidBody2DComponent>("Rigidbody 2D", entity, [](auto& component) {
             const char* bodyTypeStrings[]     = {"Static", "Dynamic", "Kinematic"};
             const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type];
             if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
@@ -432,7 +435,7 @@ namespace Gaze
                     if (ImGui::Selectable(bodyTypeStrings[i], isSelected))
                     {
                         currentBodyTypeString = bodyTypeStrings[i];
-                        component.Type        = (Rigidbody2DComponent::BodyType)i;
+                        component.Type        = (RigidBody2DComponent::BodyType)i;
                     }
 
                     if (isSelected)

@@ -27,7 +27,7 @@ namespace Gaze
         }
     }
 
-    public class Rigidbody2DComponent : Component
+    public class RigidBody2DComponent : Component
     {
         public enum BodyType { Static = 0, Dynamic, Kinematic }
 

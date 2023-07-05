@@ -11,7 +11,7 @@ namespace Sandbox
     public class Player : Entity
     {
         private TransformComponent m_Transform;
-        private Rigidbody2DComponent m_Rigidbody;
+        private RigidBody2DComponent m_Rigidbody;
 
         public float Speed;
         public float Time = 0.0f;
@@ -21,7 +21,7 @@ namespace Sandbox
             Console.WriteLine($"Player.OnCreate - {ID}");
 
             m_Transform = GetComponent<TransformComponent>();
-            m_Rigidbody = GetComponent<Rigidbody2DComponent>();
+            m_Rigidbody = GetComponent<RigidBody2DComponent>();
 
             bool hasTransform = HasComponent<TransformComponent>();
             Console.WriteLine($"Player.HasComponent - {hasTransform}");

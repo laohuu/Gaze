@@ -144,15 +144,15 @@ namespace Gaze
         return out;
     }
 
-    static std::string RigidBody2DBodyTypeToString(Rigidbody2DComponent::BodyType bodyType)
+    static std::string RigidBody2DBodyTypeToString(RigidBody2DComponent::BodyType bodyType)
     {
         switch (bodyType)
         {
-            case Rigidbody2DComponent::BodyType::Static:
+            case RigidBody2DComponent::BodyType::Static:
                 return "Static";
-            case Rigidbody2DComponent::BodyType::Dynamic:
+            case RigidBody2DComponent::BodyType::Dynamic:
                 return "Dynamic";
-            case Rigidbody2DComponent::BodyType::Kinematic:
+            case RigidBody2DComponent::BodyType::Kinematic:
                 return "Kinematic";
         }
 
@@ -160,17 +160,17 @@ namespace Gaze
         return {};
     }
 
-    static Rigidbody2DComponent::BodyType RigidBody2DBodyTypeFromString(const std::string& bodyTypeString)
+    static RigidBody2DComponent::BodyType RigidBody2DBodyTypeFromString(const std::string& bodyTypeString)
     {
         if (bodyTypeString == "Static")
-            return Rigidbody2DComponent::BodyType::Static;
+            return RigidBody2DComponent::BodyType::Static;
         if (bodyTypeString == "Dynamic")
-            return Rigidbody2DComponent::BodyType::Dynamic;
+            return RigidBody2DComponent::BodyType::Dynamic;
         if (bodyTypeString == "Kinematic")
-            return Rigidbody2DComponent::BodyType::Kinematic;
+            return RigidBody2DComponent::BodyType::Kinematic;
 
         GZ_CORE_ASSERT(false, "Unknown body type");
-        return Rigidbody2DComponent::BodyType::Static;
+        return RigidBody2DComponent::BodyType::Static;
     }
 
     SceneSerializer::SceneSerializer(const Ref<Scene>& scene) : m_Scene(scene) {}
@@ -314,12 +314,12 @@ namespace Gaze
             out << YAML::EndMap; // CircleRendererComponent
         }
 
-        if (entity.HasComponent<Rigidbody2DComponent>())
+        if (entity.HasComponent<RigidBody2DComponent>())
         {
             out << YAML::Key << "Rigidbody2DComponent";
             out << YAML::BeginMap; // Rigidbody2DComponent
 
-            auto& rb2dComponent = entity.GetComponent<Rigidbody2DComponent>();
+            auto& rb2dComponent = entity.GetComponent<RigidBody2DComponent>();
             out << YAML::Key << "BodyType" << YAML::Value << RigidBody2DBodyTypeToString(rb2dComponent.Type);
             out << YAML::Key << "FixedRotation" << YAML::Value << rb2dComponent.FixedRotation;
 
@@ -544,7 +544,7 @@ namespace Gaze
                 auto rigidbody2DComponent = entity["Rigidbody2DComponent"];
                 if (rigidbody2DComponent)
                 {
-                    auto& rb2d = deserializedEntity.AddComponent<Rigidbody2DComponent>();
+                    auto& rb2d = deserializedEntity.AddComponent<RigidBody2DComponent>();
                     rb2d.Type  = RigidBody2DBodyTypeFromString(rigidbody2DComponent["BodyType"].as<std::string>());
                     rb2d.FixedRotation = rigidbody2DComponent["FixedRotation"].as<bool>();
                 }

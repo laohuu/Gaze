@@ -5,7 +5,7 @@
 #include "Core/Input.h"
 #include "Core/KeyCodes.h"
 #include "Core/UUID.h"
-#include "Physics/Physics2D.h"
+#include "Physics/2D/Physics2D.h"
 #include "Scene/Entity.h"
 #include "Scene/Scene.h"
 
@@ -106,7 +106,7 @@ namespace Gaze
         Entity entity = scene->GetEntityByUUID(entityID);
         GZ_CORE_ASSERT(entity);
 
-        auto&   rb2d = entity.GetComponent<Rigidbody2DComponent>();
+        auto&   rb2d = entity.GetComponent<RigidBody2DComponent>();
         b2Body* body = (b2Body*)rb2d.RuntimeBody;
         body->ApplyLinearImpulse(b2Vec2(impulse->x, impulse->y), b2Vec2(point->x, point->y), wake);
     }
@@ -118,7 +118,7 @@ namespace Gaze
         Entity entity = scene->GetEntityByUUID(entityID);
         GZ_CORE_ASSERT(entity);
 
-        auto&   rb2d = entity.GetComponent<Rigidbody2DComponent>();
+        auto&   rb2d = entity.GetComponent<RigidBody2DComponent>();
         b2Body* body = (b2Body*)rb2d.RuntimeBody;
         body->ApplyLinearImpulseToCenter(b2Vec2(impulse->x, impulse->y), wake);
     }
@@ -130,32 +130,32 @@ namespace Gaze
         Entity entity = scene->GetEntityByUUID(entityID);
         GZ_CORE_ASSERT(entity);
 
-        auto&         rb2d           = entity.GetComponent<Rigidbody2DComponent>();
+        auto&         rb2d           = entity.GetComponent<RigidBody2DComponent>();
         b2Body*       body           = (b2Body*)rb2d.RuntimeBody;
         const b2Vec2& linearVelocity = body->GetLinearVelocity();
         *outLinearVelocity           = glm::vec2(linearVelocity.x, linearVelocity.y);
     }
 
-    static Rigidbody2DComponent::BodyType Rigidbody2DComponent_GetType(UUID entityID)
+    static RigidBody2DComponent::BodyType Rigidbody2DComponent_GetType(UUID entityID)
     {
         Scene* scene = ScriptEngine::GetSceneContext();
         GZ_CORE_ASSERT(scene);
         Entity entity = scene->GetEntityByUUID(entityID);
         GZ_CORE_ASSERT(entity);
 
-        auto&   rb2d = entity.GetComponent<Rigidbody2DComponent>();
+        auto&   rb2d = entity.GetComponent<RigidBody2DComponent>();
         b2Body* body = (b2Body*)rb2d.RuntimeBody;
         return Utils::Rigidbody2DTypeFromBox2DBody(body->GetType());
     }
 
-    static void Rigidbody2DComponent_SetType(UUID entityID, Rigidbody2DComponent::BodyType bodyType)
+    static void Rigidbody2DComponent_SetType(UUID entityID, RigidBody2DComponent::BodyType bodyType)
     {
         Scene* scene = ScriptEngine::GetSceneContext();
         GZ_CORE_ASSERT(scene);
         Entity entity = scene->GetEntityByUUID(entityID);
         GZ_CORE_ASSERT(entity);
 
-        auto&   rb2d = entity.GetComponent<Rigidbody2DComponent>();
+        auto&   rb2d = entity.GetComponent<RigidBody2DComponent>();
         b2Body* body = (b2Body*)rb2d.RuntimeBody;
         body->SetType(Utils::Rigidbody2DTypeToBox2DBody(bodyType));
     }

@@ -113,7 +113,7 @@ namespace Gaze
 
     // Physics
 
-    struct Rigidbody2DComponent
+    struct RigidBody2DComponent
     {
         enum class BodyType
         {
@@ -123,12 +123,17 @@ namespace Gaze
         };
         BodyType Type          = BodyType::Static;
         bool     FixedRotation = false;
+        float    Mass          = 1.0f;
+        float    LinearDrag    = 0.01f;
+        float    AngularDrag   = 0.05f;
+        float    GravityScale  = 1.0f;
+        bool     IsBullet      = false;
 
         // Storage for runtime
         void* RuntimeBody = nullptr;
 
-        Rigidbody2DComponent()                            = default;
-        Rigidbody2DComponent(const Rigidbody2DComponent&) = default;
+        RigidBody2DComponent()                            = default;
+        RigidBody2DComponent(const RigidBody2DComponent&) = default;
     };
 
     struct BoxCollider2DComponent
@@ -136,7 +141,6 @@ namespace Gaze
         glm::vec2 Offset = {0.0f, 0.0f};
         glm::vec2 Size   = {0.5f, 0.5f};
 
-        // TODO: move into physics material in the future maybe
         float Density              = 1.0f;
         float Friction             = 0.5f;
         float Restitution          = 0.0f;
@@ -154,7 +158,6 @@ namespace Gaze
         glm::vec2 Offset = {0.0f, 0.0f};
         float     Radius = 0.5f;
 
-        // TODO: move into physics material in the future maybe
         float Density              = 1.0f;
         float Friction             = 0.5f;
         float Restitution          = 0.0f;
@@ -186,7 +189,7 @@ namespace Gaze
                                          CameraComponent,
                                          ScriptComponent,
                                          NativeScriptComponent,
-                                         Rigidbody2DComponent,
+                                         RigidBody2DComponent,
                                          BoxCollider2DComponent,
                                          CircleCollider2DComponent,
                                          TextComponent>;
