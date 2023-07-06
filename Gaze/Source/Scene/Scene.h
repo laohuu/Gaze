@@ -47,6 +47,9 @@ namespace Gaze
 
         Entity GetPrimaryCameraEntity();
 
+        const std::string& GetName() const { return m_Name; }
+        void               SetName(const std::string& name) { m_Name = name; }
+
         bool IsRunning() const { return m_IsRunning; }
         bool IsPaused() const { return m_IsPaused; }
 

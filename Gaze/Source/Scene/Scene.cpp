@@ -44,7 +44,7 @@ namespace Gaze
         Box2DWorldComponent& b2dWorld =
             m_Registry.emplace<Box2DWorldComponent>(m_SceneEntity, std::make_unique<b2World>(b2Vec2 {0.0f, -9.8f}));
 
-        //        m_Registry.emplace<PhysXSceneComponent>(m_SceneEntity);
+        //                m_Registry.emplace<PhysXSceneComponent>(m_SceneEntity);
 
         Init();
     }
@@ -162,8 +162,21 @@ namespace Gaze
 
     void Scene::DestroyEntity(Entity entity)
     {
+        if (!entity)
+            return;
+
         m_EntityMap.erase(entity.GetUUID());
         m_Registry.destroy(entity);
+
+        if (m_IsRunning)
+        {
+            if (entity.HasComponent<RigidBody2DComponent>())
+            {
+                auto&   world = m_Registry.get<Box2DWorldComponent>(m_SceneEntity).World;
+                b2Body* body  = (b2Body*)entity.GetComponent<RigidBody2DComponent>().RuntimeBody;
+                world->DestroyBody(body);
+            }
+        }
     }
 
     void Scene::OnRuntimeStart()
@@ -236,18 +249,23 @@ namespace Gaze
             // Retrieve transform from Box2D
             {
                 auto view = m_Registry.view<RigidBody2DComponent>();
-                for (auto e : view)
+                for (auto entity : view)
                 {
-                    Entity entity    = {e, this};
-                    auto&  transform = entity.GetComponent<TransformComponent>();
-                    auto&  rb2d      = entity.GetComponent<RigidBody2DComponent>();
+                    Entity e    = {entity, this};
+                    auto&  rb2d = e.GetComponent<RigidBody2DComponent>();
 
-                    b2Body* body = (b2Body*)rb2d.RuntimeBody;
+                    if (rb2d.RuntimeBody == nullptr)
+                        continue;
 
-                    const auto& position    = body->GetPosition();
+                    b2Body* body = static_cast<b2Body*>(rb2d.RuntimeBody);
+
+                    auto& position          = body->GetPosition();
+                    auto& transform         = e.GetComponent<TransformComponent>();
                     transform.Translation.x = position.x;
                     transform.Translation.y = position.y;
-                    transform.Rotation.z    = body->GetAngle();
+                    glm::vec3 rotation      = transform.GetRotationEuler();
+                    rotation.z              = body->GetAngle();
+                    transform.SetRotationEuler(rotation);
                 }
             }
         }
@@ -314,19 +332,24 @@ namespace Gaze
                 box2DWorld->Step(ts, velocityIterations, positionIterations);
             }
             {
-                // Retrieve transform from Box2D
                 auto view = m_Registry.view<RigidBody2DComponent>();
-                for (auto e : view)
+                for (auto entity : view)
                 {
-                    Entity entity    = {e, this};
-                    auto&  transform = entity.GetComponent<TransformComponent>();
-                    auto&  rb2d      = entity.GetComponent<RigidBody2DComponent>();
+                    Entity e    = {entity, this};
+                    auto&  rb2d = e.GetComponent<RigidBody2DComponent>();
 
-                    b2Body*     body        = (b2Body*)rb2d.RuntimeBody;
-                    const auto& position    = body->GetPosition();
+                    if (rb2d.RuntimeBody == nullptr)
+                        continue;
+
+                    b2Body* body = static_cast<b2Body*>(rb2d.RuntimeBody);
+
+                    auto& position          = body->GetPosition();
+                    auto& transform         = e.GetComponent<TransformComponent>();
                     transform.Translation.x = position.x;
                     transform.Translation.y = position.y;
-                    transform.Rotation.z    = body->GetAngle();
+                    glm::vec3 rotation      = transform.GetRotationEuler();
+                    rotation.z              = body->GetAngle();
+                    transform.SetRotationEuler(rotation);
                 }
             }
         }
@@ -374,51 +397,60 @@ namespace Gaze
         for (auto e : view)
         {
             Entity entity    = {e, this};
+            UUID   entityID  = entity.GetComponent<IDComponent>().ID;
             auto&  transform = entity.GetComponent<TransformComponent>();
             auto&  rb2d      = entity.GetComponent<RigidBody2DComponent>();
 
             b2BodyDef bodyDef;
             bodyDef.type = Utils::Rigidbody2DTypeToBox2DBody(rb2d.Type);
             bodyDef.position.Set(transform.Translation.x, transform.Translation.y);
-            bodyDef.angle = transform.Rotation.z;
+            bodyDef.angle = transform.GetRotationEuler().z;
 
             b2Body* body = world->CreateBody(&bodyDef);
             body->SetFixedRotation(rb2d.FixedRotation);
-            rb2d.RuntimeBody = body;
+            b2MassData massData = body->GetMassData();
+            massData.mass       = rb2d.Mass;
+            body->SetMassData(&massData);
+            body->SetGravityScale(rb2d.GravityScale);
+            body->SetLinearDamping(rb2d.LinearDrag);
+            body->SetAngularDamping(rb2d.AngularDrag);
+            body->SetBullet(rb2d.IsBullet);
+            body->GetUserData().pointer = (uintptr_t)entityID;
+            rb2d.RuntimeBody            = body;
 
             if (entity.HasComponent<BoxCollider2DComponent>())
             {
-                auto& bc2d = entity.GetComponent<BoxCollider2DComponent>();
+                auto& boxCollider2D = entity.GetComponent<BoxCollider2DComponent>();
 
                 b2PolygonShape boxShape;
-                boxShape.SetAsBox(bc2d.Size.x * transform.Scale.x,
-                                  bc2d.Size.y * transform.Scale.y,
-                                  b2Vec2(bc2d.Offset.x, bc2d.Offset.y),
+                boxShape.SetAsBox(boxCollider2D.Size.x * transform.Scale.x,
+                                  boxCollider2D.Size.y * transform.Scale.y,
+                                  b2Vec2(boxCollider2D.Offset.x, boxCollider2D.Offset.y),
                                   0.0f);
 
                 b2FixtureDef fixtureDef;
                 fixtureDef.shape                = &boxShape;
-                fixtureDef.density              = bc2d.Density;
-                fixtureDef.friction             = bc2d.Friction;
-                fixtureDef.restitution          = bc2d.Restitution;
-                fixtureDef.restitutionThreshold = bc2d.RestitutionThreshold;
+                fixtureDef.density              = boxCollider2D.Density;
+                fixtureDef.friction             = boxCollider2D.Friction;
+                fixtureDef.restitution          = boxCollider2D.Restitution;
+                fixtureDef.restitutionThreshold = boxCollider2D.RestitutionThreshold;
                 body->CreateFixture(&fixtureDef);
             }
 
             if (entity.HasComponent<CircleCollider2DComponent>())
             {
-                auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
+                auto& circleCollider2D = entity.GetComponent<CircleCollider2DComponent>();
 
                 b2CircleShape circleShape;
-                circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
-                circleShape.m_radius = transform.Scale.x * cc2d.Radius;
+                circleShape.m_p.Set(circleCollider2D.Offset.x, circleCollider2D.Offset.y);
+                circleShape.m_radius = transform.Scale.x * circleCollider2D.Radius;
 
                 b2FixtureDef fixtureDef;
                 fixtureDef.shape                = &circleShape;
-                fixtureDef.density              = cc2d.Density;
-                fixtureDef.friction             = cc2d.Friction;
-                fixtureDef.restitution          = cc2d.Restitution;
-                fixtureDef.restitutionThreshold = cc2d.RestitutionThreshold;
+                fixtureDef.density              = circleCollider2D.Density;
+                fixtureDef.friction             = circleCollider2D.Friction;
+                fixtureDef.restitution          = circleCollider2D.Restitution;
+                fixtureDef.restitutionThreshold = circleCollider2D.RestitutionThreshold;
                 body->CreateFixture(&fixtureDef);
             }
         }

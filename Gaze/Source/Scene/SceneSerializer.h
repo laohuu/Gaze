@@ -3,24 +3,36 @@
 
 #include "Scene.h"
 
-namespace Gaze {
+namespace YAML
+{
+    class Emitter;
+    class Node;
+} // namespace YAML
 
-    class SceneSerializer {
+namespace Gaze
+{
+
+    class SceneSerializer
+    {
     public:
-        SceneSerializer(const Gaze::Ref<Scene> &scene);
+        SceneSerializer(const Ref<Scene>& scene);
 
-        void Serialize(const std::string &filepath); //yaml
+        void Serialize(const std::filesystem::path& filepath);
+        void SerializeToYAML(YAML::Emitter& out);
+        void SerializeRuntime(const std::filesystem::path& filepath);
 
-        void SerializeRuntime(const std::string &filepath); //Binary
+        bool Deserialize(const std::filesystem::path& filepath);
+        bool DeserializeFromYAML(const std::string& yamlString);
+        bool DeserializeRuntime(const std::filesystem::path& filepath);
 
-        bool Deserialize(const std::string &filepath);
-
-        bool DeserializeRuntime(const std::string &filepath);
+    public:
+        static void SerializeEntity(YAML::Emitter& out, Entity entity);
+        static void DeserializeEntities(YAML::Node& entitiesNode, Ref<Scene> scene);
 
     private:
         Gaze::Ref<Scene> m_Scene;
     };
 
-} // Gaze
+} // namespace Gaze
 
-#endif //GAZE_ENGINE_SCENESERIALIZER_H
+#endif // GAZE_ENGINE_SCENESERIALIZER_H

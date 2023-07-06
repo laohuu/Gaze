@@ -2,6 +2,7 @@
 #define GAZE_ENGINE_COMPONENTS_H
 
 #include "Core/UUID.h"
+#include "Math/Math.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Font.h"
 #include "Renderer/Texture.h"
@@ -36,19 +37,49 @@ namespace Gaze
     struct TransformComponent
     {
         glm::vec3 Translation = {0.0f, 0.0f, 0.0f};
-        glm::vec3 Rotation    = {0.0f, 0.0f, 0.0f};
         glm::vec3 Scale       = {1.0f, 1.0f, 1.0f};
 
+    private:
+        // These are private so that you are forced to set them via
+        // SetRotation() or SetRotationEuler()
+        // This avoids situation where one of them gets set and the other is forgotten.
+        glm::vec3 RotationEuler = {0.0f, 0.0f, 0.0f};
+        glm::quat Rotation      = {1.0f, 0.0f, 0.0f, 0.0f};
+
+    public:
         TransformComponent()                          = default;
         TransformComponent(const TransformComponent&) = default;
         TransformComponent(const glm::vec3& translation) : Translation(translation) {}
 
         glm::mat4 GetTransform() const
         {
-            glm::mat4 rotation = glm::toMat4(glm::quat(Rotation));
-
-            return glm::translate(glm::mat4(1.0f), Translation) * rotation * glm::scale(glm::mat4(1.0f), Scale);
+            return glm::translate(glm::mat4(1.0f), Translation) * glm::toMat4(Rotation) *
+                   glm::scale(glm::mat4(1.0f), Scale);
         }
+
+        void SetTransform(const glm::mat4& transform)
+        {
+            Math::DecomposeTransform(transform, Translation, Rotation, Scale);
+            RotationEuler = glm::eulerAngles(Rotation);
+        }
+
+        glm::vec3 GetRotationEuler() const { return RotationEuler; }
+
+        void SetRotationEuler(const glm::vec3& euler)
+        {
+            RotationEuler = euler;
+            Rotation      = glm::quat(RotationEuler);
+        }
+
+        glm::quat GetRotation() const { return Rotation; }
+
+        void SetRotation(const glm::quat& quat)
+        {
+            Rotation      = quat;
+            RotationEuler = glm::eulerAngles(Rotation);
+        }
+
+        friend class SceneSerializer;
     };
 
     struct SpriteRendererComponent

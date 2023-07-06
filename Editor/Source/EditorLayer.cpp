@@ -15,7 +15,6 @@
 
 namespace Gaze
 {
-
     static Ref<Font> s_Font;
 
     EditorLayer::EditorLayer() :
@@ -328,14 +327,47 @@ namespace Gaze
 
             if (ImGuizmo::IsUsing())
             {
-                glm::vec3 translation, rotation, scale;
+                glm::vec3 translation;
+                glm::quat rotation;
+                glm::vec3 scale;
                 Math::DecomposeTransform(transform, translation, rotation, scale);
 
-                glm::vec3 deltaRotation = rotation - tc.Rotation;
-                tc.Translation          = glm::vec3(transform[3]);
-                tc.Translation          = translation;
-                tc.Rotation += deltaRotation;
-                tc.Scale = scale;
+                switch (m_GizmoType)
+                {
+                    case ImGuizmo::TRANSLATE: {
+                        tc.Translation = translation;
+                        break;
+                    }
+                    case ImGuizmo::ROTATE: {
+                        // Do this in Euler in an attempt to preserve any full revolutions (> 360)
+                        glm::vec3 originalRotationEuler = tc.GetRotationEuler();
+
+                        // Map original rotation to range [-180, 180] which is what ImGuizmo gives us
+                        originalRotationEuler.x =
+                            fmodf(originalRotationEuler.x + glm::pi<float>(), glm::two_pi<float>()) - glm::pi<float>();
+                        originalRotationEuler.y =
+                            fmodf(originalRotationEuler.y + glm::pi<float>(), glm::two_pi<float>()) - glm::pi<float>();
+                        originalRotationEuler.z =
+                            fmodf(originalRotationEuler.z + glm::pi<float>(), glm::two_pi<float>()) - glm::pi<float>();
+
+                        glm::vec3 deltaRotationEuler = glm::eulerAngles(rotation) - originalRotationEuler;
+
+                        // Try to avoid drift due numeric precision
+                        if (fabs(deltaRotationEuler.x) < 0.001)
+                            deltaRotationEuler.x = 0.0f;
+                        if (fabs(deltaRotationEuler.y) < 0.001)
+                            deltaRotationEuler.y = 0.0f;
+                        if (fabs(deltaRotationEuler.z) < 0.001)
+                            deltaRotationEuler.z = 0.0f;
+
+                        tc.SetRotationEuler(tc.GetRotationEuler() += deltaRotationEuler);
+                        break;
+                    }
+                    case ImGuizmo::SCALE: {
+                        tc.Scale = scale;
+                        break;
+                    }
+                }
             }
         }
 
@@ -582,10 +614,10 @@ namespace Gaze
                 {
                     auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
 
-                    glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f);
-
+                    glm::vec3 scale     = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f);
+                    glm::vec3 rotation  = tc.GetRotationEuler();
                     glm::mat4 transform = glm::translate(glm::mat4(1.0f), tc.Translation) *
-                                          glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f)) *
+                                          glm::rotate(glm::mat4(1.0f), rotation.z, glm::vec3(0.0f, 0.0f, 1.0f)) *
                                           glm::translate(glm::mat4(1.0f), glm::vec3(bc2d.Offset, 0.001f)) *
                                           glm::scale(glm::mat4(1.0f), scale);
 
@@ -676,7 +708,7 @@ namespace Gaze
 
         Ref<Scene>      newScene = CreateRef<Scene>();
         SceneSerializer serializer(newScene);
-        if (serializer.Deserialize(path.string()))
+        if (serializer.Deserialize(path))
         {
             m_EditorScene = newScene;
             m_SceneHierarchyPanel.SetContext(m_EditorScene);
@@ -766,7 +798,6 @@ namespace Gaze
     void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path& path)
     {
         SceneSerializer serializer(scene);
-        serializer.Serialize(path.string());
+        serializer.Serialize(path);
     }
-
 } // namespace Gaze
