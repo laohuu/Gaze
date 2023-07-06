@@ -438,6 +438,7 @@ namespace Gaze
         mono_runtime_object_init(instance);
         return instance;
     }
+    bool ScriptEngine::IsEntityModuleValid(Entity entity) { return entity.HasComponent<ScriptComponent>(); }
 
     ScriptClass::ScriptClass(const std::string& classNamespace, const std::string& className, bool isCore) :
         m_ClassNamespace(classNamespace), m_ClassName(className)

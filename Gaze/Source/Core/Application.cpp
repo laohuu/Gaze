@@ -3,7 +3,7 @@
 #include "Application.h"
 
 #include "Core/Log.h"
-#include "Physics/3D/PhysXManager.h"
+#include "Physics/3D/PhysicsScene.h"
 #include "Renderer/Renderer.h"
 #include "Scripting/ScriptEngine.h"
 #include "Utils/PlatformUtils.h"
@@ -12,7 +12,6 @@
 
 namespace Gaze
 {
-
     Application* Application::s_Instance = nullptr;
 
     Application::Application(const ApplicationSpecification& specification) : m_Specification(specification)
@@ -29,8 +28,8 @@ namespace Gaze
         m_Window = Window::Create(WindowProps(m_Specification.Name));
         m_Window->SetEventCallback(GZ_BIND_EVENT_FN(Application::OnEvent));
 
+        PhysicsScene::Init();
         Renderer::Init();
-        PhysXManager::Init();
 
         m_ImGuiLayer = new ImGuiLayer();
         PushOverlay(m_ImGuiLayer);
@@ -40,7 +39,7 @@ namespace Gaze
     {
         GZ_PROFILE_FUNCTION();
 
-        PhysXManager::Shutdown();
+        PhysicsScene::Shutdown();
         Renderer::Shutdown();
         ScriptEngine::Shutdown();
     }
@@ -153,5 +152,4 @@ namespace Gaze
 
         m_MainThreadQueue.clear();
     }
-
 } // namespace Gaze

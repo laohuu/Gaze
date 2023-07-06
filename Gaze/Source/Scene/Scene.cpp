@@ -4,7 +4,7 @@
 #include "Components.h"
 #include "Entity.h"
 #include "Physics/2D/Physics2D.h"
-#include "Physics/3D/PhysXManager.h"
+#include "Physics/3D/PhysicsScene.h"
 #include "Renderer/Renderer2D.h"
 #include "ScriptableEntity.h"
 #include "Scripting/ScriptEngine.h"
@@ -25,6 +25,53 @@ namespace Gaze
         UUID SceneID;
     };
 
+    class PhysXContactListener : public physx::PxSimulationEventCallback
+    {
+    public:
+        virtual void onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count) override
+        {
+            PX_UNUSED(constraints);
+            PX_UNUSED(count);
+        }
+
+        virtual void onWake(physx::PxActor** actors, physx::PxU32 count) override
+        {
+            PX_UNUSED(actors);
+            PX_UNUSED(count);
+        }
+
+        virtual void onSleep(physx::PxActor** actors, physx::PxU32 count) override
+        {
+            PX_UNUSED(actors);
+            PX_UNUSED(count);
+        }
+
+        virtual void onContact(const physx::PxContactPairHeader& pairHeader,
+                               const physx::PxContactPair*       pairs,
+                               physx::PxU32                      nbPairs) override
+        {
+            Entity& a = *(Entity*)pairHeader.actors[0]->userData;
+            Entity& b = *(Entity*)pairHeader.actors[1]->userData;
+        }
+
+        virtual void onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count) override
+        {
+            PX_UNUSED(pairs);
+            PX_UNUSED(count);
+        }
+
+        virtual void onAdvance(const physx::PxRigidBody* const* bodyBuffer,
+                               const physx::PxTransform*        poseBuffer,
+                               const physx::PxU32               count) override
+        {
+            PX_UNUSED(bodyBuffer);
+            PX_UNUSED(poseBuffer);
+            PX_UNUSED(count);
+        }
+    };
+
+    static PhysXContactListener s_PhysXContactListener;
+
     struct PhysXSceneComponent
     {
         // NOTE: PhysX does some internal ref counting, and thus doesn't allow unique_ptr
@@ -44,7 +91,11 @@ namespace Gaze
         Box2DWorldComponent& b2dWorld =
             m_Registry.emplace<Box2DWorldComponent>(m_SceneEntity, std::make_unique<b2World>(b2Vec2 {0.0f, -9.8f}));
 
-        //                m_Registry.emplace<PhysXSceneComponent>(m_SceneEntity);
+        physx::PxSceneDesc sceneDesc      = PhysicsScene::CreateSceneDesc();
+        sceneDesc.gravity                 = physx::PxVec3(0.0F, -9.8F, 0.0F);
+        sceneDesc.simulationEventCallback = &s_PhysXContactListener;
+        PhysXSceneComponent& physxWorld =
+            m_Registry.emplace<PhysXSceneComponent>(m_SceneEntity, PhysicsScene::CreateScene(sceneDesc));
 
         Init();
     }
@@ -268,6 +319,46 @@ namespace Gaze
                     transform.SetRotationEuler(rotation);
                 }
             }
+
+            // PhysX Physics
+            auto            physxView  = m_Registry.view<PhysXSceneComponent>();
+            physx::PxScene* physxScene = m_Registry.get<PhysXSceneComponent>(physxView.front()).World;
+            constexpr float stepSize   = 0.016666660f;
+            physxScene->simulate(stepSize);
+            physxScene->fetchResults(true);
+
+            {
+                auto view = m_Registry.view<RigidBodyComponent>();
+                for (auto entity : view)
+                {
+                    Entity               e                   = {entity, this};
+                    RigidBodyComponent&  rb                  = e.GetComponent<RigidBodyComponent>();
+                    physx::PxRigidActor* actor               = static_cast<physx::PxRigidActor*>(rb.RuntimeActor);
+                    physx::PxVec3        position            = actor->getGlobalPose().p;
+                    physx::PxQuat        physicsBodyRotation = actor->getGlobalPose().q;
+                    auto&                transform           = e.GetComponent<TransformComponent>();
+                    if (rb.BodyType == RigidBodyComponent::Type::Dynamic)
+                    {
+                        // If the rigidbody is dynamic, the position of the entity is determined by the rigidbody
+                        // TODO: Get rotation from RigidActor
+                        float         xAngle, yAngle, zAngle;
+                        physx::PxVec3 axis;
+                        physicsBodyRotation.toRadiansAndUnitAxis(xAngle, axis);
+                        physicsBodyRotation.toRadiansAndUnitAxis(yAngle, axis);
+                        physicsBodyRotation.toRadiansAndUnitAxis(zAngle, axis);
+
+                        transform.Translation.x = position.x;
+                        transform.Translation.y = position.y;
+                        transform.Translation.z = position.z;
+                        transform.SetRotation(glm::quat({xAngle, yAngle, zAngle}));
+                    }
+                    else if (rb.BodyType == RigidBodyComponent::Type::Static)
+                    {
+                        // If the rigidbody is static, make sure the actor is at the entitys position
+                        actor->setGlobalPose(PhysicsScene::CreatePose(transform.GetTransform()));
+                    }
+                }
+            }
         }
 
         // Render 2D
@@ -352,6 +443,46 @@ namespace Gaze
                     transform.SetRotationEuler(rotation);
                 }
             }
+
+            // PhysX Physics
+            auto            physxView  = m_Registry.view<PhysXSceneComponent>();
+            physx::PxScene* physxScene = m_Registry.get<PhysXSceneComponent>(physxView.front()).World;
+            constexpr float stepSize   = 0.016666660f;
+            physxScene->simulate(stepSize);
+            physxScene->fetchResults(true);
+
+            {
+                auto view = m_Registry.view<RigidBodyComponent>();
+                for (auto entity : view)
+                {
+                    Entity               e                   = {entity, this};
+                    RigidBodyComponent&  rb                  = e.GetComponent<RigidBodyComponent>();
+                    physx::PxRigidActor* actor               = static_cast<physx::PxRigidActor*>(rb.RuntimeActor);
+                    physx::PxVec3        position            = actor->getGlobalPose().p;
+                    physx::PxQuat        physicsBodyRotation = actor->getGlobalPose().q;
+                    auto&                transform           = e.GetComponent<TransformComponent>();
+                    if (rb.BodyType == RigidBodyComponent::Type::Dynamic)
+                    {
+                        // If the rigidbody is dynamic, the position of the entity is determined by the rigidbody
+                        // TODO: Get rotation from RigidActor
+                        float         xAngle, yAngle, zAngle;
+                        physx::PxVec3 axis;
+                        physicsBodyRotation.toRadiansAndUnitAxis(xAngle, axis);
+                        physicsBodyRotation.toRadiansAndUnitAxis(yAngle, axis);
+                        physicsBodyRotation.toRadiansAndUnitAxis(zAngle, axis);
+
+                        transform.Translation.x = position.x;
+                        transform.Translation.y = position.y;
+                        transform.Translation.z = position.z;
+                        transform.SetRotation(glm::quat({xAngle, yAngle, zAngle}));
+                    }
+                    else if (rb.BodyType == RigidBodyComponent::Type::Static)
+                    {
+                        // If the rigidbody is static, make sure the actor is at the entitys position
+                        actor->setGlobalPose(PhysicsScene::CreatePose(transform.GetTransform()));
+                    }
+                }
+            }
         }
 
         // Render
@@ -415,7 +546,7 @@ namespace Gaze
             body->SetLinearDamping(rb2d.LinearDrag);
             body->SetAngularDamping(rb2d.AngularDrag);
             body->SetBullet(rb2d.IsBullet);
-            body->GetUserData().pointer = (uintptr_t)entityID;
+            body->GetUserData().pointer = (uintptr_t) new UUID(entityID);
             rb2d.RuntimeBody            = body;
 
             if (entity.HasComponent<BoxCollider2DComponent>())
@@ -454,9 +585,83 @@ namespace Gaze
                 body->CreateFixture(&fixtureDef);
             }
         }
+
+        // PhysX physics
+        auto            physxView  = m_Registry.view<PhysXSceneComponent>();
+        physx::PxScene* physxWorld = m_Registry.get<PhysXSceneComponent>(physxView.front()).World;
+
+        auto rigidBodyComponentView = m_Registry.view<RigidBodyComponent>();
+        for (auto e : rigidBodyComponentView)
+        {
+            Entity entity             = {e, this};
+            UUID   entityID           = entity.GetComponent<IDComponent>().ID;
+            auto&  transform          = entity.GetComponent<TransformComponent>();
+            auto&  rigidBodyComponent = entity.GetComponent<RigidBodyComponent>();
+
+            physx::PxRigidActor* actor =
+                PhysicsScene::CreateAndAddActor(physxWorld, rigidBodyComponent, transform.GetTransform());
+            GZ_CORE_ASSERT(actor);
+            actor->userData                 = (void*)new UUID(entityID);
+            rigidBodyComponent.RuntimeActor = actor;
+
+            // Setup Collision Filters
+            if (rigidBodyComponent.BodyType == RigidBodyComponent::Type::Static)
+                PhysicsScene::SetCollisionFilters(actor, (uint32_t)FilterGroup::Static, (uint32_t)FilterGroup::All);
+            else if (rigidBodyComponent.BodyType == RigidBodyComponent::Type::Dynamic)
+                PhysicsScene::SetCollisionFilters(actor, (uint32_t)FilterGroup::Dynamic, (uint32_t)FilterGroup::All);
+
+            if (entity.HasComponent<BoxColliderComponent>())
+            {
+                auto&                boxCollider     = entity.GetComponent<BoxColliderComponent>();
+                auto&                physicsMaterial = entity.GetComponent<PhysicsMaterialComponent>();
+                physx::PxBoxGeometry boxGeometry =
+                    physx::PxBoxGeometry(boxCollider.HalfSize.x, boxCollider.HalfSize.y, boxCollider.HalfSize.z);
+                physx::PxMaterial* material = PhysicsScene::CreateMaterial(
+                    physicsMaterial.StaticFriction, physicsMaterial.DynamicFriction, physicsMaterial.Bounciness);
+                physx::PxShape* shape = physx::PxRigidActorExt::createExclusiveShape(*actor, boxGeometry, *material);
+                shape->setLocalPose(PhysicsScene::CreatePose(glm::translate(glm::mat4(1.0F), boxCollider.Offset)));
+            }
+
+            if (entity.HasComponent<SphereColliderComponent>())
+            {
+                auto&                   sphereCollider  = entity.GetComponent<SphereColliderComponent>();
+                auto&                   physicsMaterial = entity.GetComponent<PhysicsMaterialComponent>();
+                physx::PxSphereGeometry sphereGeometry  = physx::PxSphereGeometry(sphereCollider.Radius);
+                physx::PxMaterial*      material        = PhysicsScene::CreateMaterial(
+                    physicsMaterial.StaticFriction, physicsMaterial.DynamicFriction, physicsMaterial.Bounciness);
+                physx::PxRigidActorExt::createExclusiveShape(*actor, sphereGeometry, *material);
+
+                physx::PxRigidDynamic* rigidBodyActor = actor->is<physx::PxRigidDynamic>();
+                if (rigidBodyActor)
+                {
+                    rigidBodyActor->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
+                    rigidBodyActor->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
+                    rigidBodyActor->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
+                }
+            }
+
+            if (entity.HasComponent<CapsuleColliderComponent>())
+            {
+                auto&                    capsuleCollider = entity.GetComponent<CapsuleColliderComponent>();
+                auto&                    physicsMaterial = entity.GetComponent<PhysicsMaterialComponent>();
+                physx::PxCapsuleGeometry capsuleGeometry =
+                    physx::PxCapsuleGeometry(capsuleCollider.Radius, capsuleCollider.Height / 2.0F);
+                physx::PxMaterial* material = PhysicsScene::CreateMaterial(
+                    physicsMaterial.StaticFriction, physicsMaterial.DynamicFriction, physicsMaterial.Bounciness);
+                physx::PxShape* shape =
+                    physx::PxRigidActorExt::createExclusiveShape(*actor, capsuleGeometry, *material);
+
+                // Make sure that the capsule is facing up (+Y)
+                shape->setLocalPose(physx::PxTransform(physx::PxQuat(physx::PxHalfPi, physx::PxVec3(0, 0, 1))));
+            }
+        }
     }
 
-    void Scene::OnPhysics2DStop() {}
+    void Scene::OnPhysics2DStop()
+    {
+        auto physxView = m_Registry.view<PhysXSceneComponent>();
+        m_Registry.get<PhysXSceneComponent>(m_SceneEntity).World->release();
+    }
 
     void Scene::RenderScene(EditorCamera& camera)
     {
@@ -549,6 +754,26 @@ namespace Gaze
 
     template<>
     void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component)
+    {}
+
+    template<>
+    void Scene::OnComponentAdded<RigidBodyComponent>(Entity entity, RigidBodyComponent& component)
+    {}
+
+    template<>
+    void Scene::OnComponentAdded<PhysicsMaterialComponent>(Entity entity, PhysicsMaterialComponent& component)
+    {}
+
+    template<>
+    void Scene::OnComponentAdded<BoxColliderComponent>(Entity entity, BoxColliderComponent& component)
+    {}
+
+    template<>
+    void Scene::OnComponentAdded<SphereColliderComponent>(Entity entity, SphereColliderComponent& component)
+    {}
+
+    template<>
+    void Scene::OnComponentAdded<CapsuleColliderComponent>(Entity entity, CapsuleColliderComponent& component)
     {}
 
     template<>

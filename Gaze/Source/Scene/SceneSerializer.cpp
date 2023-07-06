@@ -199,6 +199,77 @@ namespace Gaze
             out << YAML::EndMap; // CircleCollider2DComponent
         }
 
+        if (entity.HasComponent<RigidBodyComponent>())
+        {
+            out << YAML::Key << "RigidBodyComponent";
+            out << YAML::BeginMap; // RigidBodyComponent
+
+            auto& rigidBodyComponent = entity.GetComponent<RigidBodyComponent>();
+            out << YAML::Key << "BodyType" << YAML::Value << (int)rigidBodyComponent.BodyType;
+            out << YAML::Key << "Mass" << YAML::Value << rigidBodyComponent.Mass;
+            out << YAML::Key << "LinearDrag" << YAML::Value << rigidBodyComponent.LinearDrag;
+            out << YAML::Key << "AngularDrag" << YAML::Value << rigidBodyComponent.AngularDrag;
+            out << YAML::Key << "DisableGravity" << YAML::Value << rigidBodyComponent.DisableGravity;
+            out << YAML::Key << "IsKinematic" << YAML::Value << rigidBodyComponent.IsKinematic;
+            out << YAML::Key << "CollisionDetection" << YAML::Value << (uint32_t)rigidBodyComponent.CollisionDetection;
+            out << YAML::Key << "LockFlags" << YAML::Value << rigidBodyComponent.LockFlags;
+
+            out << YAML::EndMap; // RigidBodyComponent
+        }
+
+        if (entity.HasComponent<PhysicsMaterialComponent>())
+        {
+            out << YAML::Key << "PhysicsMaterialComponent";
+            out << YAML::BeginMap; // PhysicsMaterialComponent
+
+            auto& physicsMaterial = entity.GetComponent<PhysicsMaterialComponent>();
+            out << YAML::Key << "StaticFriction" << YAML::Value << physicsMaterial.StaticFriction;
+            out << YAML::Key << "DynamicFriction" << YAML::Value << physicsMaterial.DynamicFriction;
+            out << YAML::Key << "Bounciness" << YAML::Value << physicsMaterial.Bounciness;
+
+            out << YAML::EndMap;
+        }
+
+        if (entity.HasComponent<BoxColliderComponent>())
+        {
+            out << YAML::Key << "BoxColliderComponent";
+            out << YAML::BeginMap; // BoxColliderComponent
+
+            auto& boxColliderComponent = entity.GetComponent<BoxColliderComponent>();
+            out << YAML::Key << "Offset" << YAML::Value << boxColliderComponent.Offset;
+            out << YAML::Key << "HalfSize" << YAML::Value << boxColliderComponent.HalfSize;
+            out << YAML::Key << "IsTrigger" << YAML::Value << boxColliderComponent.IsTrigger;
+
+            out << YAML::EndMap; // BoxColliderComponent
+        }
+
+        if (entity.HasComponent<SphereColliderComponent>())
+        {
+            out << YAML::Key << "SphereColliderComponent";
+            out << YAML::BeginMap; // SphereColliderComponent
+
+            auto& sphereColliderComponent = entity.GetComponent<SphereColliderComponent>();
+            out << YAML::Key << "Radius" << YAML::Value << sphereColliderComponent.Radius;
+            out << YAML::Key << "IsTrigger" << YAML::Value << sphereColliderComponent.IsTrigger;
+            out << YAML::Key << "Offset" << YAML::Value << sphereColliderComponent.Offset;
+
+            out << YAML::EndMap; // SphereColliderComponent
+        }
+
+        if (entity.HasComponent<CapsuleColliderComponent>())
+        {
+            out << YAML::Key << "CapsuleColliderComponent";
+            out << YAML::BeginMap; // CapsuleColliderComponent
+
+            auto& capsuleColliderComponent = entity.GetComponent<CapsuleColliderComponent>();
+            out << YAML::Key << "Radius" << YAML::Value << capsuleColliderComponent.Radius;
+            out << YAML::Key << "Height" << YAML::Value << capsuleColliderComponent.Height;
+            out << YAML::Key << "Offset" << YAML::Value << capsuleColliderComponent.Offset;
+            out << YAML::Key << "IsTrigger" << YAML::Value << capsuleColliderComponent.IsTrigger;
+
+            out << YAML::EndMap; // CapsuleColliderComponent
+        }
+
         if (entity.HasComponent<TextComponent>())
         {
             out << YAML::Key << "TextComponent";
@@ -432,6 +503,91 @@ namespace Gaze
                 cc2d.Friction             = circleCollider2DComponent["Friction"].as<float>();
                 cc2d.Restitution          = circleCollider2DComponent["Restitution"].as<float>();
                 cc2d.RestitutionThreshold = circleCollider2DComponent["RestitutionThreshold"].as<float>();
+            }
+
+            auto rigidBodyComponent = entity["RigidBodyComponent"];
+            if (rigidBodyComponent)
+            {
+                auto& component          = deserializedEntity.AddComponent<RigidBodyComponent>();
+                component.BodyType       = (RigidBodyComponent::Type)rigidBodyComponent["BodyType"].as<int>(0);
+                component.Mass           = rigidBodyComponent["Mass"].as<float>(1.0f);
+                component.LinearDrag     = rigidBodyComponent["LinearDrag"].as<float>(0.0f);
+                component.AngularDrag    = rigidBodyComponent["AngularDrag"].as<float>(0.05f);
+                component.DisableGravity = rigidBodyComponent["DisableGravity"].as<bool>(false);
+                component.IsKinematic    = rigidBodyComponent["IsKinematic"].as<bool>(false);
+
+                component.CollisionDetection =
+                    (CollisionDetectionType)rigidBodyComponent["CollisionDetection"].as<uint32_t>(0);
+
+                auto lockFlagsNode = rigidBodyComponent["LockFlags"];
+                if (lockFlagsNode)
+                {
+                    component.LockFlags = lockFlagsNode.as<uint8_t>(0);
+                }
+                else
+                {
+                    component.LockFlags |= rigidBodyComponent["Constraints"]["LockPositionX"].as<bool>(false) ?
+                                               (uint8_t)ActorLockFlag::TranslationX :
+                                               0;
+                    component.LockFlags |= rigidBodyComponent["Constraints"]["LockPositionY"].as<bool>(false) ?
+                                               (uint8_t)ActorLockFlag::TranslationY :
+                                               0;
+                    component.LockFlags |= rigidBodyComponent["Constraints"]["LockPositionZ"].as<bool>(false) ?
+                                               (uint8_t)ActorLockFlag::TranslationZ :
+                                               0;
+                    component.LockFlags |= rigidBodyComponent["Constraints"]["LockRotationX"].as<bool>(false) ?
+                                               (uint8_t)ActorLockFlag::RotationX :
+                                               0;
+                    component.LockFlags |= rigidBodyComponent["Constraints"]["LockRotationY"].as<bool>(false) ?
+                                               (uint8_t)ActorLockFlag::RotationY :
+                                               0;
+                    component.LockFlags |= rigidBodyComponent["Constraints"]["LockRotationZ"].as<bool>(false) ?
+                                               (uint8_t)ActorLockFlag::RotationZ :
+                                               0;
+                }
+            }
+
+            auto physicsMaterialComponent = entity["PhysicsMaterialComponent"];
+            if (physicsMaterialComponent)
+            {
+                auto& component           = deserializedEntity.AddComponent<PhysicsMaterialComponent>();
+                component.StaticFriction  = physicsMaterialComponent["StaticFriction"].as<float>();
+                component.DynamicFriction = physicsMaterialComponent["DynamicFriction"].as<float>();
+                component.Bounciness      = physicsMaterialComponent["Bounciness"].as<float>();
+            }
+
+            auto boxColliderComponent = entity["BoxColliderComponent"];
+            if (boxColliderComponent)
+            {
+                auto& component  = deserializedEntity.AddComponent<BoxColliderComponent>();
+                component.Offset = boxColliderComponent["Offset"].as<glm::vec3>();
+                if (boxColliderComponent["Size"])
+                    component.HalfSize = boxColliderComponent["Size"].as<glm::vec3>() / 2.0f;
+                else
+                    component.HalfSize = boxColliderComponent["HalfSize"].as<glm::vec3>(glm::vec3(0.5f));
+                component.IsTrigger = boxColliderComponent["IsTrigger"] && boxColliderComponent["IsTrigger"].as<bool>();
+            }
+
+            auto sphereColliderComponent = entity["SphereColliderComponent"];
+            if (sphereColliderComponent)
+            {
+                auto& component  = deserializedEntity.AddComponent<SphereColliderComponent>();
+                component.Radius = sphereColliderComponent["Radius"].as<float>();
+                component.IsTrigger =
+                    sphereColliderComponent["IsTrigger"] && sphereColliderComponent["IsTrigger"].as<bool>();
+                component.Offset = sphereColliderComponent["Offset"].as<glm::vec3>(glm::vec3(0.0f));
+            }
+
+            auto capsuleColliderComponent = entity["CapsuleColliderComponent"];
+            if (capsuleColliderComponent)
+            {
+                auto& component  = deserializedEntity.AddComponent<CapsuleColliderComponent>();
+                component.Radius = capsuleColliderComponent["Radius"].as<float>();
+                component.Height = capsuleColliderComponent["Height"].as<float>();
+                component.Offset = capsuleColliderComponent["Offset"].as<glm::vec3>(glm::vec3 {0.0f, 0.0f, 0.0f});
+
+                component.IsTrigger =
+                    capsuleColliderComponent["IsTrigger"] && capsuleColliderComponent["IsTrigger"].as<bool>();
             }
 
             auto textComponent = entity["TextComponent"];

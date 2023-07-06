@@ -243,9 +243,14 @@ namespace Gaze
             DisplayAddComponentEntry<ScriptComponent>("Script");
             DisplayAddComponentEntry<SpriteRendererComponent>("Sprite Renderer");
             DisplayAddComponentEntry<CircleRendererComponent>("Circle Renderer");
-            DisplayAddComponentEntry<RigidBody2DComponent>("Rigidbody 2D");
+            DisplayAddComponentEntry<RigidBody2DComponent>("RigidBody 2D");
             DisplayAddComponentEntry<BoxCollider2DComponent>("Box Collider 2D");
             DisplayAddComponentEntry<CircleCollider2DComponent>("Circle Collider 2D");
+            DisplayAddComponentEntry<RigidBodyComponent>("RigidBody");
+            DisplayAddComponentEntry<PhysicsMaterialComponent>("Physics Material");
+            DisplayAddComponentEntry<BoxColliderComponent>("Box Collider");
+            DisplayAddComponentEntry<SphereColliderComponent>("Sphere Collider");
+            DisplayAddComponentEntry<CapsuleColliderComponent>("Capsule Collider");
             DisplayAddComponentEntry<TextComponent>("Text Component");
 
             ImGui::EndPopup();
@@ -426,7 +431,7 @@ namespace Gaze
             ImGui::DragFloat("Fade", &component.Fade, 0.00025f, 0.0f, 1.0f);
         });
 
-        DrawComponent<RigidBody2DComponent>("Rigidbody 2D", entity, [](auto& component) {
+        DrawComponent<RigidBody2DComponent>("RigidBody 2D", entity, [](auto& component) {
             const char* bodyTypeStrings[]     = {"Static", "Dynamic", "Kinematic"};
             const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type];
             if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
@@ -466,6 +471,54 @@ namespace Gaze
             ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
             ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
+        });
+
+        DrawComponent<RigidBodyComponent>("RigidBody", entity, [](auto& component) {
+            const char* bodyTypeStrings[]     = {"None", "Static", "Dynamic"};
+            const char* currentBodyTypeString = bodyTypeStrings[(int)component.BodyType];
+            if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    bool isSelected = currentBodyTypeString == bodyTypeStrings[i];
+                    if (ImGui::Selectable(bodyTypeStrings[i], isSelected))
+                    {
+                        currentBodyTypeString = bodyTypeStrings[i];
+                        component.BodyType    = (RigidBodyComponent::Type)i;
+                    }
+
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
+                }
+
+                ImGui::EndCombo();
+            }
+            ImGui::Checkbox("Is Kinematic", &component.IsKinematic);
+        });
+
+        DrawComponent<PhysicsMaterialComponent>("Physics Material", entity, [](auto& component) {
+            ImGui::DragFloat("StaticFriction", &component.StaticFriction, 0.01f, 0.0f);
+            ImGui::DragFloat("DynamicFriction", &component.DynamicFriction, 0.01f, 0.0f);
+            ImGui::DragFloat("Bounciness", &component.Bounciness, 0.01f, 0.0f);
+        });
+
+        DrawComponent<BoxColliderComponent>("Box Collider", entity, [](auto& component) {
+            ImGui::DragFloat3("HalfSize", glm::value_ptr(component.HalfSize));
+            ImGui::DragFloat3("Offset", glm::value_ptr(component.Offset));
+            ImGui::Checkbox("Is Trigger", &component.IsTrigger);
+        });
+
+        DrawComponent<SphereColliderComponent>("Sphere Collider", entity, [](auto& component) {
+            ImGui::DragFloat("Radius", &component.Radius, 0.01f, 0.0f);
+            ImGui::DragFloat3("Offset", glm::value_ptr(component.Offset));
+            ImGui::Checkbox("Is Trigger", &component.IsTrigger);
+        });
+
+        DrawComponent<CapsuleColliderComponent>("Capsule Collider", entity, [](auto& component) {
+            ImGui::DragFloat("Radius", &component.Radius, 0.01f, 0.0f);
+            ImGui::DragFloat("Height", &component.Height, 0.01f, 0.0f);
+            ImGui::DragFloat3("Offset", glm::value_ptr(component.Offset));
+            ImGui::Checkbox("Is Trigger", &component.IsTrigger);
         });
 
         DrawComponent<TextComponent>("Text Renderer", entity, [](auto& component) {

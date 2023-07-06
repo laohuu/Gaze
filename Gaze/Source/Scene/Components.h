@@ -3,6 +3,7 @@
 
 #include "Core/UUID.h"
 #include "Math/Math.h"
+#include "Physics/3D/PhysicsTypes.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Font.h"
 #include "Renderer/Texture.h"
@@ -210,6 +211,73 @@ namespace Gaze
         float       LineSpacing = 0.0f;
     };
 
+    struct RigidBodyComponent
+    {
+        enum class Type
+        {
+            None   = 0,
+            Static = 1,
+            Dynamic
+        };
+
+        Type     BodyType     = Type::Static;
+        void*    RuntimeActor = nullptr;
+
+        float                  Mass               = 1.0f;
+        float                  LinearDrag         = 0.01f;
+        float                  AngularDrag        = 0.05f;
+        bool                   DisableGravity     = false;
+        bool                   IsKinematic        = false;
+        CollisionDetectionType CollisionDetection = CollisionDetectionType::Discrete;
+
+        uint8_t LockFlags = 0;
+
+        RigidBodyComponent()                                = default;
+        RigidBodyComponent(const RigidBodyComponent& other) = default;
+    };
+
+    // TODO: This will eventually be a resource, but that requires object referencing through the editor
+    struct PhysicsMaterialComponent
+    {
+        float StaticFriction  = 1.0F;
+        float DynamicFriction = 1.0F;
+        float Bounciness      = 1.0F;
+
+        PhysicsMaterialComponent()                                      = default;
+        PhysicsMaterialComponent(const PhysicsMaterialComponent& other) = default;
+    };
+
+    struct BoxColliderComponent
+    {
+        glm::vec3 HalfSize  = {0.5f, 0.5f, 0.5f};
+        glm::vec3 Offset    = {0.0f, 0.0f, 0.0f};
+        bool      IsTrigger = false;
+
+        BoxColliderComponent()                                  = default;
+        BoxColliderComponent(const BoxColliderComponent& other) = default;
+    };
+
+    struct SphereColliderComponent
+    {
+        float     Radius    = 0.5f;
+        glm::vec3 Offset    = {0.0f, 0.0f, 0.0f};
+        bool      IsTrigger = false;
+
+        SphereColliderComponent()                                     = default;
+        SphereColliderComponent(const SphereColliderComponent& other) = default;
+    };
+
+    struct CapsuleColliderComponent
+    {
+        float     Radius    = 0.5f;
+        float     Height    = 1.0f;
+        glm::vec3 Offset    = {0.0f, 0.0f, 0.0f};
+        bool      IsTrigger = false;
+
+        CapsuleColliderComponent()                                      = default;
+        CapsuleColliderComponent(const CapsuleColliderComponent& other) = default;
+    };
+
     template<typename... Component>
     struct ComponentGroup
     {};
@@ -223,6 +291,11 @@ namespace Gaze
                                          RigidBody2DComponent,
                                          BoxCollider2DComponent,
                                          CircleCollider2DComponent,
+                                         RigidBodyComponent,
+                                         PhysicsMaterialComponent,
+                                         BoxColliderComponent,
+                                         SphereColliderComponent,
+                                         CapsuleColliderComponent,
                                          TextComponent>;
 
 } // namespace Gaze

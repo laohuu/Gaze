@@ -167,6 +167,8 @@ namespace Gaze
         static void OnCreateEntity(Entity entity);
         static void OnUpdateEntity(Entity entity, Timestep ts);
 
+        static bool IsEntityModuleValid(Entity entity);
+
         static Scene*                                            GetSceneContext();
         static Ref<ScriptClass>                                  GetEntityClass(const std::string& name);
         static std::unordered_map<std::string, Ref<ScriptClass>> GetEntityClasses();
