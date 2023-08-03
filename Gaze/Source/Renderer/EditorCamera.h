@@ -32,7 +32,7 @@ namespace Gaze {
 
         const glm::mat4 &GetViewMatrix() const { return m_ViewMatrix; }
 
-        glm::mat4 GetViewProjection() const { return m_Projection * m_ViewMatrix; }
+        glm::mat4 GetViewProjection() const { return m_ProjectionMatrix * m_ViewMatrix; }
 
         glm::vec3 GetUpDirection() const;
 

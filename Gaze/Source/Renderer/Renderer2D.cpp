@@ -230,7 +230,7 @@ namespace Gaze
     {
         GZ_PROFILE_FUNCTION();
 
-        s_Data.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
+        s_Data.CameraBuffer.ViewProjection = camera.GetProjectionMatrix() * glm::inverse(transform);
         s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
 
         StartBatch();

@@ -301,7 +301,7 @@ namespace Gaze
             //            glm::mat4 cameraView =
             //            glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
             // Editor camera
-            const glm::mat4& cameraProjection = m_EditorCamera.GetProjection();
+            const glm::mat4& cameraProjection = m_EditorCamera.GetProjectionMatrix();
             glm::mat4        cameraView       = m_EditorCamera.GetViewMatrix();
 
             // Entity transform

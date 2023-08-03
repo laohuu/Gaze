@@ -3,22 +3,26 @@
 
 #include <glm/glm.hpp>
 
-namespace Gaze {
+namespace Gaze
+{
 
-    class Camera {
+    class Camera
+    {
     public:
         Camera() = default;
-
-        Camera(const glm::mat4 &projection)
-                : m_Projection(projection) {}
-
+        Camera(const glm::mat4& projectionMatrix) : m_ProjectionMatrix(projectionMatrix) {}
         virtual ~Camera() = default;
 
-        const glm::mat4 &GetProjection() const { return m_Projection; }
+        const glm::mat4& GetProjectionMatrix() const { return m_ProjectionMatrix; }
+        void SetProjectionMatrix(const glm::mat4& projectionMatrix) { m_ProjectionMatrix = projectionMatrix; }
+
+        float  GetExposure() const { return m_Exposure; }
+        float& GetExposure() { return m_Exposure; }
 
     protected:
-        glm::mat4 m_Projection = glm::mat4(1.0f);
+        glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
+        float     m_Exposure         = 0.8f;
     };
 
-}
-#endif //GAZE_ENGINE_CAMERA_H
+} // namespace Gaze
+#endif // GAZE_ENGINE_CAMERA_H
