@@ -12,33 +12,81 @@ namespace Gaze
     {
     public:
         OpenGLTexture2D(const TextureSpecification& specification);
-        OpenGLTexture2D(const std::string& path);
+        OpenGLTexture2D(const std::string& path, bool srgb);
         virtual ~OpenGLTexture2D();
 
-        virtual const TextureSpecification& GetSpecification() const override { return m_Specification; }
+        const TextureSpecification& GetSpecification() const override { return m_Specification; }
 
-        virtual uint32_t GetWidth() const override { return m_Width; }
-        virtual uint32_t GetHeight() const override { return m_Height; }
-        virtual uint32_t GetRendererID() const override { return m_RendererID; }
+        uint32_t GetWidth() const override { return m_Specification.Width; }
+        uint32_t GetHeight() const override { return m_Specification.Height; }
+        // This function currently returns the expected number of mips based on image size,
+        // not present mips in data
+        uint32_t GetMipLevelCount() const override;
 
-        virtual const std::string& GetPath() const override { return m_Path; }
+        void Lock() override;
+        void Unlock() override;
 
-        virtual void SetData(void* data, uint32_t size) override;
+        void   Resize(uint32_t width, uint32_t height) override;
+        Buffer GetWriteableBuffer() override;
 
-        virtual void Bind(uint32_t slot = 0) const override;
+        RendererID GetRendererID() const override { return m_RendererID; }
 
-        virtual bool IsLoaded() const override { return m_IsLoaded; }
+        const std::string& GetPath() const override { return m_Path; }
 
-        virtual bool operator==(const Texture& other) const override { return m_RendererID == other.GetRendererID(); }
+        void Bind(uint32_t slot = 0) const override;
+
+        bool IsLoaded() const override { return m_IsLoaded; }
+
+        bool operator==(const Texture& other) const override { return m_RendererID == other.GetRendererID(); }
 
     private:
         TextureSpecification m_Specification;
 
         std::string m_Path;
-        bool        m_IsLoaded = false;
-        uint32_t    m_Width, m_Height;
-        uint32_t    m_RendererID;
-        GLenum      m_InternalFormat, m_DataFormat;
+
+        Buffer m_ImageData;
+
+        RendererID m_RendererID;
+        GLenum     m_InternalFormat, m_DataFormat;
+
+        bool m_IsHDR    = false;
+        bool m_Locked   = false;
+        bool m_IsLoaded = false;
+    };
+
+    class OpenGLTextureCube : public TextureCube
+    {
+    public:
+        OpenGLTextureCube(const TextureSpecification& specification);
+        OpenGLTextureCube(const std::string& path);
+        virtual ~OpenGLTextureCube();
+
+        const TextureSpecification& GetSpecification() const override { return m_Specification; }
+
+        virtual void Bind(uint32_t slot = 0) const;
+
+        uint32_t GetWidth() const override { return m_Specification.Width; }
+        uint32_t GetHeight() const override { return m_Specification.Height; }
+        // This function currently returns the expected number of mips based on image size,
+        // not present mips in data
+        uint32_t GetMipLevelCount() const override;
+
+        const std::string& GetPath() const override { return m_FilePath; }
+
+        RendererID GetRendererID() const override { return m_RendererID; }
+
+        bool operator==(const Texture& other) const override
+        {
+            return m_RendererID == ((OpenGLTextureCube&)other).m_RendererID;
+        }
+
+    private:
+        TextureSpecification m_Specification;
+
+        RendererID     m_RendererID;
+        unsigned char* m_ImageData;
+
+        std::string m_FilePath;
     };
 
 } // namespace Gaze

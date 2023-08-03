@@ -28,12 +28,11 @@ namespace Gaze
     {
         GZ_PROFILE_FUNCTION();
 
-        m_CheckerboardTexture = Gaze::Texture2D::Create("Assets/Textures/Checkerboard.png");
-        m_IconPlay            = Texture2D::Create("Resources/Icons/PlayButton.png");
-        m_IconSimulate        = Texture2D::Create("Resources/Icons/SimulateButton.png");
-        m_IconPause           = Texture2D::Create("Resources/Icons/PauseButton.png");
-        m_IconStop            = Texture2D::Create("Resources/Icons/StopButton.png");
-        m_IconStep            = Texture2D::Create("Resources/Icons/StepButton.png");
+        m_IconPlay     = Texture2D::Create("Resources/Icons/PlayButton.png");
+        m_IconSimulate = Texture2D::Create("Resources/Icons/SimulateButton.png");
+        m_IconPause    = Texture2D::Create("Resources/Icons/PauseButton.png");
+        m_IconStop     = Texture2D::Create("Resources/Icons/StopButton.png");
+        m_IconStep     = Texture2D::Create("Resources/Icons/StepButton.png");
 
         FramebufferSpecification fbSpec;
         fbSpec.Attachments = {

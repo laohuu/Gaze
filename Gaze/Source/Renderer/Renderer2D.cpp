@@ -191,7 +191,9 @@ namespace Gaze
 
         s_Data.WhiteTexture       = Texture2D::Create(TextureSpecification());
         uint32_t whiteTextureData = 0xffffffff;
-        s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+        s_Data.WhiteTexture->Lock();
+        s_Data.WhiteTexture->GetWriteableBuffer().Write(&whiteTextureData, sizeof(uint32_t));
+        s_Data.WhiteTexture->Unlock();
 
         s_Data.QuadShader   = Shader::Create("Assets/Shaders/Renderer2D_Quad.glsl");
         s_Data.CircleShader = Shader::Create("Assets/Shaders/Renderer2D_Circle.glsl");

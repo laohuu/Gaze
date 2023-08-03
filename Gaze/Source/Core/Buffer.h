@@ -1,76 +1,117 @@
 #ifndef GAZE_ENGINE_CORE_BUFFER_H
 #define GAZE_ENGINE_CORE_BUFFER_H
 
+#include <cstdint>
+
 #include <cstring>
-#include <stdint.h>
 
 namespace Gaze
 {
 
+    typedef unsigned char byte;
+
     // Non-owning raw buffer class
     struct Buffer
     {
-        uint8_t* Data = nullptr;
-        uint64_t Size = 0;
+        void*    Data;
+        uint64_t Size;
 
-        Buffer() = default;
+        Buffer() : Data(nullptr), Size(0) {}
 
-        Buffer(uint64_t size) { Allocate(size); }
+        Buffer(const void* data, uint64_t size = 0) : Data((void*)data), Size(size) {}
 
-        Buffer(const Buffer&) = default;
-
-        static Buffer Copy(Buffer other)
+        static Buffer Copy(const Buffer& other)
         {
-            Buffer result(other.Size);
-            memcpy(result.Data, other.Data, other.Size);
-            return result;
+            Buffer buffer;
+            buffer.Allocate(other.Size);
+            memcpy(buffer.Data, other.Data, other.Size);
+            return buffer;
+        }
+
+        static Buffer Copy(const void* data, uint64_t size)
+        {
+            Buffer buffer;
+            buffer.Allocate(size);
+            memcpy(buffer.Data, data, size);
+            return buffer;
         }
 
         void Allocate(uint64_t size)
         {
             Release();
 
-            Data = new uint8_t[size];
+            if (size == 0)
+                return;
+
+            Data = new byte[size];
             Size = size;
         }
 
         void Release()
         {
-            delete[] Data;
+            delete[] (byte*)Data;
             Data = nullptr;
             Size = 0;
         }
 
+        void ZeroInitialize()
+        {
+            if (Data)
+                memset(Data, 0, Size);
+        }
+
         template<typename T>
-        T* As()
+        T& Read(uint64_t offset = 0)
+        {
+            return *(T*)((byte*)Data + offset);
+        }
+
+        template<typename T>
+        const T& Read(uint64_t offset = 0) const
+        {
+            return *(T*)((byte*)Data + offset);
+        }
+
+        byte* ReadBytes(uint64_t size, uint64_t offset) const
+        {
+            GZ_CORE_ASSERT(offset + size <= Size, "Buffer overflow!");
+            byte* buffer = new byte[size];
+            memcpy(buffer, (byte*)Data + offset, size);
+            return buffer;
+        }
+
+        void Write(const void* data, uint64_t size, uint64_t offset = 0)
+        {
+            GZ_CORE_ASSERT(offset + size <= Size, "Buffer overflow!");
+            memcpy((byte*)Data + offset, data, size);
+        }
+
+        operator bool() const { return Data; }
+
+        byte& operator[](int index) { return ((byte*)Data)[index]; }
+
+        byte operator[](int index) const { return ((byte*)Data)[index]; }
+
+        template<typename T>
+        T* As() const
         {
             return (T*)Data;
         }
 
-        operator bool() const { return (bool)Data; }
+        inline uint64_t GetSize() const { return Size; }
     };
 
-    struct ScopedBuffer
+    struct BufferSafe : public Buffer
     {
-        ScopedBuffer(Buffer buffer) : m_Buffer(buffer) {}
+        ~BufferSafe() { Release(); }
 
-        ScopedBuffer(uint64_t size) : m_Buffer(size) {}
-
-        ~ScopedBuffer() { m_Buffer.Release(); }
-
-        uint8_t* Data() { return m_Buffer.Data; }
-        uint64_t Size() { return m_Buffer.Size; }
-
-        template<typename T>
-        T* As()
+        static BufferSafe Copy(const void* data, uint64_t size)
         {
-            return m_Buffer.As<T>();
+            BufferSafe buffer;
+            buffer.Allocate(size);
+            memcpy(buffer.Data, data, size);
+            return buffer;
         }
-
-        operator bool() const { return m_Buffer; }
-
-    private:
-        Buffer m_Buffer;
     };
 
 } // namespace Gaze

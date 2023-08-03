@@ -9,7 +9,7 @@ namespace Gaze
     class FileSystem
     {
     public:
-        static Buffer ReadFileBinary(const std::filesystem::path& filepath);
+        static Buffer ReadBytes(const std::filesystem::path& filepath);
     };
 
 } // namespace Gaze

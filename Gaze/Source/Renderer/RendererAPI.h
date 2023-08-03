@@ -8,6 +8,19 @@
 namespace Gaze
 {
 
+    enum class PrimitiveType
+    {
+        None = 0,
+        Triangles,
+        Lines
+    };
+
+    enum class RendererAPIType
+    {
+        None   = 0,
+        OpenGL = 1
+    };
+
     using RendererID = uint32_t;
 
     class RendererAPI

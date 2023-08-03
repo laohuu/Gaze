@@ -44,13 +44,12 @@ namespace Gaze
 
         static MonoAssembly* LoadMonoAssembly(const std::filesystem::path& assemblyPath, bool loadPDB = false)
         {
-            uint32_t     fileSize = 0;
-            ScopedBuffer fileData = FileSystem::ReadFileBinary(assemblyPath);
+            Buffer fileData = FileSystem::ReadBytes(assemblyPath);
 
             // NOTE: We can't use this image for anything other than loading the assembly because this image doesn't
             // have a reference to the assembly
             MonoImageOpenStatus status;
-            MonoImage* image = mono_image_open_from_data_full(fileData.As<char>(), fileData.Size(), 1, &status, 0);
+            MonoImage* image = mono_image_open_from_data_full(fileData.As<char>(), fileData.Size, 1, &status, 0);
 
             if (status != MONO_IMAGE_OK)
             {
@@ -66,9 +65,8 @@ namespace Gaze
 
                 if (std::filesystem::exists(pdbPath))
                 {
-                    uint32_t     pdbFileSize = 0;
-                    ScopedBuffer pdbFileData = FileSystem::ReadFileBinary(pdbPath);
-                    mono_debug_open_image_from_memory(image, pdbFileData.As<const mono_byte>(), pdbFileData.Size());
+                    Buffer buffer = FileSystem::ReadBytes(pdbPath);
+                    mono_debug_open_image_from_memory(image, buffer.As<mono_byte>(), buffer.Size);
                     GZ_CORE_INFO("Loaded PDB {}", pdbPath);
                 }
             }

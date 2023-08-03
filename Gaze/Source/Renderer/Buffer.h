@@ -1,16 +1,30 @@
 #ifndef GAZE_ENGINE_BUFFER_H
 #define GAZE_ENGINE_BUFFER_H
 
-#include <cstdint>
+namespace Gaze
+{
+    using RendererID = uint32_t;
 
-namespace Gaze {
-
-    enum class ShaderDataType {
-        None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
+    enum class ShaderDataType
+    {
+        None = 0,
+        Float,
+        Float2,
+        Float3,
+        Float4,
+        Mat3,
+        Mat4,
+        Int,
+        Int2,
+        Int3,
+        Int4,
+        Bool
     };
 
-    static uint32_t ShaderDataTypeSize(ShaderDataType type) {
-        switch (type) {
+    static uint32_t ShaderDataTypeSize(ShaderDataType type)
+    {
+        switch (type)
+        {
             case ShaderDataType::Float:
                 return 4;
             case ShaderDataType::Float2:
@@ -39,22 +53,25 @@ namespace Gaze {
         return 0;
     }
 
-    class BufferElement {
+    class BufferElement
+    {
     public:
-        std::string Name;
+        std::string    Name;
         ShaderDataType Type;
-        uint32_t Size;
-        size_t Offset;
-        bool Normalized;
+        uint32_t       Size;
+        size_t         Offset;
+        bool           Normalized;
 
         BufferElement() = default;
 
-        BufferElement(ShaderDataType type, const std::string &name, bool normalized = false)
-                : Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized) {
-        }
+        BufferElement(ShaderDataType type, const std::string& name, bool normalized = false) :
+            Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized)
+        {}
 
-        uint32_t GetComponentCount() const {
-            switch (Type) {
+        uint32_t GetComponentCount() const
+        {
+            switch (Type)
+            {
                 case ShaderDataType::Float:
                     return 1;
                 case ShaderDataType::Float2:
@@ -64,9 +81,9 @@ namespace Gaze {
                 case ShaderDataType::Float4:
                     return 4;
                 case ShaderDataType::Mat3:
-                    return 3;   // 3* float3
+                    return 3 * 3;
                 case ShaderDataType::Mat4:
-                    return 4;   // 4* float4
+                    return 4 * 4;
                 case ShaderDataType::Int:
                     return 1;
                 case ShaderDataType::Int2:
@@ -84,35 +101,31 @@ namespace Gaze {
         }
     };
 
-
-    class BufferLayout {
+    class BufferLayout
+    {
     public:
         BufferLayout() = default;
 
-        BufferLayout(std::initializer_list<BufferElement> elements)
-                : m_Elements(elements) {
+        BufferLayout(std::initializer_list<BufferElement> elements) : m_Elements(elements)
+        {
             CalculateOffsetsAndStride();
         }
 
-        uint32_t GetStride() const { return m_Stride; }
+        inline uint32_t                   GetStride() const { return m_Stride; }
+        const std::vector<BufferElement>& GetElements() const { return m_Elements; }
 
-        const std::vector<BufferElement> &GetElements() const {
-            return m_Elements;
-        }
-
-        std::vector<BufferElement>::iterator begin() { return m_Elements.begin(); }
-
-        std::vector<BufferElement>::iterator end() { return m_Elements.end(); }
-
+        std::vector<BufferElement>::iterator       begin() { return m_Elements.begin(); }
+        std::vector<BufferElement>::iterator       end() { return m_Elements.end(); }
         std::vector<BufferElement>::const_iterator begin() const { return m_Elements.begin(); }
-
         std::vector<BufferElement>::const_iterator end() const { return m_Elements.end(); }
 
     private:
-        void CalculateOffsetsAndStride() {
+        void CalculateOffsetsAndStride()
+        {
             size_t offset = 0;
-            m_Stride = 0;
-            for (auto &element: m_Elements) {
+            m_Stride      = 0;
+            for (auto& element : m_Elements)
+            {
                 element.Offset = offset;
                 offset += element.Size;
                 m_Stride += element.Size;
@@ -121,41 +134,55 @@ namespace Gaze {
 
     private:
         std::vector<BufferElement> m_Elements;
-        uint32_t m_Stride = 0;
+        uint32_t                   m_Stride = 0;
     };
 
-    class VertexBuffer {
+    enum class VertexBufferUsage
+    {
+        None    = 0,
+        Static  = 1,
+        Dynamic = 2
+    };
+
+    class VertexBuffer
+    {
     public:
         virtual ~VertexBuffer() = default;
 
-        virtual void Bind() const = 0;
-
+        virtual void Bind() const   = 0;
         virtual void Unbind() const = 0;
 
-        virtual void SetData(const void *data, uint32_t size) = 0;
+        virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) = 0;
 
-        virtual const BufferLayout &GetLayout() const = 0;
+        virtual const BufferLayout& GetLayout() const                     = 0;
+        virtual void                SetLayout(const BufferLayout& layout) = 0;
 
-        virtual void SetLayout(const BufferLayout &layout) = 0;
+        virtual unsigned int GetSize() const       = 0;
+        virtual RendererID   GetRendererID() const = 0;
 
-        static Ref<VertexBuffer> Create(uint32_t size);
-
-        static Ref<VertexBuffer> Create(float *vertices, uint32_t size);
+        static Ref<VertexBuffer> Create(uint32_t size, VertexBufferUsage usage = VertexBufferUsage::Dynamic);
+        static Ref<VertexBuffer> Create(void* data, uint32_t size, VertexBufferUsage usage = VertexBufferUsage::Static);
     };
 
-    class IndexBuffer {
+    class IndexBuffer
+    {
     public:
         virtual ~IndexBuffer() = default;
 
-        virtual void Bind() const = 0;
-
+        virtual void Bind() const   = 0;
         virtual void Unbind() const = 0;
+
+        virtual void SetData(const void* data, uint32_t size, uint32_t offset = 0) = 0;
 
         virtual uint32_t GetCount() const = 0;
 
-        static Ref<IndexBuffer> Create(uint32_t *indices, uint32_t size);
+        virtual uint32_t   GetSize() const       = 0;
+        virtual RendererID GetRendererID() const = 0;
+
+        static Ref<IndexBuffer> Create(uint32_t size);
+        static Ref<IndexBuffer> Create(void* data, uint32_t size = 0);
     };
 
-} // Gaze
+} // namespace Gaze
 
-#endif //GAZE_ENGINE_BUFFER_H
+#endif // GAZE_ENGINE_BUFFER_H

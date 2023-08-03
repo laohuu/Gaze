@@ -1,12 +1,15 @@
-#include "GazePCH.h"
 #include "OpenGLVertexArray.h"
+#include "GazePCH.h"
 
 #include <glad/glad.h>
 
-namespace Gaze {
+namespace Gaze
+{
 
-    static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {
-        switch (type) {
+    static GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type)
+    {
+        switch (type)
+        {
             case ShaderDataType::Float:
                 return GL_FLOAT;
             case ShaderDataType::Float2:
@@ -35,32 +38,37 @@ namespace Gaze {
         return 0;
     }
 
-    OpenGLVertexArray::OpenGLVertexArray() {
+    OpenGLVertexArray::OpenGLVertexArray()
+    {
         GZ_PROFILE_FUNCTION();
 
         m_VertexBufferIndex = 0;
         glCreateVertexArrays(1, &m_RendererID);
     }
 
-    OpenGLVertexArray::~OpenGLVertexArray() {
+    OpenGLVertexArray::~OpenGLVertexArray()
+    {
         GZ_PROFILE_FUNCTION();
 
         glDeleteVertexArrays(1, &m_RendererID);
     }
 
-    void OpenGLVertexArray::Bind() const {
+    void OpenGLVertexArray::Bind() const
+    {
         GZ_PROFILE_FUNCTION();
 
         glBindVertexArray(m_RendererID);
     }
 
-    void OpenGLVertexArray::Unbind() const {
+    void OpenGLVertexArray::Unbind() const
+    {
         GZ_PROFILE_FUNCTION();
 
         glBindVertexArray(0);
     }
 
-    void OpenGLVertexArray::AddVertexBuffer(const Gaze::Ref<VertexBuffer> &vertexBuffer) {
+    void OpenGLVertexArray::AddVertexBuffer(const Gaze::Ref<VertexBuffer>& vertexBuffer)
+    {
         GZ_PROFILE_FUNCTION();
 
         GZ_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
@@ -68,60 +76,36 @@ namespace Gaze {
         glBindVertexArray(m_RendererID);
         vertexBuffer->Bind();
 
-        const auto &layout = vertexBuffer->GetLayout();
-        for (const auto &element: layout) {
-            switch (element.Type) {
-                case ShaderDataType::Float:
-                case ShaderDataType::Float2:
-                case ShaderDataType::Float3:
-                case ShaderDataType::Float4: {
-                    glEnableVertexAttribArray(m_VertexBufferIndex);
-                    glVertexAttribPointer(m_VertexBufferIndex,
-                                          element.GetComponentCount(),
-                                          ShaderDataTypeToOpenGLBaseType(element.Type),
-                                          element.Normalized ? GL_TRUE : GL_FALSE,
-                                          layout.GetStride(),
-                                          (const void *) element.Offset);
-                    m_VertexBufferIndex++;
-                    break;
-                }
-                case ShaderDataType::Int:
-                case ShaderDataType::Int2:
-                case ShaderDataType::Int3:
-                case ShaderDataType::Int4:
-                case ShaderDataType::Bool: {
-                    glEnableVertexAttribArray(m_VertexBufferIndex);
-                    glVertexAttribIPointer(m_VertexBufferIndex,
-                                           element.GetComponentCount(),
-                                           ShaderDataTypeToOpenGLBaseType(element.Type),
-                                           layout.GetStride(),
-                                           (const void *) element.Offset);
-                    m_VertexBufferIndex++;
-                    break;
-                }
-                case ShaderDataType::Mat3:
-                case ShaderDataType::Mat4: {
-                    uint8_t count = element.GetComponentCount();
-                    for (uint8_t i = 0; i < count; i++) {
-                        glEnableVertexAttribArray(m_VertexBufferIndex);
-                        glVertexAttribPointer(m_VertexBufferIndex,
-                                              count,
-                                              ShaderDataTypeToOpenGLBaseType(element.Type),
-                                              element.Normalized ? GL_TRUE : GL_FALSE,
-                                              layout.GetStride(),
-                                              (const void *) (element.Offset + sizeof(float) * count * i));
-                        glVertexAttribDivisor(m_VertexBufferIndex, 1);
-                        m_VertexBufferIndex++;
-                    }
-                    break;
-                }
-                default: GZ_CORE_ASSERT(false, "Unknown ShaderDataType!");
+        const auto& layout      = vertexBuffer->GetLayout();
+        uint32_t    attribIndex = 0;
+        for (const auto& element : layout)
+        {
+            auto glBaseType = ShaderDataTypeToOpenGLBaseType(element.Type);
+            glEnableVertexAttribArray(attribIndex);
+            if (glBaseType == GL_INT)
+            {
+                glVertexAttribIPointer(attribIndex,
+                                       element.GetComponentCount(),
+                                       glBaseType,
+                                       layout.GetStride(),
+                                       (const void*)(intptr_t)element.Offset);
             }
+            else
+            {
+                glVertexAttribPointer(attribIndex,
+                                      element.GetComponentCount(),
+                                      glBaseType,
+                                      element.Normalized ? GL_TRUE : GL_FALSE,
+                                      layout.GetStride(),
+                                      (const void*)(intptr_t)element.Offset);
+            }
+            attribIndex++;
         }
         m_VertexBuffers.push_back(vertexBuffer);
     }
 
-    void OpenGLVertexArray::SetIndexBuffer(const Gaze::Ref<IndexBuffer> &indexBuffer) {
+    void OpenGLVertexArray::SetIndexBuffer(const Gaze::Ref<IndexBuffer>& indexBuffer)
+    {
         GZ_PROFILE_FUNCTION();
 
         glBindVertexArray(m_RendererID);
@@ -129,4 +113,4 @@ namespace Gaze {
 
         m_IndexBuffer = indexBuffer;
     }
-} // Gaze
+} // namespace Gaze
