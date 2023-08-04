@@ -144,7 +144,7 @@ namespace Gaze
         Dynamic = 2
     };
 
-    class VertexBuffer
+    class VertexBuffer : public RefCounted
     {
     public:
         virtual ~VertexBuffer() = default;
@@ -164,7 +164,7 @@ namespace Gaze
         static Ref<VertexBuffer> Create(void* data, uint32_t size, VertexBufferUsage usage = VertexBufferUsage::Static);
     };
 
-    class IndexBuffer
+    class IndexBuffer : public RefCounted
     {
     public:
         virtual ~IndexBuffer() = default;

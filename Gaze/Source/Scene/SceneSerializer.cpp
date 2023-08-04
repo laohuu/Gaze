@@ -311,7 +311,7 @@ namespace Gaze
 
         // Serialize sorted entities
         for (auto [id, entity] : sortedEntityMap)
-            SerializeEntity(out, {entity, m_Scene.get()});
+            SerializeEntity(out, {entity, m_Scene.Raw()});
 
         out << YAML::EndSeq;
         out << YAML::EndMap;

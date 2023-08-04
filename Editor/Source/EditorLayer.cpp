@@ -41,7 +41,7 @@ namespace Gaze
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
 
-        m_EditorScene = CreateRef<Scene>();
+        m_EditorScene = Ref<Scene>::Create();
         m_ActiveScene = Scene::Copy(m_EditorScene);
 
         auto commandLineArgs = Application::Get().GetSpecification().CommandLineArgs;
@@ -682,7 +682,7 @@ namespace Gaze
 
     void EditorLayer::NewScene()
     {
-        m_ActiveScene = CreateRef<Scene>();
+        m_ActiveScene = Ref<Scene>::Create();
         m_SceneHierarchyPanel.SetContext(m_ActiveScene);
         m_EditorScenePath = std::filesystem::path();
     }
@@ -705,7 +705,7 @@ namespace Gaze
             return;
         }
 
-        Ref<Scene>      newScene = CreateRef<Scene>();
+        Ref<Scene>      newScene = Ref<Scene>::Create();
         SceneSerializer serializer(newScene);
         if (serializer.Deserialize(path))
         {

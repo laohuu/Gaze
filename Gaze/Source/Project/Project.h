@@ -19,7 +19,7 @@ namespace Gaze
         std::filesystem::path ScriptModulePath;
     };
 
-    class Project
+    class Project : public RefCounted
     {
     public:
         static const std::filesystem::path& GetProjectDirectory()

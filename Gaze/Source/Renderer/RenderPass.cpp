@@ -1,12 +1,13 @@
-#include "UniformBuffer.h"
 #include "GazePCH.h"
 
-#include "Platform/OpenGL/OpenGLUniformBuffer.h"
-#include "Renderer/Renderer.h"
+#include "RenderPass.h"
+#include "Renderer.h"
+
+#include "Platform/OpenGL/OpenGLRenderPass.h"
 
 namespace Gaze
 {
-    Ref<UniformBuffer> UniformBuffer::Create(uint32_t size, uint32_t binding)
+    Ref<RenderPass> RenderPass::Create(const RenderPassSpecification& spec)
     {
         switch (Renderer::GetAPI())
         {
@@ -14,7 +15,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return Ref<OpenGLUniformBuffer>::Create(size, binding);
+                return Ref<OpenGLRenderPass>::Create(spec);
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");

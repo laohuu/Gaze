@@ -14,7 +14,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return CreateRef<OpenGLVertexBuffer>(data, size, usage);
+                return Ref<OpenGLVertexBuffer>::Create(data, size, usage);
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -29,7 +29,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return CreateRef<OpenGLVertexBuffer>(size, usage);
+                return Ref<OpenGLVertexBuffer>::Create(size, usage);
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -44,7 +44,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return CreateRef<OpenGLIndexBuffer>(size);
+                return Ref<OpenGLIndexBuffer>::Create(size);
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -59,7 +59,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return CreateRef<OpenGLIndexBuffer>(data, size);
+                return Ref<OpenGLIndexBuffer>::Create(data, size);
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");

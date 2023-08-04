@@ -11,10 +11,9 @@ class b2World;
 
 namespace Gaze
 {
-
     class Entity;
 
-    class Scene
+    class Scene : public RefCounted
     {
     public:
         Scene(const std::string& name = "UntitledScene", bool isEditorScene = false, bool initalize = true);
@@ -91,7 +90,6 @@ namespace Gaze
         friend class SceneSerializer;
         friend class SceneHierarchyPanel;
     };
-
 } // namespace Gaze
 
 #endif // GAZE_ENGINE_SCENE_H

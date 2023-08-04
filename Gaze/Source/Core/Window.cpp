@@ -9,9 +9,9 @@
 
 namespace Gaze {
 
-    Gaze::Scope<Window> Window::Create(const WindowProps &props) {
+    Window* Window::Create(const WindowProps &props) {
 #ifdef GZ_PLATFORM_WINDOWS
-        return CreateScope<WindowsWindow>(props);
+        return new WindowsWindow(props);
 #else
         GZ_CORE_ASSERT(false, "Unknown platform!");
         return nullptr;

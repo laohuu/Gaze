@@ -9,7 +9,6 @@
 
 namespace Gaze
 {
-
     enum class ShaderDomain
     {
         None   = 0,
@@ -36,7 +35,6 @@ namespace Gaze
     };
 
     typedef std::vector<ShaderResourceDeclaration*> ShaderResourceList;
-
 } // namespace Gaze
 
 #endif // GAZE_ENGINE_SHADERUNIFORM_H

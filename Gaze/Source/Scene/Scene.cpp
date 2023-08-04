@@ -163,7 +163,7 @@ namespace Gaze
 
     Gaze::Ref<Scene> Scene::Copy(Gaze::Ref<Scene> other)
     {
-        Gaze::Ref<Scene> newScene = CreateRef<Scene>();
+        Gaze::Ref<Scene> newScene = Ref<Scene>::Create();
 
         newScene->m_ViewportWidth  = other->m_ViewportWidth;
         newScene->m_ViewportHeight = other->m_ViewportHeight;

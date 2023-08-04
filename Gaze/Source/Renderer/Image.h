@@ -80,7 +80,7 @@ namespace Gaze
         uint32_t    Layers   = 1;
     };
 
-    class Image
+    class Image : public RefCounted
     {
     public:
         virtual ~Image() = default;

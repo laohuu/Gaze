@@ -48,7 +48,7 @@ namespace Gaze
         MonoClassField* ClassField;
     };
 
-    class ScriptClass
+    class ScriptClass : public RefCounted
     {
     public:
         ScriptClass() = default;
@@ -71,7 +71,7 @@ namespace Gaze
         friend class ScriptEngine;
     };
 
-    class ScriptInstance
+    class ScriptInstance : public RefCounted
     {
     public:
         ScriptInstance(Ref<ScriptClass> scriptClass, Entity entity);

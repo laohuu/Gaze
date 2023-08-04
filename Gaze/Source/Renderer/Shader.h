@@ -127,7 +127,7 @@ namespace Gaze
         uint32_t           GetSize() const { return m_Size; }
         uint32_t           GetOffset() const { return m_Offset; }
 
-        static const std::string& UniformTypeToString(ShaderUniformType type);
+        static const std::string UniformTypeToString(ShaderUniformType type);
 
     private:
         std::string       m_Name;
@@ -153,7 +153,7 @@ namespace Gaze
         std::unordered_map<std::string, ShaderUniform> Uniforms;
     };
 
-    class Shader
+    class Shader : public RefCounted
     {
     public:
         using ShaderReloadedCallback = std::function<void()>;

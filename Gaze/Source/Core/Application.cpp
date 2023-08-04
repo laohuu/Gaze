@@ -25,7 +25,7 @@ namespace Gaze
         if (!m_Specification.WorkingDirectory.empty())
             std::filesystem::current_path(m_Specification.WorkingDirectory);
 
-        m_Window = Window::Create(WindowProps(m_Specification.Name));
+        m_Window = std::unique_ptr<Window>(Window::Create(WindowProps(m_Specification.Name)));
         m_Window->SetEventCallback(GZ_BIND_EVENT_FN(Application::OnEvent));
 
         PhysicsScene::Init();

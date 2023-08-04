@@ -140,7 +140,7 @@ namespace Gaze
 
     Ref<OpenGLShader> OpenGLShader::CreateFromString(const std::string& source)
     {
-        Ref<OpenGLShader> shader = CreateRef<OpenGLShader>();
+        Ref<OpenGLShader> shader = Ref<OpenGLShader>::Create();
         shader->Load(source, true);
         return shader;
     }

@@ -153,7 +153,7 @@ namespace Gaze
     {
         static Ref<Font> DefaultFont;
         if (!DefaultFont)
-            DefaultFont = CreateRef<Font>("Assets/Fonts/OpenSans/static/OpenSans-Regular.ttf");
+            DefaultFont = Ref<Font>::Create("Assets/Fonts/OpenSans/static/OpenSans-Regular.ttf");
 
         return DefaultFont;
     }

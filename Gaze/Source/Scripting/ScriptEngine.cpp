@@ -126,7 +126,7 @@ namespace Gaze
         std::filesystem::path CoreAssemblyFilepath;
         std::filesystem::path AppAssemblyFilepath;
 
-        ScriptClass EntityClass;
+        Ref<ScriptClass> EntityClass;
 
         std::unordered_map<std::string, Ref<ScriptClass>> EntityClasses;
         std::unordered_map<UUID, Ref<ScriptInstance>>     EntityInstances;
@@ -187,7 +187,7 @@ namespace Gaze
         ScriptGlue::RegisterComponents();
 
         // Retrieve and instantiate class
-        s_Data->EntityClass = ScriptClass("Gaze", "Entity", true);
+        s_Data->EntityClass = Ref<ScriptClass>::Create("Gaze", "Entity", true);
     }
 
     void ScriptEngine::Shutdown()
@@ -279,7 +279,7 @@ namespace Gaze
         ScriptGlue::RegisterComponents();
 
         // Retrieve and instantiate class
-        s_Data->EntityClass = ScriptClass("Gaze", "Entity", true);
+        s_Data->EntityClass = Ref<ScriptClass>::Create("Gaze", "Entity", true);
     }
 
     void ScriptEngine::OnRuntimeStart(Scene* scene) { s_Data->SceneContext = scene; }
@@ -300,8 +300,8 @@ namespace Gaze
         const auto& sc = entity.GetComponent<ScriptComponent>();
         if (ScriptEngine::EntityClassExists(sc.ClassName))
         {
-            UUID                entityID      = entity.GetUUID();
-            Ref<ScriptInstance> instance      = CreateRef<ScriptInstance>(s_Data->EntityClasses[sc.ClassName], entity);
+            UUID                entityID = entity.GetUUID();
+            Ref<ScriptInstance> instance = Ref<ScriptInstance>::Create(s_Data->EntityClasses[sc.ClassName], entity);
             s_Data->EntityInstances[entityID] = instance;
 
             // Copy field values
@@ -392,7 +392,7 @@ namespace Gaze
             if (!isEntity)
                 continue;
 
-            Ref<ScriptClass> scriptClass    = CreateRef<ScriptClass>(nameSpace, className);
+            Ref<ScriptClass> scriptClass    = Ref<ScriptClass>::Create(nameSpace, className);
             s_Data->EntityClasses[fullName] = scriptClass;
 
             // This routine is an iterator routine for retrieving the fields in a class.
@@ -462,7 +462,7 @@ namespace Gaze
     {
         m_Instance = scriptClass->Instantiate();
 
-        m_Constructor    = s_Data->EntityClass.GetMethod(".ctor", 1);
+        m_Constructor    = s_Data->EntityClass->GetMethod(".ctor", 1);
         m_OnCreateMethod = scriptClass->GetMethod("OnCreate", 0);
         m_OnUpdateMethod = scriptClass->GetMethod("OnUpdate", 1);
 

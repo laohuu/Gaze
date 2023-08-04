@@ -8,13 +8,13 @@ namespace Gaze
 
     Ref<Project> Project::New()
     {
-        s_ActiveProject = CreateRef<Project>();
+        s_ActiveProject = Ref<Project>::Create();
         return s_ActiveProject;
     }
 
     Ref<Project> Project::Load(const std::filesystem::path& path)
     {
-        Ref<Project> project = CreateRef<Project>();
+        Ref<Project> project = Ref<Project>::Create();
 
         ProjectSerializer serializer(project);
         if (serializer.Deserialize(path))

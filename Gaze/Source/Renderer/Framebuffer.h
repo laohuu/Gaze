@@ -58,7 +58,7 @@ namespace Gaze
         bool SwapChainTarget = false;
     };
 
-    class Framebuffer
+    class Framebuffer : public RefCounted
     {
     public:
         virtual ~Framebuffer() {}

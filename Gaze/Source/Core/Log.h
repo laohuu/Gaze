@@ -17,17 +17,16 @@
 #pragma warning(pop)
 
 namespace Gaze {
-    class Log {
+    class Log
+    {
     public:
         static void Init();
 
-        static Gaze::Ref<spdlog::logger> &GetCoreLogger() { return s_CoreLogger; }
-
-        static Gaze::Ref<spdlog::logger> &GetClientLogger() { return s_ClientLogger; }
-
+        inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+        inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
     private:
-        static Gaze::Ref<spdlog::logger> s_CoreLogger;
-        static Gaze::Ref<spdlog::logger> s_ClientLogger;
+        static std::shared_ptr<spdlog::logger> s_CoreLogger;
+        static std::shared_ptr<spdlog::logger> s_ClientLogger;
     };
 }
 

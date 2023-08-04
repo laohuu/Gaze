@@ -17,7 +17,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                result = CreateRef<OpenGLShader>(filepath, forceCompile);
+                result = Ref<OpenGLShader>::Create(filepath, forceCompile);
                 s_AllShaders.push_back(result);
                 return result;
         }
@@ -77,7 +77,7 @@ namespace Gaze
         m_Name(name), m_Type(type), m_Size(size), m_Offset(offset)
     {}
 
-    const std::string& ShaderUniform::UniformTypeToString(ShaderUniformType type)
+    const std::string ShaderUniform::UniformTypeToString(ShaderUniformType type)
     {
         if (type == ShaderUniformType::Bool)
         {

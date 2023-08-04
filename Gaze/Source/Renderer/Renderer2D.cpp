@@ -99,7 +99,7 @@ namespace Gaze
         TextVertex* TextVertexBufferBase = nullptr;
         TextVertex* TextVertexBufferPtr  = nullptr;
 
-        std::array<Gaze::Ref<Texture2D>, MaxTextureSlots> TextureSlots;
+        std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
         uint32_t                                          TextureSlotIndex = 1; // 0 = white texture
 
         Ref<Texture2D> FontAtlasTexture;
@@ -415,7 +415,7 @@ namespace Gaze
         float textureIndex = 0.0f;
         for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++)
         {
-            if (*s_Data.TextureSlots[i].get() == *texture.get())
+            if (*s_Data.TextureSlots[i].Raw() == *texture.Raw())
             {
                 textureIndex = (float)i;
                 break;
