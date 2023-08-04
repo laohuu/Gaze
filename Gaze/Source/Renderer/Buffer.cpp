@@ -8,12 +8,12 @@ namespace Gaze
 {
     Ref<VertexBuffer> VertexBuffer::Create(void* data, uint32_t size, VertexBufferUsage usage)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return Ref<OpenGLVertexBuffer>::Create(data, size, usage);
         }
 
@@ -23,12 +23,12 @@ namespace Gaze
 
     Ref<VertexBuffer> VertexBuffer::Create(uint32_t size, VertexBufferUsage usage)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return Ref<OpenGLVertexBuffer>::Create(size, usage);
         }
 
@@ -38,12 +38,12 @@ namespace Gaze
 
     Ref<IndexBuffer> IndexBuffer::Create(uint32_t size)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return Ref<OpenGLIndexBuffer>::Create(size);
         }
 
@@ -53,12 +53,12 @@ namespace Gaze
 
     Ref<IndexBuffer> IndexBuffer::Create(void* data, uint32_t size)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return Ref<OpenGLIndexBuffer>::Create(data, size);
         }
 

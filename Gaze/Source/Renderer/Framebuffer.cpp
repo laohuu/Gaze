@@ -11,12 +11,12 @@ namespace Gaze
     {
 
         Ref<Framebuffer> result = nullptr;
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 result = Ref<OpenGLFramebuffer>::Create(spec);
                 FramebufferPool::GetGlobal()->Add(result);
                 return result;

@@ -9,12 +9,12 @@ namespace Gaze
 
     Ref<Texture2D> Texture2D::Create(const TextureSpecification& specification)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return Ref<OpenGLTexture2D>::Create(specification);
         }
 
@@ -24,12 +24,12 @@ namespace Gaze
 
     Ref<Texture2D> Texture2D::Create(const std::string& path, bool srgb)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return Ref<OpenGLTexture2D>::Create(path, srgb);
         }
 
@@ -39,12 +39,12 @@ namespace Gaze
 
     Ref<TextureCube> TextureCube::Create(const TextureSpecification& specification)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return nullptr;
         }
 
@@ -54,12 +54,12 @@ namespace Gaze
 
     Ref<TextureCube> TextureCube::Create(const std::string& path)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return nullptr;
         }
 

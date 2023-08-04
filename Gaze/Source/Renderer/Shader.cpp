@@ -11,12 +11,12 @@ namespace Gaze
     Ref<Shader> Shader::Create(const std::string& filepath, bool forceCompile)
     {
         Ref<Shader> result = nullptr;
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 result = Ref<OpenGLShader>::Create(filepath, forceCompile);
                 s_AllShaders.push_back(result);
                 return result;
@@ -28,12 +28,12 @@ namespace Gaze
     Ref<Shader> Shader::CreateFromString(const std::string& source)
     {
         Ref<Shader> result = nullptr;
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 result = OpenGLShader::CreateFromString(source);
                 s_AllShaders.push_back(result);
                 return result;

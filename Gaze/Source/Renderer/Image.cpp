@@ -9,12 +9,12 @@ namespace Gaze
 
     Ref<Image2D> Image2D::Create(ImageSpecification specification, Buffer buffer)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return nullptr;
         }
 
@@ -24,12 +24,12 @@ namespace Gaze
 
     Ref<Image2D> Image2D::Create(ImageSpecification specification, const void* data)
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return nullptr;
         }
         GZ_CORE_ASSERT(false, "Unknown RendererAPI");

@@ -1,6 +1,6 @@
-#include "Renderer.h"
 #include "GazePCH.h"
 
+#include "Renderer.h"
 #include "Renderer2D.h"
 
 namespace Gaze

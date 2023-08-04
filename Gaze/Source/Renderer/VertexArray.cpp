@@ -7,12 +7,12 @@ namespace Gaze
 {
     Ref<VertexArray> VertexArray::Create()
     {
-        switch (Renderer::GetAPI())
+        switch (RendererAPI::Current())
         {
-            case RendererAPI::API::None:
+            case RendererAPIType::None:
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return Ref<OpenGLVertexArray>::Create();
         }
 

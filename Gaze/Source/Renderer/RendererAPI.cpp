@@ -1,21 +1,24 @@
-#include "GazePCH.h"
 #include "RendererAPI.h"
+#include "GazePCH.h"
 
 #include "Platform/OpenGL/OpenGLRendererAPI.h"
 
-namespace Gaze {
-    RendererAPI::API RendererAPI::s_API = RendererAPI::API::OpenGL;
+namespace Gaze
+{
+    RendererAPIType RendererAPI::s_CurrentRendererAPI = RendererAPIType::OpenGL;
 
-    Gaze::Scope<RendererAPI> RendererAPI::Create() {
-        switch (s_API) {
-            case RendererAPI::API::None: GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+    Gaze::Scope<RendererAPI> RendererAPI::Create()
+    {
+        switch (s_CurrentRendererAPI)
+        {
+            case RendererAPIType::None:
+                GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
-            case RendererAPI::API::OpenGL:
+            case RendererAPIType::OpenGL:
                 return CreateScope<OpenGLRendererAPI>();
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }
-
-} // Gaze
+} // namespace Gaze

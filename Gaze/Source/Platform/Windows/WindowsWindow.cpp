@@ -57,7 +57,7 @@ namespace Gaze
         {
             GZ_PROFILE_SCOPE("glfwCreateWindow");
 #if defined(GZ_DEBUG)
-            if (Renderer::GetAPI() == RendererAPI::API::OpenGL)
+            if (RendererAPI::Current() == RendererAPIType::OpenGL)
                 glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
 

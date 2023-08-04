@@ -34,17 +34,17 @@ namespace Gaze
         std::string    Name;
     };
 
-//    struct UniformBuffer
-//    {
-//        // TODO: This currently represents a byte buffer that has been
-//        // packed with uniforms. This was primarily created for OpenGL,
-//        // and needs to be revisted for other rendering APIs. Furthermore,
-//        // this currently does not assume any alignment. This also has
-//        // nothing to do with GL uniform buffers, this is simply a CPU-side
-//        // buffer abstraction.
-//        byte*                    Buffer;
-//        std::vector<UniformDecl> Uniforms;
-//    };
+    //    struct UniformBuffer
+    //    {
+    //        // TODO: This currently represents a byte buffer that has been
+    //        // packed with uniforms. This was primarily created for OpenGL,
+    //        // and needs to be revisted for other rendering APIs. Furthermore,
+    //        // this currently does not assume any alignment. This also has
+    //        // nothing to do with GL uniform buffers, this is simply a CPU-side
+    //        // buffer abstraction.
+    //        byte*                    Buffer;
+    //        std::vector<UniformDecl> Uniforms;
+    //    };
 
     struct UniformBufferBase
     {
