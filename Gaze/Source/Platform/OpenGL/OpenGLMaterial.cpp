@@ -3,13 +3,13 @@
 #include "OpenGLMaterial.h"
 #include "Renderer/Renderer.h"
 
+#include "OpenGLImage.h"
 #include "OpenGLShader.h"
 #include "OpenGLTexture.h"
-//#include "OpenGLImage.h"
 
 namespace Gaze
-{OpenGLMaterial::OpenGLMaterial(const Ref<Shader>& shader, const std::string& name)
-        : m_Shader(shader), m_Name(name)
+{
+    OpenGLMaterial::OpenGLMaterial(const Ref<Shader>& shader, const std::string& name) : m_Shader(shader), m_Name(name)
     {
         m_Shader->AddShaderReloadedCallback(std::bind(&OpenGLMaterial::OnShaderReloaded, this));
         AllocateStorage();
@@ -18,9 +18,7 @@ namespace Gaze
         m_MaterialFlags |= (uint32_t)MaterialFlag::Blend;
     }
 
-    OpenGLMaterial::~OpenGLMaterial()
-    {
-    }
+    OpenGLMaterial::~OpenGLMaterial() {}
 
     void OpenGLMaterial::AllocateStorage()
     {
@@ -37,10 +35,7 @@ namespace Gaze
         }
     }
 
-    void OpenGLMaterial::Invalidate()
-    {
-
-    }
+    void OpenGLMaterial::Invalidate() {}
 
     void OpenGLMaterial::OnShaderReloaded()
     {
@@ -76,20 +71,11 @@ namespace Gaze
         return nullptr;
     }
 
-    void OpenGLMaterial::Set(const std::string& name, float value)
-    {
-        Set<float>(name, value);
-    }
+    void OpenGLMaterial::Set(const std::string& name, float value) { Set<float>(name, value); }
 
-    void OpenGLMaterial::Set(const std::string& name, int value)
-    {
-        Set<int>(name, value);
-    }
+    void OpenGLMaterial::Set(const std::string& name, int value) { Set<int>(name, value); }
 
-    void OpenGLMaterial::Set(const std::string& name, uint32_t value)
-    {
-        Set<uint32_t>(name, value);
-    }
+    void OpenGLMaterial::Set(const std::string& name, uint32_t value) { Set<uint32_t>(name, value); }
 
     void OpenGLMaterial::Set(const std::string& name, bool value)
     {
@@ -97,30 +83,15 @@ namespace Gaze
         Set<uint32_t>(name, (int)value);
     }
 
-    void OpenGLMaterial::Set(const std::string& name, const glm::vec2& value)
-    {
-        Set<glm::vec2>(name, value);
-    }
+    void OpenGLMaterial::Set(const std::string& name, const glm::vec2& value) { Set<glm::vec2>(name, value); }
 
-    void OpenGLMaterial::Set(const std::string& name, const glm::vec3& value)
-    {
-        Set<glm::vec3>(name, value);
-    }
+    void OpenGLMaterial::Set(const std::string& name, const glm::vec3& value) { Set<glm::vec3>(name, value); }
 
-    void OpenGLMaterial::Set(const std::string& name, const glm::vec4& value)
-    {
-        Set<glm::vec4>(name, value);
-    }
+    void OpenGLMaterial::Set(const std::string& name, const glm::vec4& value) { Set<glm::vec4>(name, value); }
 
-    void OpenGLMaterial::Set(const std::string& name, const glm::mat3& value)
-    {
-        Set<glm::mat3>(name, value);
-    }
+    void OpenGLMaterial::Set(const std::string& name, const glm::mat3& value) { Set<glm::mat3>(name, value); }
 
-    void OpenGLMaterial::Set(const std::string& name, const glm::mat4& value)
-    {
-        Set<glm::mat4>(name, value);
-    }
+    void OpenGLMaterial::Set(const std::string& name, const glm::mat4& value) { Set<glm::mat4>(name, value); }
 
     void OpenGLMaterial::Set(const std::string& name, const Ref<Texture2D>& texture)
     {
@@ -130,7 +101,7 @@ namespace Gaze
             GZ_CORE_WARN("Cannot find material property: ", name);
             return;
         }
-        uint32_t slot = decl->GetRegister();
+        uint32_t slot      = decl->GetRegister();
         m_Texture2Ds[slot] = texture;
     }
 
@@ -156,54 +127,27 @@ namespace Gaze
             GZ_CORE_WARN("Cannot find material property: ", name);
             return;
         }
-        uint32_t slot = decl->GetRegister();
+        uint32_t slot  = decl->GetRegister();
         m_Images[slot] = image;
     }
 
-    float& OpenGLMaterial::GetFloat(const std::string& name)
-    {
-        return Get<float>(name);
-    }
+    float& OpenGLMaterial::GetFloat(const std::string& name) { return Get<float>(name); }
 
-    int32_t& OpenGLMaterial::GetInt(const std::string& name)
-    {
-        return Get<int32_t>(name);
-    }
+    int32_t& OpenGLMaterial::GetInt(const std::string& name) { return Get<int32_t>(name); }
 
-    uint32_t& OpenGLMaterial::GetUInt(const std::string& name)
-    {
-        return Get<uint32_t>(name);
-    }
+    uint32_t& OpenGLMaterial::GetUInt(const std::string& name) { return Get<uint32_t>(name); }
 
-    bool& OpenGLMaterial::GetBool(const std::string& name)
-    {
-        return Get<bool>(name);
-    }
+    bool& OpenGLMaterial::GetBool(const std::string& name) { return Get<bool>(name); }
 
-    glm::vec2& OpenGLMaterial::GetVector2(const std::string& name)
-    {
-        return Get<glm::vec2>(name);
-    }
+    glm::vec2& OpenGLMaterial::GetVector2(const std::string& name) { return Get<glm::vec2>(name); }
 
-    glm::vec3& OpenGLMaterial::GetVector3(const std::string& name)
-    {
-        return Get<glm::vec3>(name);
-    }
+    glm::vec3& OpenGLMaterial::GetVector3(const std::string& name) { return Get<glm::vec3>(name); }
 
-    glm::vec4& OpenGLMaterial::GetVector4(const std::string& name)
-    {
-        return Get<glm::vec4>(name);
-    }
+    glm::vec4& OpenGLMaterial::GetVector4(const std::string& name) { return Get<glm::vec4>(name); }
 
-    glm::mat3& OpenGLMaterial::GetMatrix3(const std::string& name)
-    {
-        return Get<glm::mat3>(name);
-    }
+    glm::mat3& OpenGLMaterial::GetMatrix3(const std::string& name) { return Get<glm::mat3>(name); }
 
-    glm::mat4& OpenGLMaterial::GetMatrix4(const std::string& name)
-    {
-        return Get<glm::mat4>(name);
-    }
+    glm::mat4& OpenGLMaterial::GetMatrix4(const std::string& name) { return Get<glm::mat4>(name); }
 
     Ref<Texture2D> OpenGLMaterial::GetTexture2D(const std::string& name)
     {
@@ -232,10 +176,7 @@ namespace Gaze
         return m_Texture2Ds[slot];
     }
 
-    Ref<TextureCube> OpenGLMaterial::GetTextureCube(const std::string& name)
-    {
-        return GetResource<TextureCube>(name);
-    }
+    Ref<TextureCube> OpenGLMaterial::GetTextureCube(const std::string& name) { return GetResource<TextureCube>(name); }
 
     void OpenGLMaterial::UpdateForRendering()
     {
@@ -255,56 +196,47 @@ namespace Gaze
                 switch (uniform.GetType())
                 {
                     case ShaderUniformType::Bool:
-                    case ShaderUniformType::UInt:
-                    {
+                    case ShaderUniformType::UInt: {
                         uint32_t value = m_UniformStorageBuffer.Read<uint32_t>(uniform.GetOffset());
                         shader->SetUniform(name, value);
                         break;
                     }
-                    case ShaderUniformType::Int:
-                    {
+                    case ShaderUniformType::Int: {
                         int value = m_UniformStorageBuffer.Read<int>(uniform.GetOffset());
                         shader->SetUniform(name, value);
                         break;
                     }
-                    case ShaderUniformType::Float:
-                    {
+                    case ShaderUniformType::Float: {
                         float value = m_UniformStorageBuffer.Read<float>(uniform.GetOffset());
                         shader->SetUniform(name, value);
                         break;
                     }
-                    case ShaderUniformType::Vec2:
-                    {
+                    case ShaderUniformType::Vec2: {
                         const glm::vec2& value = m_UniformStorageBuffer.Read<glm::vec2>(uniform.GetOffset());
                         shader->SetUniform(name, value);
                         break;
                     }
-                    case ShaderUniformType::Vec3:
-                    {
+                    case ShaderUniformType::Vec3: {
                         const glm::vec3& value = m_UniformStorageBuffer.Read<glm::vec3>(uniform.GetOffset());
                         shader->SetUniform(name, value);
                         break;
                     }
-                    case ShaderUniformType::Vec4:
-                    {
+                    case ShaderUniformType::Vec4: {
                         const glm::vec4& value = m_UniformStorageBuffer.Read<glm::vec4>(uniform.GetOffset());
                         shader->SetUniform(name, value);
                         break;
                     }
-                    case ShaderUniformType::Mat3:
-                    {
+                    case ShaderUniformType::Mat3: {
                         const glm::mat3& value = m_UniformStorageBuffer.Read<glm::mat3>(uniform.GetOffset());
                         shader->SetUniform(name, value);
                         break;
                     }
-                    case ShaderUniformType::Mat4:
-                    {
+                    case ShaderUniformType::Mat4: {
                         const glm::mat4& value = m_UniformStorageBuffer.Read<glm::mat4>(uniform.GetOffset());
                         shader->SetUniform(name, value);
                         break;
                     }
-                    default:
-                    {
+                    default: {
                         GZ_CORE_ASSERT(false);
                         break;
                     }
@@ -317,7 +249,7 @@ namespace Gaze
 //            auto& texture = m_Textures[i];
 //            if (texture)
 //            {
-//                GZ_CORE_ASSERT(texture->GetType() == TextureType::TextureCube);
+//                GZ_CORE_ASSERT(texture->GetStaticType() == AssetType::EnvMap);
 //                Ref<OpenGLTextureCube> glTexture = texture.As<OpenGLTextureCube>();
 //                glBindTextureUnit(i, glTexture->GetRendererID());
 //            }
@@ -327,22 +259,26 @@ namespace Gaze
 //        {
 //            if (texture)
 //            {
-//                uint32_t textureSlot = slot;
-//                Ref<Image2D> image = texture->GetImage();
-//                Ref<OpenGLImage2D> glImage = image.As<OpenGLImage2D>();
+//                uint32_t           textureSlot = slot;
+//                TextureSpecification specification = texture->GetSpecification();
+//
+//                Ref<Image2D>       image       = Image2D::Create(specification, width, height, buffer);
+//                texture->GetWriteableBuffer();
+//                Ref<OpenGLImage2D> glImage     = image.As<OpenGLImage2D>();
 //                glBindSampler(textureSlot, glImage->GetSamplerRendererID());
 //                glBindTextureUnit(textureSlot, glImage->GetRendererID());
 //            }
 //        }
 //
-//        for (auto[slot, image] : m_Images)
+//        for (auto [slot, image] : m_Images)
 //        {
 //            if (image)
 //            {
-//                uint32_t textureSlot = slot;
-//                Ref<OpenGLImage2D> glImage = image.As<OpenGLImage2D>();
+//                uint32_t           textureSlot = slot;
+//                Ref<OpenGLImage2D> glImage     = image.As<OpenGLImage2D>();
 //                glBindSampler(textureSlot, glImage->GetSamplerRendererID());
 //                glBindTextureUnit(textureSlot, glImage->GetRendererID());
 //            }
 //        }
-    }} // namespace Gaze
+    }
+} // namespace Gaze

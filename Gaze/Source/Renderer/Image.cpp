@@ -1,7 +1,7 @@
 #include "GazePCH.h"
 
 #include "Image.h"
-
+#include "Platform/OpenGL/OpenGLImage.h"
 #include "Renderer/Renderer.h"
 
 namespace Gaze
@@ -15,7 +15,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPIType::OpenGL:
-                return nullptr;
+                return Ref<OpenGLImage2D>::Create(specification, buffer);
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -30,7 +30,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPIType::OpenGL:
-                return nullptr;
+                return Ref<OpenGLImage2D>::Create(specification, data);
         }
         GZ_CORE_ASSERT(false, "Unknown RendererAPI");
         return nullptr;
