@@ -7,7 +7,7 @@
 namespace Gaze
 {
 
-    Ref<Texture2D> Texture2D::Create(const TextureSpecification& specification)
+    Ref<Texture2D> Texture2D::Create(const TextureSpecification& specification, const void* data)
     {
         switch (RendererAPI::Current())
         {
@@ -15,7 +15,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPIType::OpenGL:
-                return Ref<OpenGLTexture2D>::Create(specification);
+                return Ref<OpenGLTexture2D>::Create(specification, data);
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -37,7 +37,7 @@ namespace Gaze
         return nullptr;
     }
 
-    Ref<TextureCube> TextureCube::Create(const TextureSpecification& specification)
+    Ref<TextureCube> TextureCube::Create(const TextureSpecification& specification, const void* data)
     {
         switch (RendererAPI::Current())
         {
@@ -45,7 +45,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPIType::OpenGL:
-                return nullptr;
+                return Ref<OpenGLTextureCube>::Create(specification, data);
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -60,7 +60,7 @@ namespace Gaze
                 GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPIType::OpenGL:
-                return nullptr;
+                return Ref<OpenGLTextureCube>::Create(path);
         }
 
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");

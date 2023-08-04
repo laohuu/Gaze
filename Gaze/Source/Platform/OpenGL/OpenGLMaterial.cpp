@@ -244,41 +244,38 @@ namespace Gaze
             }
         }
 
-//        for (size_t i = 0; i < m_Textures.size(); i++)
-//        {
-//            auto& texture = m_Textures[i];
-//            if (texture)
-//            {
-//                GZ_CORE_ASSERT(texture->GetStaticType() == AssetType::EnvMap);
-//                Ref<OpenGLTextureCube> glTexture = texture.As<OpenGLTextureCube>();
-//                glBindTextureUnit(i, glTexture->GetRendererID());
-//            }
-//        }
-//
-//        for (auto [slot, texture] : m_Texture2Ds)
-//        {
-//            if (texture)
-//            {
-//                uint32_t           textureSlot = slot;
-//                TextureSpecification specification = texture->GetSpecification();
-//
-//                Ref<Image2D>       image       = Image2D::Create(specification, width, height, buffer);
-//                texture->GetWriteableBuffer();
-//                Ref<OpenGLImage2D> glImage     = image.As<OpenGLImage2D>();
-//                glBindSampler(textureSlot, glImage->GetSamplerRendererID());
-//                glBindTextureUnit(textureSlot, glImage->GetRendererID());
-//            }
-//        }
-//
-//        for (auto [slot, image] : m_Images)
-//        {
-//            if (image)
-//            {
-//                uint32_t           textureSlot = slot;
-//                Ref<OpenGLImage2D> glImage     = image.As<OpenGLImage2D>();
-//                glBindSampler(textureSlot, glImage->GetSamplerRendererID());
-//                glBindTextureUnit(textureSlot, glImage->GetRendererID());
-//            }
-//        }
+        for (size_t i = 0; i < m_Textures.size(); i++)
+        {
+            auto& texture = m_Textures[i];
+            if (texture)
+            {
+                GZ_CORE_ASSERT(texture->GetStaticType() == AssetType::EnvMap);
+                Ref<OpenGLTextureCube> glTexture = texture.As<OpenGLTextureCube>();
+                glBindTextureUnit(i, glTexture->GetRendererID());
+            }
+        }
+
+        for (auto [slot, texture] : m_Texture2Ds)
+        {
+            if (texture)
+            {
+                uint32_t           textureSlot = slot;
+                Ref<Image2D>       image       = texture->GetImage();
+                Ref<OpenGLImage2D> glImage     = image.As<OpenGLImage2D>();
+                glBindSampler(textureSlot, glImage->GetSamplerRendererID());
+                glBindTextureUnit(textureSlot, glImage->GetRendererID());
+            }
+        }
+
+        for (auto [slot, image] : m_Images)
+        {
+            if (image)
+            {
+                uint32_t           textureSlot = slot;
+                Ref<OpenGLImage2D> glImage     = image.As<OpenGLImage2D>();
+                glBindSampler(textureSlot, glImage->GetSamplerRendererID());
+                glBindTextureUnit(textureSlot, glImage->GetRendererID());
+            }
+        }
     }
 } // namespace Gaze

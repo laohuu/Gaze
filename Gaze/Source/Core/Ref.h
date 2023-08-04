@@ -121,7 +121,7 @@ namespace Gaze
         }
 
         template<typename T2>
-        Ref<T2> As() const
+        Ref<T2>  As() const
         {
             return Ref<T2>(*this);
         }
@@ -129,7 +129,7 @@ namespace Gaze
         template<typename... Args>
         static Ref<T> Create(Args&&... args)
         {
-#if HZ_TRACK_MEMORY
+#if GZ_TRACK_MEMORY
             return Ref<T>(new (typeid(T).name()) T(std::forward<Args>(args)...));
 #else
             return Ref<T>(new T(std::forward<Args>(args)...));

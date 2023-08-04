@@ -100,7 +100,7 @@ namespace Gaze
         TextVertex* TextVertexBufferPtr  = nullptr;
 
         std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
-        uint32_t                                          TextureSlotIndex = 1; // 0 = white texture
+        uint32_t                                    TextureSlotIndex = 1; // 0 = white texture
 
         Ref<Texture2D> FontAtlasTexture;
 
@@ -189,11 +189,10 @@ namespace Gaze
         s_Data.TextVertexArray->SetIndexBuffer(quadIB);
         s_Data.TextVertexBufferBase = new TextVertex[s_Data.MaxVertices];
 
-        s_Data.WhiteTexture       = Texture2D::Create(TextureSpecification());
+        TextureSpecification specification;
+        specification.Format      = ImageFormat::RGBA;
         uint32_t whiteTextureData = 0xffffffff;
-        s_Data.WhiteTexture->Lock();
-        s_Data.WhiteTexture->GetWriteableBuffer().Write(&whiteTextureData, sizeof(uint32_t));
-        s_Data.WhiteTexture->Unlock();
+        s_Data.WhiteTexture       = Texture2D::Create(specification, &whiteTextureData);
 
         s_Data.QuadShader   = Shader::Create("Assets/Shaders/Renderer2D_Quad.glsl");
         s_Data.CircleShader = Shader::Create("Assets/Shaders/Renderer2D_Circle.glsl");

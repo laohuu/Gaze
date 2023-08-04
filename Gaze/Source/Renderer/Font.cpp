@@ -38,10 +38,10 @@ namespace Gaze
         spec.Format       = ImageFormat::RGB;
         spec.GenerateMips = false;
 
-        Ref<Texture2D> texture = Texture2D::Create(spec);
-        texture->Lock();
-        texture->GetWriteableBuffer().Write((void*)bitmap.pixels, bitmap.width * bitmap.height * 3);
-        texture->Unlock();
+        Ref<Texture2D> texture = Texture2D::Create(spec,(void*)bitmap.pixels);
+//        texture->Lock();
+//        texture->GetWriteableBuffer().Write((void*)bitmap.pixels, bitmap.width * bitmap.height * 3);
+//        texture->Unlock();
         return texture;
     }
 

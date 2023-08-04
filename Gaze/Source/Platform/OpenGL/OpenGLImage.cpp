@@ -7,6 +7,7 @@ namespace Gaze
     OpenGLImage2D::OpenGLImage2D(ImageSpecification specification, Buffer buffer) :
         m_Specification(specification), m_ImageData(buffer)
     {}
+
     OpenGLImage2D::OpenGLImage2D(ImageSpecification specification, const void* data) : m_Specification(specification)
     {
         // TODO: Local storage should be optional
@@ -14,6 +15,7 @@ namespace Gaze
             m_ImageData = Buffer::Copy(
                 data, Utils::GetImageMemorySize(specification.Format, specification.Width, specification.Height));
     }
+
     OpenGLImage2D::~OpenGLImage2D()
     { // Should this be submitted?
         m_ImageData.Release();
@@ -22,6 +24,7 @@ namespace Gaze
             glDeleteTextures(1, &m_RendererID);
         }
     }
+
     void OpenGLImage2D::Invalidate()
     {
         if (m_RendererID)

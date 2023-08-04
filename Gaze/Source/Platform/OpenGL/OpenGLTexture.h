@@ -10,9 +10,11 @@ namespace Gaze
     class OpenGLTexture2D : public Texture2D
     {
     public:
-        OpenGLTexture2D(const TextureSpecification& specification);
+        OpenGLTexture2D(const TextureSpecification& specification, const void* data = nullptr);
         OpenGLTexture2D(const std::string& path, bool srgb);
         virtual ~OpenGLTexture2D();
+
+        virtual Ref<Image2D> GetImage() const override { return m_Image; }
 
         const TextureSpecification& GetSpecification() const override { return m_Specification; }
 
@@ -28,7 +30,7 @@ namespace Gaze
         void   Resize(uint32_t width, uint32_t height) override;
         Buffer GetWriteableBuffer() override;
 
-        RendererID GetRendererID() const override { return m_RendererID; }
+        RendererID GetRendererID() const override { return m_Image->GetHash(); }
 
         const std::string& GetPath() const override { return m_Path; }
 
@@ -40,6 +42,7 @@ namespace Gaze
 
     private:
         TextureSpecification m_Specification;
+        Ref<Image2D>         m_Image;
 
         std::string m_Path;
 
@@ -56,7 +59,7 @@ namespace Gaze
     class OpenGLTextureCube : public TextureCube
     {
     public:
-        OpenGLTextureCube(const TextureSpecification& specification);
+        OpenGLTextureCube(const TextureSpecification& specification, const void* data = nullptr);
         OpenGLTextureCube(const std::string& path);
         virtual ~OpenGLTextureCube();
 
@@ -74,6 +77,8 @@ namespace Gaze
 
         RendererID GetRendererID() const override { return m_RendererID; }
 
+        bool IsLoaded() const override { return true; }
+
         bool operator==(const Texture& other) const override
         {
             return m_RendererID == ((OpenGLTextureCube&)other).m_RendererID;
@@ -82,8 +87,8 @@ namespace Gaze
     private:
         TextureSpecification m_Specification;
 
-        RendererID     m_RendererID;
-        unsigned char* m_ImageData;
+        RendererID m_RendererID;
+        Buffer     m_ImageData;
 
         std::string m_FilePath;
     };

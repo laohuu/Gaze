@@ -1,5 +1,7 @@
-#include "OpenGLTexture.h"
 #include "GazePCH.h"
+
+#include "OpenGLImage.h"
+#include "OpenGLTexture.h"
 
 #include <stb_image.h>
 
@@ -23,29 +25,16 @@ namespace Gaze
         }
     } // namespace Utils
 
-    OpenGLTexture2D::OpenGLTexture2D(const TextureSpecification& specification) : m_Specification(specification)
+    OpenGLTexture2D::OpenGLTexture2D(const TextureSpecification& specification, const void* data) :
+        m_Specification(specification)
     {
-        glGenTextures(1, &m_RendererID);
-        glBindTexture(GL_TEXTURE_2D, m_RendererID);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        GLenum wrap = m_Specification.SamplerWrap == TextureWrap::Clamp ? GL_CLAMP_TO_EDGE : GL_REPEAT;
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
-        glTextureParameterf(m_RendererID, GL_TEXTURE_MAX_ANISOTROPY, 0.0F);
-
-        glTexImage2D(GL_TEXTURE_2D,
-                     0,
-                     Utils::ImageFormatToOpenGLTextureFormat(specification.Format),
-                     specification.Width,
-                     specification.Height,
-                     0,
-                     Utils::ImageFormatToOpenGLTextureFormat(specification.Format),
-                     GL_UNSIGNED_BYTE,
-                     nullptr);
-
-        m_ImageData.Allocate(specification.Width * specification.Height * Texture::GetBPP(specification.Format));
+        ImageSpecification imageSpecification;
+        imageSpecification.Width  = specification.Width;
+        imageSpecification.Height = specification.Height;
+        imageSpecification.Format = specification.Format;
+        m_Image                   = Image2D::Create(imageSpecification, data);
+        m_Image->Invalidate();
+        m_ImageData = m_Image->GetBuffer();
     }
 
     OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool srgb) : m_Path(path)
@@ -53,20 +42,37 @@ namespace Gaze
         GZ_PROFILE_FUNCTION();
 
         int width, height, channels;
-
+        stbi_set_flip_vertically_on_load(1);
         if (stbi_is_hdr(path.c_str()))
         {
             GZ_CORE_INFO("Loading HDR texture {0}, srgb={1}", path, srgb);
-            m_ImageData.Data       = (byte*)stbi_loadf(path.c_str(), &width, &height, &channels, 0);
+            float* imageData = stbi_loadf(path.c_str(), &width, &height, &channels, 0);
+            GZ_CORE_ASSERT(imageData, "Could not read image!");
+            Buffer             buffer(imageData, Utils::GetImageMemorySize(ImageFormat::RGBA32F, width, height));
+            ImageSpecification imageSpecification;
+            imageSpecification.Width  = width;
+            imageSpecification.Height = height;
+            imageSpecification.Format = ImageFormat::RGBA32F;
+
+            m_Image                = Image2D::Create(imageSpecification, buffer);
+            m_ImageData            = m_Image->GetBuffer();
             m_IsHDR                = true;
-            m_Specification.Format = ImageFormat::Float16;
+            m_Specification.Format = ImageFormat::RGBA32F;
         }
         else
         {
             GZ_CORE_INFO("Loading texture {0}, srgb={1}", path, srgb);
-            m_ImageData.Data = stbi_load(path.c_str(), &width, &height, &channels, srgb ? STBI_rgb : STBI_rgb_alpha);
-            GZ_CORE_ASSERT(m_ImageData.Data, "Could not read image!");
-            m_Specification.Format = ImageFormat::RGBA;
+            stbi_uc* imageData = stbi_load(path.c_str(), &width, &height, &channels, srgb ? STBI_rgb : STBI_rgb_alpha);
+            GZ_CORE_ASSERT(imageData, "Could not read image!");
+            ImageFormat        format = srgb ? ImageFormat::RGB : ImageFormat::RGBA;
+            ImageSpecification imageSpecification;
+            imageSpecification.Width  = width;
+            imageSpecification.Height = height;
+            imageSpecification.Format = format;
+            Buffer buffer(imageData, Utils::GetImageMemorySize(format, width, height));
+            m_Image                = Image2D::Create(imageSpecification, buffer);
+            m_ImageData            = m_Image->GetBuffer();
+            m_Specification.Format = format;
         }
 
         if (!m_ImageData.Data)
@@ -76,88 +82,36 @@ namespace Gaze
         m_Specification.Width  = width;
         m_Specification.Height = height;
 
-        // TODO: Consolidate properly
-        if (srgb)
-        {
-            glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-            int levels = Texture::CalculateMipMapCount(m_Specification.Width, m_Specification.Height);
-            glTextureStorage2D(m_RendererID, levels, GL_SRGB8, m_Specification.Width, m_Specification.Height);
-            glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, levels > 1 ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-            glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        m_Image->Invalidate();
 
-            glTextureSubImage2D(m_RendererID,
-                                0,
-                                0,
-                                0,
-                                m_Specification.Width,
-                                m_Specification.Height,
-                                GL_RGB,
-                                GL_UNSIGNED_BYTE,
-                                m_ImageData.Data);
-            glGenerateTextureMipmap(m_RendererID);
-        }
-        else
-        {
-            glGenTextures(1, &m_RendererID);
-            glBindTexture(GL_TEXTURE_2D, m_RendererID);
-
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-            GLenum internalFormat = Utils::ImageFormatToOpenGLTextureFormat(m_Specification.Format);
-            GLenum format =
-                srgb ?
-                    GL_SRGB8 :
-                    (m_IsHDR ? GL_RGB :
-                               Utils::ImageFormatToOpenGLTextureFormat(m_Specification.Format)); // HDR = GL_RGB for now
-            GLenum type = internalFormat == GL_RGBA16F ? GL_FLOAT : GL_UNSIGNED_BYTE;
-            glTexImage2D(GL_TEXTURE_2D,
-                         0,
-                         internalFormat,
-                         m_Specification.Width,
-                         m_Specification.Height,
-                         0,
-                         format,
-                         type,
-                         m_ImageData.Data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-
-            glBindTexture(GL_TEXTURE_2D, 0);
-        }
-        stbi_image_free(m_ImageData.Data);
+        Buffer& buffer = m_Image->GetBuffer();
+        stbi_image_free(buffer.Data);
+        buffer = Buffer();
     }
 
-    OpenGLTexture2D::~OpenGLTexture2D()
-    {
-        GZ_PROFILE_FUNCTION();
-
-        glDeleteTextures(1, &m_RendererID);
-    }
+    OpenGLTexture2D::~OpenGLTexture2D() { m_Image->Release(); }
 
     void OpenGLTexture2D::Bind(uint32_t slot) const
     {
-        GZ_PROFILE_FUNCTION();
-
-        glBindTextureUnit(slot, m_RendererID);
+        Ref<OpenGLImage2D> image = m_Image.As<OpenGLImage2D>();
+        glBindTextureUnit(slot, image->GetRendererID());
     }
 
     void OpenGLTexture2D::Lock() { m_Locked = true; }
 
     void OpenGLTexture2D::Unlock()
     {
-        m_Locked = false;
-        glTextureSubImage2D(m_RendererID,
+        m_Locked                 = false;
+        Ref<OpenGLImage2D> image = m_Image.As<OpenGLImage2D>();
+        glTextureSubImage2D(image->GetRendererID(),
                             0,
                             0,
                             0,
                             m_Specification.Width,
                             m_Specification.Height,
-                            Utils::ImageFormatToOpenGLTextureFormat(m_Specification.Format),
+                            Utils::OpenGLImageFormat(image->GetSpecification().Format),
                             GL_UNSIGNED_BYTE,
-                            m_ImageData.Data);
+                            m_Image->GetBuffer().Data);
     }
 
     void OpenGLTexture2D::Resize(uint32_t width, uint32_t height)
@@ -173,7 +127,7 @@ namespace Gaze
     Buffer OpenGLTexture2D::GetWriteableBuffer()
     {
         GZ_CORE_ASSERT(m_Locked, "Texture must be locked!");
-        return m_ImageData;
+        return m_Image->GetBuffer();
     }
 
     uint32_t OpenGLTexture2D::GetMipLevelCount() const
@@ -185,8 +139,15 @@ namespace Gaze
     // TextureCube
     //////////////////////////////////////////////////////////////////////////////////
 
-    OpenGLTextureCube::OpenGLTextureCube(const TextureSpecification& specification) : m_Specification(specification)
+    OpenGLTextureCube::OpenGLTextureCube(const TextureSpecification& specification, const void* data) :
+        m_Specification(specification)
     {
+        if (data)
+        {
+            uint32_t size = specification.Width * specification.Height * 4 * 6; // six layers
+            m_ImageData   = Buffer::Copy(data, size);
+        }
+
         uint32_t levels = Texture::CalculateMipMapCount(m_Specification.Width, m_Specification.Height);
 
         glCreateTextures(GL_TEXTURE_CUBE_MAP, 1, &m_RendererID);
@@ -292,14 +253,10 @@ namespace Gaze
         for (size_t i = 0; i < faces.size(); i++)
             delete[] faces[i];
 
-        stbi_image_free(m_ImageData);
+        stbi_image_free(m_ImageData.Data);
     }
 
-    OpenGLTextureCube::~OpenGLTextureCube()
-    {
-        GLuint rendererID = m_RendererID;
-        glDeleteTextures(1, &rendererID);
-    }
+    OpenGLTextureCube::~OpenGLTextureCube() { glDeleteTextures(1, &m_RendererID); }
 
     void OpenGLTextureCube::Bind(uint32_t slot) const { glBindTextureUnit(slot, m_RendererID); }
 

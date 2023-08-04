@@ -52,8 +52,10 @@ namespace Gaze
     class Texture2D : public Texture
     {
     public:
-        static Ref<Texture2D> Create(const TextureSpecification& specification);
+        static Ref<Texture2D> Create(const TextureSpecification& specification, const void* data = nullptr);
         static Ref<Texture2D> Create(const std::string& path, bool srgb = false);
+
+        virtual Ref<Image2D> GetImage() const = 0;
 
         virtual void Lock()   = 0;
         virtual void Unlock() = 0;
@@ -69,7 +71,7 @@ namespace Gaze
     class TextureCube : public Texture
     {
     public:
-        static Ref<TextureCube> Create(const TextureSpecification& specification);
+        static Ref<TextureCube> Create(const TextureSpecification& specification, const void* data = nullptr);
         static Ref<TextureCube> Create(const std::string& path);
 
         virtual const std::string& GetPath() const = 0;
