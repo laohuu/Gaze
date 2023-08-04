@@ -7,7 +7,6 @@
 
 namespace Gaze
 {
-
     class OpenGLTexture2D : public Texture2D
     {
     public:

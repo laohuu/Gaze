@@ -36,7 +36,7 @@ namespace Gaze
 
         FramebufferSpecification fbSpec;
         fbSpec.Attachments = {
-            FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth};
+            FramebufferTextureFormat::RGBA8,  FramebufferTextureFormat::Depth};
         fbSpec.Width  = 1280;
         fbSpec.Height = 720;
         m_Framebuffer = Framebuffer::Create(fbSpec);
@@ -92,7 +92,7 @@ namespace Gaze
         Gaze::RenderCommand::Clear();
 
         // Clear our entity ID attachment to -1
-        m_Framebuffer->ClearAttachment(1, -1);
+//        m_Framebuffer->ClearAttachment(1, -1);
 
         // Update scene
         switch (m_SceneState)
@@ -129,8 +129,8 @@ namespace Gaze
 
         if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y)
         {
-            int pixelData   = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
-            m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+//            int pixelData   = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+//            m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
         }
 
         OnOverlayRender();

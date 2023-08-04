@@ -3,44 +3,42 @@
 
 #include "Renderer/Framebuffer.h"
 
-namespace Gaze {
-
-    class OpenGLFramebuffer : public Framebuffer {
+namespace Gaze
+{
+    class OpenGLFramebuffer : public Framebuffer
+    {
     public:
-        OpenGLFramebuffer(const FramebufferSpecification &spec);
-
+        OpenGLFramebuffer(const FramebufferSpecification& spec);
         ~OpenGLFramebuffer() override;
 
-        void Invalidate();
+        void Resize(uint32_t width, uint32_t height, bool forceRecreate = false) override;
 
-        void Bind() override;
+        void Bind() const override;
+        void Unbind() const override;
 
-        void Unbind() override;
+        void BindTexture(uint32_t attachmentIndex = 0, uint32_t slot = 0) const override;
 
-        void Resize(uint32_t width, uint32_t height) override;
+        uint32_t GetWidth() const override { return m_Specification.Width; }
+        uint32_t GetHeight() const override { return m_Specification.Height; }
 
-        int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
+        RendererID GetRendererID() const override { return m_RendererID; }
+        RendererID GetColorAttachmentRendererID(int index = 0) const override { return m_ColorAttachments[index]; }
+        RendererID GetDepthAttachmentRendererID() const override { return m_DepthAttachment; }
 
-        void ClearAttachment(uint32_t attachmentIndex, int value) override;
-
-        uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override {
-            GZ_CORE_ASSERT(index < m_ColorAttachments.size());
-            return m_ColorAttachments[index];
-        }
-
-        const FramebufferSpecification &GetSpecification() const override { return m_Specification; }
+        const FramebufferSpecification& GetSpecification() const override { return m_Specification; }
 
     private:
-        uint32_t m_RendererID = 0;
         FramebufferSpecification m_Specification;
+        RendererID               m_RendererID = 0;
 
-        std::vector<FramebufferTextureSpecification> m_ColorAttachmentSpecifications;
-        FramebufferTextureSpecification m_DepthAttachmentSpecification = FramebufferTextureFormat::None;
+        std::vector<RendererID> m_ColorAttachments;
+        RendererID              m_DepthAttachment;
 
-        std::vector<uint32_t> m_ColorAttachments;
-        uint32_t m_DepthAttachment = 0;
+        std::vector<FramebufferTextureFormat> m_ColorAttachmentFormats;
+        FramebufferTextureFormat              m_DepthAttachmentFormat = FramebufferTextureFormat::None;
+
+        uint32_t m_Width = 0, m_Height = 0;
     };
+} // namespace Gaze
 
-} // Gaze
-
-#endif //GAZE_ENGINE_OPENGLFRAMEBUFFER_H
+#endif // GAZE_ENGINE_OPENGLFRAMEBUFFER_H

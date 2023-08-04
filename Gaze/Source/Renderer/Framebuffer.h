@@ -2,71 +2,104 @@
 #define GAZE_ENGINE_FRAMEBUFFER_H
 
 #include "Core/Base.h"
+#include "RendererAPI.h"
 
-namespace Gaze {
-
-    enum class FramebufferTextureFormat {
+namespace Gaze
+{
+    enum class FramebufferTextureFormat
+    {
         None = 0,
 
         // Color
-        RGBA8,
-        RED_INTEGER,
+        RGBA8   = 1,
+        RGBA16F = 2,
+        RGBA32F = 3,
+        RG32F   = 4,
 
         // Depth/stencil
-        DEPTH24STENCIL8,
+        DEPTH32F        = 5,
+        DEPTH24STENCIL8 = 6,
 
         // Defaults
         Depth = DEPTH24STENCIL8
     };
 
-    struct FramebufferTextureSpecification {
+    struct FramebufferTextureSpecification
+    {
         FramebufferTextureSpecification() = default;
+        FramebufferTextureSpecification(FramebufferTextureFormat format) : TextureFormat(format) {}
 
-        FramebufferTextureSpecification(FramebufferTextureFormat format)
-                : TextureFormat(format) {}
-
-        FramebufferTextureFormat TextureFormat = FramebufferTextureFormat::None;
+        FramebufferTextureFormat TextureFormat;
         // TODO: filtering/wrap
     };
 
-    struct FramebufferAttachmentSpecification {
+    struct FramebufferAttachmentSpecification
+    {
         FramebufferAttachmentSpecification() = default;
-
-        FramebufferAttachmentSpecification(std::initializer_list<FramebufferTextureSpecification> attachments)
-                : Attachments(attachments) {}
+        FramebufferAttachmentSpecification(const std::initializer_list<FramebufferTextureSpecification>& attachments) :
+            Attachments(attachments)
+        {}
 
         std::vector<FramebufferTextureSpecification> Attachments;
     };
 
-    struct FramebufferSpecification {
-        uint32_t Width = 0, Height = 0;
+    struct FramebufferSpecification
+    {
+        uint32_t                           Width  = 1280;
+        uint32_t                           Height = 720;
+        glm::vec4                          ClearColor;
         FramebufferAttachmentSpecification Attachments;
-        uint32_t Samples = 1;
+        uint32_t                           Samples = 1; // multisampling
 
+        // TODO: Temp, needs scale
+        bool NoResize = false;
+
+        // SwapChainTarget = screen buffer (i.e. no framebuffer)
         bool SwapChainTarget = false;
     };
 
-    class Framebuffer {
+    class Framebuffer
+    {
     public:
-        virtual ~Framebuffer() = default;
+        virtual ~Framebuffer() {}
+        virtual void Bind() const   = 0;
+        virtual void Unbind() const = 0;
 
-        virtual void Bind() = 0;
+        virtual void Resize(uint32_t width, uint32_t height, bool forceRecreate = false) = 0;
 
-        virtual void Unbind() = 0;
+        virtual void BindTexture(uint32_t attachmentIndex = 0, uint32_t slot = 0) const = 0;
 
-        virtual void Resize(uint32_t width, uint32_t height) = 0;
+        virtual uint32_t GetWidth() const  = 0;
+        virtual uint32_t GetHeight() const = 0;
 
-        virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
+        virtual RendererID GetRendererID() const                             = 0;
+        virtual RendererID GetColorAttachmentRendererID(int index = 0) const = 0;
+        virtual RendererID GetDepthAttachmentRendererID() const              = 0;
 
-        virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
-        
-        virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
+        virtual const FramebufferSpecification& GetSpecification() const = 0;
 
-        virtual const FramebufferSpecification &GetSpecification() const = 0;
-
-        static Gaze::Ref<Framebuffer> Create(const FramebufferSpecification &spec);
+        static Ref<Framebuffer> Create(const FramebufferSpecification& spec);
     };
 
-} // Gaze
+    class FramebufferPool final
+    {
+    public:
+        FramebufferPool(uint32_t maxFBs = 32);
+        ~FramebufferPool();
 
-#endif //GAZE_ENGINE_FRAMEBUFFER_H
+        std::weak_ptr<Framebuffer> AllocateBuffer();
+        void                       Add(const Ref<Framebuffer>& framebuffer);
+
+        std::vector<Ref<Framebuffer>>&       GetAll() { return m_Pool; }
+        const std::vector<Ref<Framebuffer>>& GetAll() const { return m_Pool; }
+
+        inline static FramebufferPool* GetGlobal() { return s_Instance; }
+
+    private:
+        std::vector<Ref<Framebuffer>> m_Pool;
+
+        static FramebufferPool* s_Instance;
+    };
+} // namespace Gaze
+
+#endif // GAZE_ENGINE_FRAMEBUFFER_H

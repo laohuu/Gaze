@@ -1,63 +1,97 @@
-#include "GazePCH.h"
 #include "Shader.h"
+#include "GazePCH.h"
 
-#include "Renderer.h"
 #include "Platform/OpenGL/OpenGLShader.h"
+#include "Renderer.h"
 
-namespace Gaze {
+namespace Gaze
+{
+    std::vector<Ref<Shader>> Shader::s_AllShaders;
 
-    Gaze::Ref<Shader>
-    Shader::Create(const std::string &name, const std::string &vertexSrc, const std::string &fragmentSrc) {
-        switch (Renderer::GetAPI()) {
-            case RendererAPI::API::None: GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+    Ref<Shader> Shader::Create(const std::string& filepath, bool forceCompile)
+    {
+        Ref<Shader> result = nullptr;
+        switch (Renderer::GetAPI())
+        {
+            case RendererAPI::API::None:
+                GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
                 return nullptr;
             case RendererAPI::API::OpenGL:
-                return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
-        }
-
-        GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
-        return nullptr;
-    }
-
-    Gaze::Ref<Shader> Shader::Create(const std::string &filepath) {
-        switch (Renderer::GetAPI()) {
-            case RendererAPI::API::None: GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
-                return nullptr;
-            case RendererAPI::API::OpenGL:
-                return CreateRef<OpenGLShader>(filepath);
+                result = CreateRef<OpenGLShader>(filepath, forceCompile);
+                s_AllShaders.push_back(result);
+                return result;
         }
         GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
         return nullptr;
     }
 
-    void ShaderLibrary::Add(const std::string &name, const Ref <Shader> &shader) {
-        GZ_CORE_ASSERT(!Exists(name), "Shader already exists!");
+    Ref<Shader> Shader::CreateFromString(const std::string& source)
+    {
+        Ref<Shader> result = nullptr;
+        switch (Renderer::GetAPI())
+        {
+            case RendererAPI::API::None:
+                GZ_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+                return nullptr;
+            case RendererAPI::API::OpenGL:
+                result = OpenGLShader::CreateFromString(source);
+                s_AllShaders.push_back(result);
+                return result;
+        }
+        GZ_CORE_ASSERT(false, "Unknown RendererAPI!");
+        return nullptr;
+    }
+
+    ShaderLibrary::ShaderLibrary() {}
+
+    ShaderLibrary::~ShaderLibrary() {}
+
+    void ShaderLibrary::Add(const Ref<Shader>& shader)
+    {
+        auto& name = shader->GetName();
+        GZ_CORE_ASSERT(m_Shaders.find(name) == m_Shaders.end());
         m_Shaders[name] = shader;
     }
 
-    void ShaderLibrary::Add(const Ref <Shader> &shader) {
-        auto &name = shader->GetName();
-        Add(name, shader);
+    void ShaderLibrary::Load(const std::string& path, bool forceCompile)
+    {
+        auto  shader = Shader::Create(path, forceCompile);
+        auto& name   = shader->GetName();
+        GZ_CORE_ASSERT(m_Shaders.find(name) == m_Shaders.end());
+        m_Shaders[name] = shader;
     }
 
-    Gaze::Ref<Shader> ShaderLibrary::Load(const std::string &filepath) {
-        auto shader = Shader::Create(filepath);
-        Add(shader);
-        return shader;
+    void ShaderLibrary::Load(const std::string& name, const std::string& path)
+    {
+        GZ_CORE_ASSERT(m_Shaders.find(name) == m_Shaders.end());
+        m_Shaders[name] = Shader::Create(path);
     }
 
-    Gaze::Ref<Shader> ShaderLibrary::Load(const std::string &name, const std::string &filepath) {
-        auto shader = Shader::Create(filepath);
-        Add(name, shader);
-        return shader;
+    const Ref<Shader>& ShaderLibrary::Get(const std::string& name) const
+    {
+        GZ_CORE_ASSERT(m_Shaders.find(name) != m_Shaders.end());
+        return m_Shaders.at(name);
     }
 
-    Gaze::Ref<Shader> ShaderLibrary::Get(const std::string &name) {
-        GZ_CORE_ASSERT(Exists(name), "Shader not found!");
-        return m_Shaders[name];
-    }
+    ShaderUniform::ShaderUniform(const std::string& name, ShaderUniformType type, uint32_t size, uint32_t offset) :
+        m_Name(name), m_Type(type), m_Size(size), m_Offset(offset)
+    {}
 
-    bool ShaderLibrary::Exists(const std::string &name) const {
-        return m_Shaders.find(name) != m_Shaders.end();
+    const std::string& ShaderUniform::UniformTypeToString(ShaderUniformType type)
+    {
+        if (type == ShaderUniformType::Bool)
+        {
+            return "Boolean";
+        }
+        else if (type == ShaderUniformType::Int)
+        {
+            return "Int";
+        }
+        else if (type == ShaderUniformType::Float)
+        {
+            return "Float";
+        }
+
+        return "None";
     }
-} // Gaze
+} // namespace Gaze

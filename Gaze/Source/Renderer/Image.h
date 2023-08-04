@@ -21,7 +21,7 @@ namespace Gaze
         RGBA,
         RGBA16F,
         RGBA32F,
-        
+
         Float16,
 
         B10R11G11UF,

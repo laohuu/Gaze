@@ -2,7 +2,6 @@
 #define GAZE_ENGINE_CORE_BUFFER_H
 
 #include <cstdint>
-
 #include <cstring>
 
 namespace Gaze
