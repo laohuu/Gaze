@@ -12,6 +12,11 @@ if (NOT TARGET glm)
     set_target_properties(glm PROPERTIES FOLDER ${third_party_folder}/glm)
 endif ()
 
+if (NOT TARGET assimp)
+    add_subdirectory(assimp)
+    set_target_properties(assimp PROPERTIES FOLDER ${third_party_folder}/assimp)
+endif ()
+
 if (NOT TARGET glfw)
     option(GLFW_BUILD_EXAMPLES "" OFF)
     option(GLFW_BUILD_TESTS "" OFF)

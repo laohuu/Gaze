@@ -1,24 +1,26 @@
 #ifndef GAZE_OPENGLCONTEXT_H
 #define GAZE_OPENGLCONTEXT_H
 
-#include "Renderer/GraphicsContext.h"
+#include "Renderer/RendererContext.h"
 
 struct GLFWwindow;
 
-namespace Gaze {
-
-    class OpenGLContext : public GraphicsContext {
+namespace Gaze
+{
+    class OpenGLContext : public RendererContext
+    {
     public:
-        OpenGLContext(GLFWwindow *windowHandle);
+        OpenGLContext(GLFWwindow* windowHandle);
+        virtual ~OpenGLContext();
 
-        virtual void Init() override;
-
+        virtual void Create() override;
+        virtual void BeginFrame() override {}
         virtual void SwapBuffers() override;
+        virtual void OnResize(uint32_t width, uint32_t height) override {}
 
     private:
-        GLFWwindow *m_WindowHandle;
+        GLFWwindow* m_WindowHandle;
     };
+} // namespace Gaze
 
-} // Gaze
-
-#endif //GAZE_OPENGLCONTEXT_H
+#endif // GAZE_OPENGLCONTEXT_H

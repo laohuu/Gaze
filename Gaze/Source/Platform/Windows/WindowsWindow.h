@@ -2,11 +2,14 @@
 #define GAZE_ENGINE_WINDOWSWINDOW_H
 
 #include "Core/Window.h"
-#include "GLFW/glfw3.h"
-#include "Renderer/GraphicsContext.h"
+#include "Renderer/RendererContext.h"
 
-namespace Gaze {
-    class WindowsWindow : public Window {
+#include <GLFW/glfw3.h>
+
+namespace Gaze
+{
+    class WindowsWindow : public Window
+    {
     public:
         WindowsWindow(const WindowProps& props);
         virtual ~WindowsWindow();
@@ -22,25 +25,26 @@ namespace Gaze {
         bool IsVSync() const override;
 
         virtual void* GetNativeWindow() const { return m_Window; }
+
     private:
         virtual void Init(const WindowProps& props);
         virtual void Shutdown();
+
     private:
-        GLFWwindow* m_Window;
-        GraphicsContext* m_Context;
+        GLFWwindow*          m_Window;
+        Ref<RendererContext> m_RendererContext;
 
         struct WindowData
         {
-            std::string Title;
+            std::string  Title;
             unsigned int Width, Height;
-            bool VSync;
+            bool         VSync;
 
             EventCallbackFn EventCallback;
         };
 
         WindowData m_Data;
     };
-}
+} // namespace Gaze
 
-
-#endif //GAZE_ENGINE_WINDOWSWINDOW_H
+#endif // GAZE_ENGINE_WINDOWSWINDOW_H

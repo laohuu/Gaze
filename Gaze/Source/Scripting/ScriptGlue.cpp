@@ -1,5 +1,7 @@
-#include "ScriptGlue.h"
 #include "GazePCH.h"
+
+#include "ScriptGlue.h"
+
 #include "ScriptEngine.h"
 
 #include "Core/Input.h"

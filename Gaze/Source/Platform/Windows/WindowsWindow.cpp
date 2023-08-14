@@ -1,5 +1,6 @@
-#include "WindowsWindow.h"
 #include "GazePCH.h"
+
+#include "WindowsWindow.h"
 
 #include "Events/ApplicationEvent.h"
 #include "Events/KeyEvent.h"
@@ -65,8 +66,9 @@ namespace Gaze
             ++s_GLFWWindowCount;
         }
 
-        m_Context = new OpenGLContext(m_Window);
-        m_Context->Init();
+        // Create Renderer Context
+        m_RendererContext = RendererContext::Create(m_Window);
+        m_RendererContext->Create();
 
         glfwSetWindowUserPointer(m_Window, &m_Data);
         SetVSync(true);
@@ -160,20 +162,19 @@ namespace Gaze
 
     void WindowsWindow::OnUpdate()
     {
-        GZ_PROFILE_FUNCTION();
-
         glfwPollEvents();
-        m_Context->SwapBuffers();
+        m_RendererContext->SwapBuffers();
     }
 
     void WindowsWindow::SetVSync(bool enabled)
     {
-        GZ_PROFILE_FUNCTION();
-
-        if (enabled)
-            glfwSwapInterval(1);
-        else
-            glfwSwapInterval(0);
+        if (RendererAPI::Current() == RendererAPIType::OpenGL)
+        {
+            if (enabled)
+                glfwSwapInterval(1);
+            else
+                glfwSwapInterval(0);
+        }
 
         m_Data.VSync = enabled;
     }

@@ -51,6 +51,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC spdlog)
 target_link_libraries(${PROJECT_NAME} PRIVATE stb)
 target_link_libraries(${PROJECT_NAME} PUBLIC glad)
 target_link_libraries(${PROJECT_NAME} PUBLIC glm)
+target_link_libraries(${PROJECT_NAME} PUBLIC assimp)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
 target_link_libraries(${PROJECT_NAME} PUBLIC imgui)
 target_link_libraries(${PROJECT_NAME} PUBLIC ImGuizmo)
@@ -94,13 +95,14 @@ target_include_directories(${PROJECT_NAME}
         ${PROJECT_SOURCE_DIR}/Packages/spdlog/include
         ${PROJECT_SOURCE_DIR}/Packages/GLFW/include
         ${PROJECT_SOURCE_DIR}/Packages/glm
+        ${PROJECT_SOURCE_DIR}/Packages/assimp/include
         ${PROJECT_SOURCE_DIR}/Packages/filewatch
         ${PROJECT_SOURCE_DIR}/Packages/entt/include
         ${PROJECT_SOURCE_DIR}/Packages/yaml-cpp/include
         ${PROJECT_SOURCE_DIR}/Packages/mono/include
         ${VK_SDK_INCLUDE}
         ${PROJECT_SOURCE_DIR}/Source
-        )
+)
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC GLFW_INCLUDE_NONE)
 target_compile_definitions(${PROJECT_NAME} PUBLIC PX_PHYSX_STATIC_LIB)
