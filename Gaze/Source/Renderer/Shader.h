@@ -207,7 +207,7 @@ namespace Gaze
     };
 
     // This should be eventually handled by the Asset Manager
-    class ShaderLibrary
+    class ShaderLibrary : public RefCounted
     {
     public:
         ShaderLibrary();

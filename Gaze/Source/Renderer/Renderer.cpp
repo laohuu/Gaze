@@ -5,18 +5,34 @@
 
 namespace Gaze
 {
-
     Scope<Renderer::SceneData> Renderer::s_SceneData = CreateScope<Renderer::SceneData>();
+    static RendererAPI*        s_RendererAPI         = nullptr;
+
+    struct RendererData
+    {
+        Ref<ShaderLibrary> m_ShaderLibrary;
+
+        Ref<Texture2D>   WhiteTexture;
+        Ref<TextureCube> BlackCubeTexture;
+    };
+
+    static RendererData* s_Data = nullptr;
 
     void Renderer::Init()
     {
         GZ_PROFILE_FUNCTION();
+
+        s_Data = new RendererData();
 
         RenderCommand::Init();
         Renderer2D::Init();
     }
 
     void Renderer::Shutdown() { Renderer2D::Shutdown(); }
+
+    RendererCapabilities& Renderer::GetCapabilities() { return s_RendererAPI->GetCapabilities(); }
+
+    Ref<ShaderLibrary> Renderer::GetShaderLibrary() { return s_Data->m_ShaderLibrary; }
 
     void Renderer::OnWindowResize(uint32_t width, uint32_t height) { RenderCommand::SetViewport(0, 0, width, height); }
 

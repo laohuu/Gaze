@@ -3,6 +3,11 @@
 
 #include "VertexArray.h"
 
+#include "Scene/Scene.h"
+
+#include "RendererCapabilities.h"
+#include "RendererTypes.h"
+
 #include <glm/glm.hpp>
 
 namespace Gaze
@@ -42,6 +47,8 @@ namespace Gaze
         virtual void SetLineWidth(float width) = 0;
 
         static Scope<RendererAPI> Create();
+
+        virtual RendererCapabilities& GetCapabilities() = 0;
 
         static RendererAPIType Current() { return s_CurrentRendererAPI; }
 

@@ -26,6 +26,8 @@ namespace Gaze
 
         virtual void* GetNativeWindow() const { return m_Window; }
 
+        Ref<RendererContext> GetRenderContext() override { return m_RendererContext; }
+
     private:
         virtual void Init(const WindowProps& props);
         virtual void Shutdown();
