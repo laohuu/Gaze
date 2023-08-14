@@ -53,4 +53,8 @@ namespace Gaze
 
         RenderCommand::DrawIndexed(vertexArray);
     }
+
+    Ref<Texture2D> Renderer::GetWhiteTexture() { return s_Data->WhiteTexture; }
+
+    Ref<TextureCube> Renderer::GetBlackCubeTexture() { return s_Data->BlackCubeTexture; }
 } // namespace Gaze

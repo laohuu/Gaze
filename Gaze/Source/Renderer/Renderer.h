@@ -1,6 +1,7 @@
 #ifndef GAZE_ENGINE_RENDERER_H
 #define GAZE_ENGINE_RENDERER_H
 
+#include "Mesh.h"
 #include "OrthographicCamera.h"
 #include "RenderCommand.h"
 #include "Shader.h"
@@ -48,6 +49,9 @@ namespace Gaze
         static void Submit(Ref<Shader>&                  shader,
                            const Gaze::Ref<VertexArray>& vertexArray,
                            const glm::mat4&              transform = glm::mat4(1.0f));
+
+        static Ref<Texture2D>   GetWhiteTexture();
+        static Ref<TextureCube> GetBlackCubeTexture();
 
     private:
         struct SceneData
